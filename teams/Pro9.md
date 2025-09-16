@@ -1,3 +1,4 @@
+[Pro9](https://github.com/onlymi/Pro9_SWD) | [Seugmin Yeom](https://github.com/onlymi), [Doyun Ji](https://github.com/chadromania), [Seungju Yoon](https://github.com/t-fox688), [Taewoo Kim](https://github.com/rfik), [Gurbazar Tumenkhuslen](https://github.com/tumee1123), [Youbin Lee](https://github.com/mangman4) | [Player & Enemy Ship Variety](teams/Pro9.md)
 # Pro9
 ## Team Introduction
 Don't make error!!!
@@ -15,4 +16,4 @@ Don't make error!!!
 1. **Player Ship Variety** – At least 3 selectable player ship types.
 2. **Enemy Variety** – At least 4 enemy types.
 4. **Wave System Update** – Integration of enemy types into waves with balanced difficulty scaling.
-6. **Optional** - Boss-type enemy for advanced challenge.  
+6. **Optional** - Boss-type enemy for advanced challenge.
