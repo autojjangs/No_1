@@ -1,6 +1,5 @@
-# Instructors
+# SwComputing
 ## Team Introduction
-**Team name: swComputing**
 - Team Leader
     - `Jaewon Choi`
 - Teammates
