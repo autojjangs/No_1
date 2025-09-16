@@ -1,5 +1,0 @@
-# Instructors
---
-##Team Introduction
---
-Hello
