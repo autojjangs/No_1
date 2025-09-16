@@ -16,7 +16,7 @@ Please list your team name and members in the table below. In addition, submit y
 |-----|------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------|
 | 0   | [Instructors](https://github.com/PurpleBananass/PurpleBananass)                          | [Scott Uk-Jin Lee](https://github.com/scottukjinlee/scottukjinlee), [Seungho Kim](https://github.com/oh-gnues/oh-gnues), [Joonwoo Lee](https://github.com/PurpleBananass/PurpleBananass) | [Instruct students](teams/instruct.md)             |
 | 1   | [SwComputing](https://github.com/jaewon9892/Invaders-SDP-24788)   | [Jaewon Choi](https://github.com/jaewon9892), [Hanyoung Park](https://github.com/Selene-and-Luna), [Suhwan Choi](https://github.com/Sohal3626), [Boseok Hong](https://github.com/Thisagree), [Hajun jang](https://github.com/jhj1516), [Hyunho Jo](https://github.com/hyunho-1208), [Jaejin Lee](https://github.com/jaaeejin) | [Records&AchievementsSystem](teams/SwComputing.md) |
-|2  | [NullNull](https://github.com/doorimng/NullNull)   |  | [Gameplay HUD](teams/NullNull.md) |
+|2  | [NullNull](https://github.com/doorimng/NullNull)   | [Yerim Kim](https://github.com/doorimng), [Inhwa Park](https://github.com/duckduckhwa), [Dain Jeong](https://github.com/manyperson), [Seohyun Park](https://github.com/https://github.com/), [Hamin Park](https://github.com/https://github.com/), [Dahye Jung](https://github.com/dahye011), [Sumin Seak](https://github.com/https://github.com/) | [Gameplay HUD](teams/NullNull.md) |
 
 
 ## Screenshots
