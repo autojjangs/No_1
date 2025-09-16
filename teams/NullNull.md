@@ -13,4 +13,10 @@ Hello
 ## Team Requirements
 ### - Gameplay HUD
 ## Detailed Requirements
-- 추후 추가
+- Score
+- the rest of player's life
+- Show game wave steps
+- the number of enemies left
+- the time left
+- Boss physical bar (when boss exists)
+- List and number of items player has
