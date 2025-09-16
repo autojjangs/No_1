@@ -15,7 +15,7 @@ Please list your team name and members in the table below. In addition, submit y
 | No. | Name                                | Members                                                                                                                                                                              | Requirements      |
 |-----|-------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------|
 | 0   | [Instructors](https://github.com/PurpleBananass/PurpleBananass) | [Scott Uk-Jin Lee](https://github.com/scottukjinlee/scottukjinlee), [Seungho Kim](https://github.com/oh-gnues/oh-gnues), [Joonwoo Lee](https://github.com/PurpleBananass/PurpleBananass) | [Instruct students](teams/instruct.md) |
-| 1   | [No.1](https://github.com/autojjangs/No.1?tab=readme-ov-file) | [Kangjune Lim](https://github.com/LoopLollipop), [Minchan Kim](https://github.com/asimov-hy), [Isak Kim](https://github.com/kisak03), [Junmyeong Lee](https://github.com/lopyad), [Gijun Jang](https://github.com/autojjangs), [Injun Cho](https://github.com/Joinjun001) | |
+| 1   | [No_1](https://github.com/autojjangs/No.1?tab=readme-ov-file) | [Kangjune Lim](https://github.com/LoopLollipop), [Minchan Kim](https://github.com/asimov-hy), [Isak Kim](https://github.com/kisak03), [Junmyeong Lee](https://github.com/lopyad), [Gijun Jang](https://github.com/autojjangs), [Injun Cho](https://github.com/Joinjun001) | [No_1](https://github.com/autojjangs/No.1/blob/master/teams/No_1.md)|
 
 
 ## Screenshots
