@@ -25,6 +25,8 @@ Please list your team name and members in the table below. In addition, submit y
 | 8  | [Pro9](https://github.com/onlymi/Invaders-SDP-24788) | [Seugmin Yeom](https://github.com/onlymi), [Doyun Ji](https://github.com/chadromania), [Seungju Yoon](https://github.com/t-fox688), [Taewoo Kim](https://github.com/rfik), [Gurbazar Tumenkhuslen](https://github.com/tumee1123), [Youbin Lee](https://github.com/mangman4) | [Player & Enemy Ship Variety](teams/Pro9.md)
 |9 | [An Pan Man Fans](https://github.com/BalthazarBERTRANDFOLIOT/Invaders-SDP-24788_SoundEffect) | [Titouan Frappat](https://github.com/Titouanfrap),[Lucas Longaud-Granier](https://github.com/lucaslnggrn),[Balthazar BERTRAND FOLIOT](https://github.com/BalthazarBERTRANDFOLIOT),[Celian HERVOUET](https://github.com/ALZcece),[Ambre THOMAS](AmbreTHOMAS15),[Estelle Costes](https://github.com/estelle4257),[Alice Felipe](https://github.com/alicemai)|[Sound Effect](teams/An_Pan_Man_Fans.md) |
 
+| 10  | [Team Scrap]((https://github.com/k0eeee/Invaders-SDP-24788))  |  [Chloe Vegiga]((https://github.com/k0eeee/k0eeee)), [이서연/Ashley Lee]((https://github.com/ashlsylee)), [Damisola Talabi](https://github.com/damisolatalabi), [Melih Emir](https://github.com/Emir-M10), [Ahmad Najmi](https://github.com/Jeminana), [Emmitt Aguirre](https://github.com/EmmittAguirre), [Muhammad Haziq](https://github.com/cyckerz)  |  [Two-Player Mode](teams/TeamScrap.md)             |
+
 
 
 ## Screenshots
