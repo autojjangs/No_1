@@ -25,3 +25,10 @@ We will try our best to at least implement 5 detailed requirements:
 - Each level earns a different amount of coins.
 - Earn different amounts of coins for killing a certain type of alien
 - Enable currency spending on items and skins 
+## :exclamation: Dependencies
+- No.1 (Item System) 
+    - items purchased/collected 
+- TEAM 4 (HUD)
+    - Display currency
+- SW Computing (Records & Achievement System)
+    - Record total earnings
