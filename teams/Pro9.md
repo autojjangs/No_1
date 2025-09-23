@@ -14,8 +14,9 @@ Don't make error!!!
 ## Detailed Requirements
 1. **Player Ship Variety** – At least 3 selectable player ship types.
 2. **Enemy Variety** – At least 4 enemy types.
-3. **Wave System Update** – Integration of enemy types into waves with balanced difficulty scaling.
-4. **Optional** - Boss-type enemy for advanced challenge.
+3. **Bullet Variety** – At least 3 bullet types.
+4. **Wave System Update** – Integration of enemy types into waves with balanced difficulty scaling.
+5. **Optional** - Boss-type enemy for advanced challenge.
 ## Dependencies on Other Teams
 1. **Gameplay HUD** – The screen keeps changing with the movement of the enemy, the player and bullets.
 2. **Sound Effect** – When bullet is shooted or bullet hit the enemy, sound is played.
