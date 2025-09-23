@@ -14,5 +14,4 @@ Hello
 ## Team Requirements
 ### - Visual Effect System
 ## Detailed Requirements
-- Game animations
-- Special effects
+- Special effects for various in-game events and characters
