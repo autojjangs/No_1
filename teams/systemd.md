@@ -32,3 +32,4 @@ We will try our best to at least implement 5 detailed requirements:
     - Display currency
 - SW Computing (Records & Achievement System)
     - Record total earnings
+- def jknsnknuwhwen
