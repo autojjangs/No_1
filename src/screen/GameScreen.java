@@ -37,8 +37,6 @@ public class GameScreen extends Screen {
 	private static final int SCREEN_CHANGE_INTERVAL = 1500;
 	/** Height of the interface separation line. */
 	private static final int SEPARATION_LINE_HEIGHT = 40;
-	/** Coins earned per enemy hit. */ // ADD THIS LINE
-	private static final int COINS_PER_HIT = 2; // ADD THIS LINE
 
 	/** Current game difficulty settings. */
 	private GameSettings gameSettings;
