@@ -15,10 +15,23 @@ Our Rain Development team's goal is to design and implement a core level structu
     - `Changjeong Choi`
 
 ## Team Requirements
+Our team is responsible for all planning and implementation related to the game's ‘levels’. We focus on implementing two main aspects
+- Wave composition for each stage
+- Difficulty scaling based on level
 
-Our team is responsible for all planning and implementation related to the game's ‘levels’. The main requirements are as follows.
+## Detailed Requirements
+1. Implementation of JSON-based level configuration file loader
+2. Development of enemy wave generation and management module
+3. Design of special gimmick levels (implementation of diverse level patterns and events)
+4. Implementation of difficulty scaling logic
+- Enemies' base movement speed and numbers will gradually increase proportionally to level variables as the game progresses into later stages.
+5. Implementation of the Boss Stage Trigger System
+- Implement a trigger system where clearing a set number of levels (ex. 5 normal levels) initiates a special ‘Boss Stage’. This level consists of combat against a single boss entity instead of regular enemy waves.
 
-- **Build a Level Data Management System**: Develop a system that manages level configurations via external files (JSON, CSV, etc.), enabling easy addition or modification of levels without directly modifying game code.
-- **Implement Wave Progression Logic**: Implement a ‘wave’ system where enemies appear sequentially or based on specific conditions within each level. Manage the flow where defeating all enemies in the current wave triggers the next wave.
-- **Design Difficulty Adjustment System**: Design a structure where the game's difficulty progressively increases as the player advances through levels. This includes adjustments to enemy movement speed, attack frequency, and variations in enemy types and quantities.
-- **Implementation of Diverse Level Patterns and Events**: Plan and implement events beyond simple enemy placement, such as special enemy waves unique to certain levels, mid-boss appearances, or special item drops.
+## Dependencies on Other Teams
+1. Player & Enemy Ship Variety (Team - Pro 9): (Highly Dependent)
+Designing diverse levels absolutely requires a wide variety of enemy types. We must receive enemy unit assets created by this team, each with distinct movement patterns, attack methods, and health, so we can strategically place them in levels to create engaging waves.
+2. Item System (Team - No_1)
+As part of level design, we want to include elements that reward players for clearing specific waves or defeating special enemies. To achieve this, we need functions developed by Team 5 to spawn or drop items (e.g., power-ups, score items) at specific coordinates. Additionally, during level design, we will structure levels so that using certain items makes clearing them easier, encouraging players to devise more strategic approaches and enhancing enjoyment.
+3. Two-Player Mode (Team - Team Scrap)
+We aim to implement levels that offer greater fun and strategic depth when two players cooperate, going beyond simple single-player gameplay. To achieve this, the core features of the two-player system implemented by Team 2 are absolutely essential.
