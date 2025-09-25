@@ -85,8 +85,8 @@ public class GameState {
 
 	/**
 	 * @return the coins
-	 */ // ADD THIS METHOD
+	 */
 	public final int getCoins() { // ADD THIS METHOD
-		return coins; // ADD THIS METHOD
-	} // ADD THIS METHOD
+		return coins;
+	}
 }
