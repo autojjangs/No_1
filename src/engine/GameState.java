@@ -124,4 +124,21 @@ public class GameState {
 	public boolean isCoop() {
 		return coop;
 	}
+
+	public void setScore(int score) {
+		this.score = score;
+	}
+
+	public void setLivesRemaining(int lives) {
+		this.livesRemaining = Math.max(0, lives);
+	}
+
+	public void setShipsDestroyed(int shipsDestroyed) {
+		this.shipsDestroyed = shipsDestroyed;
+	}
+
+	public void setBulletsShot(int bulletsShot) {
+		this.bulletsShot = bulletsShot;
+	}
+
 }

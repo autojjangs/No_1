@@ -113,7 +113,7 @@ public class GameScreen extends Screen {
 		super.run();
 
 		// Award bonus score for remaining TEAM lives.
-		state.addScore(0, LIFE_SCORE * state.getLivesRemaining());
+		state.setScore(state.getScore() + LIFE_SCORE * state.getLivesRemaining());
 		this.logger.info("Screen cleared with a score of " + state.getScore());
 
 		return this.returnCode;
@@ -150,7 +150,7 @@ public class GameScreen extends Screen {
 						: inputManager.isKeyDown(KeyEvent.VK_ENTER);
 
 				if (fire && ship.shoot(this.bullets)) {
-					state.incBulletsShot(p);
+					state.setBulletsShot(state.getBulletsShot() + 1); // increments ships destroyed
 				}
 			}
 
@@ -254,7 +254,8 @@ public class GameScreen extends Screen {
 							&& checkCollision(bullet, ship) && !this.levelFinished) {
 						recyclable.add(bullet);
 						ship.destroy(); // explosion/respawn handled by Ship.update()
-						state.decTeamLife(1); // <-- SHARED POOL DECREMENT
+						state.setLivesRemaining(Math.max(0, state.getLivesRemaining() - 1)); // decrement shared/team
+																								// lives by 1
 						this.logger.info("Hit on player " + (p + 1) + ", team lives now: " + state.getLivesRemaining());
 						break;
 					}
@@ -266,8 +267,8 @@ public class GameScreen extends Screen {
 						int points = enemyShip.getPointValue();
 						this.coins += enemyShip.getCoinValue();
 						// TODO: when Bullet has owner index, credit that player instead of P1
-						state.addScore(0, points);
-						state.incShipsDestroyed(0);
+						state.setScore(state.getScore() + points);
+						state.setShipsDestroyed(state.getShipsDestroyed() + 1);
 						this.enemyShipFormation.destroy(enemyShip);
 						recyclable.add(bullet);
 					}
@@ -279,8 +280,8 @@ public class GameScreen extends Screen {
 					this.coins += this.enemyShipSpecial.getCoinValue();
 
 					// TODO: credit correct owner when available
-					state.addScore(0, points);
-					state.incShipsDestroyed(0);
+					state.setScore(state.getScore() + points);
+					state.setShipsDestroyed(state.getShipsDestroyed() + 1); // incrementing ships destroyed
 					this.enemyShipSpecial.destroy();
 					this.enemyShipSpecialExplosionCooldown.reset();
 					recyclable.add(bullet);
