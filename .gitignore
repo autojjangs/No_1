@@ -146,6 +146,9 @@ sdist
 develop-eggs
 .installed.cfg
 
+# Build output
+out/production/
+
 # Installer logs
 pip-log.txt
 
