@@ -93,10 +93,7 @@ public final class Core {
 		int returnCode = 1;
 		do {
 			// Co-op game with SHARED lives: team pool = MAX_LIVES * 2 (e.g., 6).
-			gameState = new GameState(/* level */ 1, /* livesEach */ MAX_LIVES, 0, /* coop */ true); // MODIFY THIS
-																										// LINE: Added 0
-																										// for initial
-																										// coins
+			gameState = new GameState(1, MAX_LIVES, true); // MODIFY THIS LINE: Added 0 for initial coins
 
 			switch (returnCode) {
 				case 1:
@@ -109,7 +106,7 @@ public final class Core {
 				case 2:
 					do {
 						// Extra life this level? Give it if team pool is below cap.
-						int teamCap = MAX_LIVES * GameState.NUM_PLAYERS;
+						int teamCap = gameState.isCoop() ? (MAX_LIVES * GameState.NUM_PLAYERS) : MAX_LIVES;
 						boolean bonusLife = gameState.getLevel() % EXTRA_LIFE_FRECUENCY == 0
 								&& gameState.getLivesRemaining() < teamCap;
 
