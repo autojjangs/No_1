@@ -174,3 +174,4 @@ log*
 .checkstyle
 .idea/
 *.iml
+*.class
