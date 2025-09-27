@@ -67,8 +67,8 @@ public class GameScreen extends Screen {
 	private final GameState state;
 
 	public GameScreen(final GameState gameState,
-			final GameSettings gameSettings, final boolean bonusLife,
-			final int width, final int height, final int fps) {
+					  final GameSettings gameSettings, final boolean bonusLife,
+					  final int width, final int height, final int fps) {
 		super(width, height, fps);
 
 		this.state = gameState;
@@ -79,12 +79,8 @@ public class GameScreen extends Screen {
 		if (this.bonusLife && state.isCoop()) {
 			state.setLivesRemaining(state.getLivesRemaining() + 1);
 		}
-
 	}
 
-	/**
-	 * Initializes basic screen properties, and adds necessary elements.
-	 */
 	public final void initialize() {
 		super.initialize();
 
@@ -109,6 +105,7 @@ public class GameScreen extends Screen {
 		this.inputDelay.reset();
 	}
 
+  
 	/**
 	 * Starts the action.
 	 *
@@ -132,30 +129,32 @@ public class GameScreen extends Screen {
 			// Per-player input/move/shoot
 			for (int p = 0; p < GameState.NUM_PLAYERS; p++) {
 				Ship ship = this.ships[p];
-				if (ship == null || ship.isDestroyed())
-					continue;
+
+				if (ship == null || ship.isDestroyed()) continue;
 
 				boolean moveRight = (p == 0)
 						? (inputManager.isKeyDown(KeyEvent.VK_D))
 						: (inputManager.isKeyDown(KeyEvent.VK_RIGHT));
+
 				boolean moveLeft = (p == 0)
 						? (inputManager.isKeyDown(KeyEvent.VK_A))
 						: (inputManager.isKeyDown(KeyEvent.VK_LEFT));
 
 				boolean isRightBorder = ship.getPositionX() + ship.getWidth() + ship.getSpeed() > this.width - 1;
-				boolean isLeftBorder = ship.getPositionX() - ship.getSpeed() < 1;
 
-				if (moveRight && !isRightBorder)
-					ship.moveRight();
-				if (moveLeft && !isLeftBorder)
-					ship.moveLeft();
+				boolean isLeftBorder  = ship.getPositionX() - ship.getSpeed() < 1;
+
+				if (moveRight && !isRightBorder) ship.moveRight();
+				if (moveLeft  && !isLeftBorder)  ship.moveLeft();
 
 				boolean fire = (p == 0)
 						? inputManager.isKeyDown(KeyEvent.VK_SPACE)
 						: inputManager.isKeyDown(KeyEvent.VK_ENTER);
 
 				if (fire && ship.shoot(this.bullets)) {
+
 					state.incBulletsShot(p); // 2P mode: increments per-player bullet shots
+
 				}
 			}
 
@@ -177,9 +176,8 @@ public class GameScreen extends Screen {
 			}
 
 			// Update ships & enemies
-			for (Ship s : this.ships)
-				if (s != null)
-					s.update();
+			for (Ship s : this.ships) if (s != null) s.update();
+
 			this.enemyShipFormation.update();
 			this.enemyShipFormation.shoot(this.bullets);
 		}
@@ -216,10 +214,11 @@ public class GameScreen extends Screen {
 			drawManager.drawEntity(bullet, bullet.getPositionX(),
 					bullet.getPositionY());
 
-		// UI (team score & team lives)
+		// Aggregate UI (team score & team lives)
 		drawManager.drawScore(this, state.getScore());
 		drawManager.drawLives(this, state.getLivesRemaining());
 		drawManager.drawCoins(this, this.coins); // ADD THIS LINE
+
 		drawManager.drawHorizontalLine(this, SEPARATION_LINE_HEIGHT - 1);
 
 		if (!this.inputDelay.checkFinished()) {
@@ -244,10 +243,8 @@ public class GameScreen extends Screen {
 		BulletPool.recycle(recyclable);
 	}
 
-	/**
-	 * Enemy bullets hit players → decrement TEAM lives; player bullets hit enemies
-	 * → add score.
-	 */
+
+	/** Enemy bullets hit players → decrement TEAM lives; player bullets hit enemies → add score. */
 	private void manageCollisions() {
 		Set<Bullet> recyclable = new HashSet<Bullet>();
 		for (Bullet bullet : this.bullets) {
@@ -258,16 +255,16 @@ public class GameScreen extends Screen {
 					if (ship != null && !ship.isDestroyed()
 							&& checkCollision(bullet, ship) && !this.levelFinished) {
 						recyclable.add(bullet);
+
 						ship.destroy(); // explosion/respawn handled by Ship.update()
-						state.setLivesRemaining(Math.max(0, state.getLivesRemaining() - 1)); // decrement shared/team
-																								// lives by 1
+						state.setLivesRemaining(Math.max(0, state.getLivesRemaining() - 1)); // decrement shared/team lives by 1
+
 						this.logger.info("Hit on player " + (p + 1) + ", team lives now: " + state.getLivesRemaining());
 						break;
 					}
 				}
 			} else {
 				// Player bullet vs enemies
-
 				// map Bullet owner id (1 or 2) to per-player index (0 or 1)
 				final int ownerId = bullet.getOwnerPlayerId(); // 1 or 2 (0 if unset)
 				final int pIdx = (ownerId == 2) ? 1 : 0; // default to P1 when unset
@@ -279,6 +276,7 @@ public class GameScreen extends Screen {
 
 						state.addScore(pIdx, points); // 2P mode: modified to add to P1 score for now
 						state.incShipsDestroyed(pIdx);
+
 						this.enemyShipFormation.destroy(enemyShip);
 						recyclable.add(bullet);
 						break;
@@ -288,6 +286,7 @@ public class GameScreen extends Screen {
 						&& !this.enemyShipSpecial.isDestroyed()
 						&& checkCollision(bullet, this.enemyShipSpecial)) {
 					int points = this.enemyShipSpecial.getPointValue();
+
 					this.coins += this.enemyShipSpecial.getCoinValue();
 
 					state.addScore(pIdx, points);

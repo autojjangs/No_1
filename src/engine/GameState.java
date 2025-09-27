@@ -88,6 +88,7 @@ public class GameState {
 		this.lives[0] = livesRemaining;
 		this.bulletsShot[0] = bulletsShot;
 		this.shipsDestroyed[0] = shipsDestroyed;
+    
 		this.coins = coins; // ADD THIS LINE
 		this.coop = false; // 2P: single-player mode
 	}
@@ -193,4 +194,6 @@ public class GameState {
 		return sharedLives ? (teamLives > 0) : (lives[0] > 0 || lives[1] > 0);
 	}
 
+	/** Team is alive while teamLives > 0 (shared) or any player has lives (separate). */
+	public boolean teamAlive()  { return sharedLives ? teamLives > 0 : (lives[0] > 0 || lives[1] > 0); }
 }

@@ -31,19 +31,12 @@ public final class Core {
 	private static final int EXTRA_LIFE_FRECUENCY = 3;
 	private static final int NUM_LEVELS = 7;
 
-	/** Difficulty settings for level 1. */
 	private static final GameSettings SETTINGS_LEVEL_1 = new GameSettings(5, 4, 60, 2000);
-	/** Difficulty settings for level 2. */
 	private static final GameSettings SETTINGS_LEVEL_2 = new GameSettings(5, 5, 50, 2500);
-	/** Difficulty settings for level 3. */
 	private static final GameSettings SETTINGS_LEVEL_3 = new GameSettings(6, 5, 40, 1500);
-	/** Difficulty settings for level 4. */
 	private static final GameSettings SETTINGS_LEVEL_4 = new GameSettings(6, 6, 30, 1500);
-	/** Difficulty settings for level 5. */
 	private static final GameSettings SETTINGS_LEVEL_5 = new GameSettings(7, 6, 20, 1000);
-	/** Difficulty settings for level 6. */
 	private static final GameSettings SETTINGS_LEVEL_6 = new GameSettings(7, 7, 10, 1000);
-	/** Difficulty settings for level 7. */
 	private static final GameSettings SETTINGS_LEVEL_7 = new GameSettings(8, 7, 2, 500);
 
 	/** Frame to draw the screen on. */
@@ -126,8 +119,7 @@ public final class Core {
 
 					} while (gameState.teamAlive() && gameState.getLevel() <= NUM_LEVELS);
 
-					LOGGER.info("Starting " + WIDTH + "x" + HEIGHT
-							+ " score screen at " + FPS + " fps, with a score of "
+					LOGGER.info("Starting " + WIDTH + "x" + HEIGHT + " score screen at " + FPS + " fps, with a score of "
 							+ gameState.getScore() + ", "
 							+ gameState.getLivesRemaining() + " lives remaining, "
 							+ gameState.getBulletsShot() + " bullets shot and "
@@ -136,6 +128,7 @@ public final class Core {
 					returnCode = frame.setScreen(currentScreen);
 					LOGGER.info("Closing score screen.");
 					break;
+
 				case 3:
 					// High scores.
 					currentScreen = new HighScoreScreen(width, height, FPS);
@@ -144,6 +137,7 @@ public final class Core {
 					returnCode = frame.setScreen(currentScreen);
 					LOGGER.info("Closing high score screen.");
 					break;
+          
 				default:
 					break;
 			}

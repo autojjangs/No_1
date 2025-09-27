@@ -20,22 +20,23 @@ public class Score implements Comparable<Score> {
     private int[] playerBullets;
     private int[] playerKills;
 
-    /** level reached and lives left */
+  
+    /**level reached and lives left */
     private int levelReached;
     private int livesRemaining;
 
-    /**
-     * Constructor.
-     *
-     * @param name
-     *              Player name, three letters.
-     * @param score
-     *              Player score.
-     */
-    public Score(final String name, final int score) {
-        this.name = name;
-        this.score = score;
-    }
+	/**
+	 * Constructor.
+	 * 
+	 * @param name
+	 *            Player name, three letters.
+	 * @param score
+	 *            Player score.
+	 */
+	public Score(final String name, final int score) {
+		this.name = name;
+		this.score = score;
+	}
 
     /**
      * NEW Constructor: (team co-op)
@@ -50,6 +51,7 @@ public class Score implements Comparable<Score> {
         this.playerScores = new int[n];
         this.playerBullets = new int[n];
         this.playerKills = new int[n];
+
 
         for (int i = 0; i < n; i++) {
             this.playerScores[i] = gs.getScore(i);
@@ -112,6 +114,7 @@ public class Score implements Comparable<Score> {
      * @return Comparison between the two scores. Positive if the current one is
      *         smaller, positive if its bigger, zero if it's the same.
      */
+
     @Override
     public final int compareTo(final Score other) {
         return Integer.compare(other.getScore(), this.score); // descending
@@ -122,4 +125,6 @@ public class Score implements Comparable<Score> {
         return "Score{name='" + name + "', score=" + score +
                 ", perPlayer=" + Arrays.toString(playerScores) + "}";
     }
+
 }
+
