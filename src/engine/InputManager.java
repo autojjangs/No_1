@@ -4,14 +4,14 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-
+import java.awt.event.MouseMotionListener;
 /**
  * Manages keyboard input for the provided screen.
  *
  * @author <a href="mailto:RobertoIA1987@gmail.com">Roberto Izquierdo Amo</a>
  *
  */
-public final class InputManager implements KeyListener, MouseListener {
+public final class InputManager implements KeyListener, MouseListener, MouseMotionListener {
 
 	/** Number of recognised keys. */
 	private static final int NUM_KEYS = 256;
@@ -133,4 +133,15 @@ public final class InputManager implements KeyListener, MouseListener {
     public void mouseExited(final MouseEvent e) {
 
     }
+	@Override
+	public void mouseMoved(final MouseEvent e){
+		mouseX = e.getX();
+		mouseY = e.getY();
+	}
+	@Override
+	public void mouseDragged(final MouseEvent e){
+		mouseX = e.getX();
+		mouseY = e.getY();
+	}
+
 }

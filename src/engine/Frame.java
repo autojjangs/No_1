@@ -45,6 +45,7 @@ public class Frame extends JFrame {
 
 		addKeyListener(Core.getInputManager());
         addMouseListener(Core.getInputManager());
+		addMouseMotionListener(Core.getInputManager());
 	}
 
 	/**

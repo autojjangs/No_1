@@ -19,6 +19,9 @@ public class TitleScreen extends Screen {
 	/** Time between changes in user selection. */
 	private Cooldown selectionCooldown;
 
+
+	private Integer hoverOption = null;
+
 	/**
 	 * Constructor, establishes the properties of the screen.
 	 *
@@ -54,6 +57,8 @@ public class TitleScreen extends Screen {
 	 */
 	protected final void update() {
 		super.update();
+
+
 
 		draw();
 		if (this.selectionCooldown.checkFinished()
@@ -119,8 +124,20 @@ public class TitleScreen extends Screen {
 	private void draw() {
 		drawManager.initDrawing(this);
 
+		int mx = inputManager.getMouseX();
+		int my = inputManager.getMouseY();
+		java.awt.Rectangle[] boxesForHover = drawManager.getMenuHitboxes(this);
+
+		hoverOption = null;
+		if(boxesForHover[0].contains(mx, my))
+			hoverOption = 2;
+		if(boxesForHover[1].contains(mx, my))
+			hoverOption = 3;
+		if(boxesForHover[2].contains(mx, my))
+			hoverOption = 0;
+
 		drawManager.drawTitle(this);
-		drawManager.drawMenu(this, this.returnCode);
+		drawManager.drawMenu(this, this.returnCode, hoverOption);
 
 		drawManager.completeDrawing(this);
 	}
