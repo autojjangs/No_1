@@ -2,6 +2,8 @@ package engine;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 
 /**
  * Manages keyboard input for the provided screen.
@@ -9,14 +11,22 @@ import java.awt.event.KeyListener;
  * @author <a href="mailto:RobertoIA1987@gmail.com">Roberto Izquierdo Amo</a>
  *
  */
-public final class InputManager implements KeyListener {
+public final class InputManager implements KeyListener, MouseListener {
 
 	/** Number of recognised keys. */
 	private static final int NUM_KEYS = 256;
 	/** Array with the jeys marked as pressed or not. */
 	private static boolean[] keys;
+
+    /** Mouse pressed state. */
+    private static  boolean mousePressed;
+
 	/** Singleton instance of the class. */
 	private static InputManager instance;
+
+    private static int mouseX;
+    private static int mouseY;
+    private static boolean mouseClicked;
 
 	/**
 	 * Private constructor.
@@ -81,4 +91,54 @@ public final class InputManager implements KeyListener {
 	public void keyTyped(final KeyEvent key) {
 
 	}
+
+    /**
+     * * Returns true if the mouse is clicked.
+     * @return Mouse pressed state.
+     */
+    public boolean isMousePressed() {
+        return mousePressed;
+    }
+
+    public int getMouseX() { return mouseX; }
+
+    public int getMouseY() { return mouseY; }
+
+    public boolean isMouseClicked() {
+        if (mouseClicked) {
+            mouseClicked = false;
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public void mouseClicked(final MouseEvent e) {
+        // Can be left empty or used if needed
+    }
+
+    @Override
+    public void mousePressed(final MouseEvent e) {
+        mousePressed = true;
+        mouseX = e.getX();
+        mouseY = e.getY();
+    }
+
+    @Override
+    public void mouseReleased(final MouseEvent e) {
+        mousePressed = false;
+        mouseX = e.getX();
+        mouseY = e.getY();
+        mouseClicked = true;
+    }
+
+    @Override
+    public void mouseEntered(final MouseEvent e) {
+
+    }
+
+    @Override
+    public void mouseExited(final MouseEvent e) {
+
+    }
 }

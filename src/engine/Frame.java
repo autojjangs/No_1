@@ -44,6 +44,7 @@ public class Frame extends JFrame {
 		setTitle("Invaders");
 
 		addKeyListener(Core.getInputManager());
+        addMouseListener(Core.getInputManager());
 	}
 
 	/**

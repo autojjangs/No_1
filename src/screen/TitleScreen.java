@@ -4,6 +4,7 @@ import java.awt.event.KeyEvent;
 
 import engine.Cooldown;
 import engine.Core;
+import engine.InputManager;
 
 /**
  * Implements the title screen.
@@ -70,6 +71,22 @@ public class TitleScreen extends Screen {
 			}
 			if (inputManager.isKeyDown(KeyEvent.VK_SPACE))
 				this.isRunning = false;
+
+            if (inputManager.isMouseClicked()) {
+                int temp_x = inputManager.getMouseX();
+                int temp_y = inputManager.getMouseY();
+
+                java.awt.Rectangle[] boxes = drawManager.getMenuHitboxes(this);
+                int[] pos = {2, 3, 0};
+
+                for (int i = 0; i < boxes.length; i++) {
+                    if (boxes[i].contains(temp_x, temp_y)) {
+                        this.returnCode = pos[i];
+                        this.isRunning = false;
+                        break;
+                    }
+                }
+            }
 		}
 	}
 

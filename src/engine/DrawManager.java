@@ -6,6 +6,7 @@ import java.awt.FontFormatException;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
+import java.awt.Rectangle;
 import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -49,6 +50,8 @@ public final class DrawManager {
 
 	/** Sprite types mapped to their images. */
 	private static Map<SpriteType, boolean[][]> spriteMap;
+
+    private int menuHitboxOffset = 20;
 
 	/** Sprite types. */
 	public static enum SpriteType {
@@ -574,4 +577,44 @@ public final class DrawManager {
 			drawCenteredBigString(screen, "GO!", screen.getHeight() / 2
 					+ fontBigMetrics.getHeight() / 3);
 	}
+
+    public void setMenuHitboxOffset(final int dy) {
+        this.menuHitboxOffset = dy;
+    }
+
+    public Rectangle[] getMenuHitboxes (final Screen screen) {
+        if (fontRegularMetrics == null) {
+            backBufferGraphics.setFont(fontRegular);
+            fontRegularMetrics = backBufferGraphics.getFontMetrics(fontRegular);
+        }
+
+        String playString = "Play";
+        String highScoreString = "High scores";
+        String exitString = "exit";
+
+        int baselinePlay = screen.getHeight() / 3 * 2;
+        int baselineHighscore = screen.getHeight() / 3 * 2 + fontRegularMetrics.getHeight() * 2;
+        int baselineExit = screen.getHeight() / 3 * 2 + fontRegularMetrics.getHeight() * 4;
+
+        Rectangle hitbox_play = centeredStringBounds(screen, playString, baselinePlay);
+        Rectangle hitbox_score = centeredStringBounds(screen, highScoreString, baselineHighscore);
+        Rectangle hitbox_exit = centeredStringBounds(screen, exitString, baselineExit);
+
+        return new Rectangle[] {hitbox_play, hitbox_score, hitbox_exit};
+    }
+
+    private Rectangle centeredStringBounds(final Screen screen, final String string, final int baselineY) {
+        backBufferGraphics.setFont(fontRegular);
+        final int pad = 4;
+
+        int textWidth = fontRegularMetrics.stringWidth(string);
+        int ascent = fontRegularMetrics.getAscent();
+        int descent = fontRegularMetrics.getDescent();
+
+        int x = screen.getWidth() / 2 - textWidth / 2;
+        int y = baselineY - ascent + menuHitboxOffset - pad / 2;
+        int h = ascent + descent + pad;
+
+        return new Rectangle(x, y, textWidth, h);
+    }
 }
