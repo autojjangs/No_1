@@ -123,6 +123,19 @@ public class GameState {
 		return coins;
 	}
 
+	/* ----- Per-player getters (needed by Score.java) ----- */
+	public int getScore(final int p) {
+		return (p >= 0 && p < NUM_PLAYERS) ? score[p] : 0;
+	}
+
+	public int getBulletsShot(final int p) {
+		return (p >= 0 && p < NUM_PLAYERS) ? bulletsShot[p] : 0;
+	}
+
+	public int getShipsDestroyed(final int p) {
+		return (p >= 0 && p < NUM_PLAYERS) ? shipsDestroyed[p] : 0;
+	}
+
 	public void addScore(final int p, final int delta) {
 		score[p] += delta;
 	}
