@@ -74,6 +74,7 @@ public class GameScreen extends Screen {
 		this.state = gameState;
 		this.gameSettings = gameSettings;
 		this.bonusLife = bonusLife;
+
 		// 2P: bonus life adds to TEAM pool when in co-op - no hard cap
 		if (this.bonusLife && state.isCoop()) {
 			state.setLivesRemaining(state.getLivesRemaining() + 1);
@@ -112,10 +113,10 @@ public class GameScreen extends Screen {
 	public final int run() {
 		super.run();
 
-		// Award bonus score for remaining TEAM lives.
-		state.setScore(state.getScore() + LIFE_SCORE * state.getLivesRemaining());
-		this.logger.info("Screen cleared with a score of " + state.getScore());
+		// 2P mode: award bonus score for remaining TEAM lives
+		state.addScore(0, LIFE_SCORE * state.getLivesRemaining());
 
+		this.logger.info("Screen cleared with a score of " + state.getScore());
 		return this.returnCode;
 	}
 
@@ -150,7 +151,7 @@ public class GameScreen extends Screen {
 						: inputManager.isKeyDown(KeyEvent.VK_ENTER);
 
 				if (fire && ship.shoot(this.bullets)) {
-					state.setBulletsShot(state.getBulletsShot() + 1); // increments ships destroyed
+					state.incBulletsShot(p); // 2P mode: increments per-player bullet shots
 				}
 			}
 
@@ -267,8 +268,9 @@ public class GameScreen extends Screen {
 						int points = enemyShip.getPointValue();
 						this.coins += enemyShip.getCoinValue();
 						// TODO: when Bullet has owner index, credit that player instead of P1
-						state.setScore(state.getScore() + points);
-						state.setShipsDestroyed(state.getShipsDestroyed() + 1);
+
+						state.addScore(0, points); // 2P mode: modified to add to P1 score for now
+						state.incShipsDestroyed(0);
 						this.enemyShipFormation.destroy(enemyShip);
 						recyclable.add(bullet);
 					}
@@ -280,8 +282,8 @@ public class GameScreen extends Screen {
 					this.coins += this.enemyShipSpecial.getCoinValue();
 
 					// TODO: credit correct owner when available
-					state.setScore(state.getScore() + points);
-					state.setShipsDestroyed(state.getShipsDestroyed() + 1); // incrementing ships destroyed
+					state.addScore(0, points);
+					state.incShipsDestroyed(0); // 2P mode: modified incrementing ships destroyed
 					this.enemyShipSpecial.destroy();
 					this.enemyShipSpecialExplosionCooldown.reset();
 					recyclable.add(bullet);

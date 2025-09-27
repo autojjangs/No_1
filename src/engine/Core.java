@@ -93,8 +93,7 @@ public final class Core {
 		int returnCode = 1;
 		do {
 			// Co-op game with SHARED lives: team pool = MAX_LIVES * 2 (e.g., 6).
-			gameState = new GameState(1, MAX_LIVES, true); // MODIFY THIS LINE: Added 0 for initial coins
-
+			gameState = new GameState(1, MAX_LIVES, true);
 			switch (returnCode) {
 				case 1:
 					currentScreen = new TitleScreen(width, height, FPS);
