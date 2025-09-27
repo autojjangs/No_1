@@ -128,13 +128,18 @@ public class TitleScreen extends Screen {
 		int my = inputManager.getMouseY();
 		java.awt.Rectangle[] boxesForHover = drawManager.getMenuHitboxes(this);
 
-		hoverOption = null;
+		Integer newHover = null;
 		if(boxesForHover[0].contains(mx, my))
-			hoverOption = 2;
+			newHover = 2;
 		if(boxesForHover[1].contains(mx, my))
-			hoverOption = 3;
+			newHover = 3;
 		if(boxesForHover[2].contains(mx, my))
-			hoverOption = 0;
+			newHover = 0;
+
+		if (newHover != null && !newHover.equals(this.returnCode)){
+			this.returnCode = newHover;
+		}
+
 
 		drawManager.drawTitle(this);
 		drawManager.drawMenu(this, this.returnCode, hoverOption);
