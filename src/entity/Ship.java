@@ -83,7 +83,7 @@ public class Ship extends Entity {
 			Bullet b = (BulletPool.getBullet(positionX + this.width / 2,
 					positionY, BULLET_SPEED)); // shoots bullet and tags with shooter's team
 
-			b.setOwnerPlayerId(this.playerId); // 2P mode:owner tag for bullet
+			b.setOwnerPlayerId(this.getPlayerId()); // 2P mode:owner tag for bullet
 			b.setTeam(this.getTeam()); // bullet inherits shooter's team
 			bullets.add(b);
 			return true;
@@ -126,8 +126,13 @@ public class Ship extends Entity {
 		return SPEED;
 	}
 
-	// 2P mode: adding playerId getter
+	// 2P mode: adding playerId getter and setter
 	public final int getPlayerId() {
 		return this.playerId;
 	}
+
+	public void setPlayerId(int id) {
+		this.playerId = id;
+	}
+
 }

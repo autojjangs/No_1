@@ -93,7 +93,10 @@ public class GameScreen extends Screen {
 
 		// 2P mode: create both ships, tagged to their respective teams
 		this.ships[0] = new Ship(this.width / 2 - 60, this.height - 30, Entity.Team.PLAYER1); // P1
+		this.ships[0].setPlayerId(1);
+
 		this.ships[1] = new Ship(this.width / 2 + 60, this.height - 30, Entity.Team.PLAYER2); // P2
+		this.ships[1].setPlayerId(2);
 
 		this.enemyShipSpecialCooldown = Core.getVariableCooldown(BONUS_SHIP_INTERVAL, BONUS_SHIP_VARIANCE);
 		this.enemyShipSpecialCooldown.reset();
@@ -264,16 +267,21 @@ public class GameScreen extends Screen {
 				}
 			} else {
 				// Player bullet vs enemies
+
+				// map Bullet owner id (1 or 2) to per-player index (0 or 1)
+				final int ownerId = bullet.getOwnerPlayerId(); // 1 or 2 (0 if unset)
+				final int pIdx = (ownerId == 2) ? 1 : 0; // default to P1 when unset
+
 				for (EnemyShip enemyShip : this.enemyShipFormation)
 					if (!enemyShip.isDestroyed() && checkCollision(bullet, enemyShip)) {
 						int points = enemyShip.getPointValue();
 						this.coins += enemyShip.getCoinValue();
-						// TODO: when Bullet has owner index, credit that player instead of P1
 
-						state.addScore(0, points); // 2P mode: modified to add to P1 score for now
-						state.incShipsDestroyed(0);
+						state.addScore(pIdx, points); // 2P mode: modified to add to P1 score for now
+						state.incShipsDestroyed(pIdx);
 						this.enemyShipFormation.destroy(enemyShip);
 						recyclable.add(bullet);
+						break;
 					}
 
 				if (this.enemyShipSpecial != null
@@ -282,9 +290,9 @@ public class GameScreen extends Screen {
 					int points = this.enemyShipSpecial.getPointValue();
 					this.coins += this.enemyShipSpecial.getCoinValue();
 
-					// TODO: credit correct owner when available
-					state.addScore(0, points);
-					state.incShipsDestroyed(0); // 2P mode: modified incrementing ships destroyed
+					state.addScore(pIdx, points);
+					state.incShipsDestroyed(pIdx); // 2P mode: modified incrementing ships destroyed
+
 					this.enemyShipSpecial.destroy();
 					this.enemyShipSpecialExplosionCooldown.reset();
 					recyclable.add(bullet);
