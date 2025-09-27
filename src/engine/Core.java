@@ -81,21 +81,32 @@ public final class Core {
 		gameSettings.add(SETTINGS_LEVEL_6);
 		gameSettings.add(SETTINGS_LEVEL_7);
 
-		GameState gameState;
 
-		int returnCode = 1;
-		do {
-			// Co-op game with SHARED lives: team pool = MAX_LIVES * 2 (e.g., 6).
-			gameState = new GameState(1, MAX_LIVES, true);
+        // 2P mode: modified to null to allow for switch between 2 modes
+        GameState gameState = null;
+        boolean coopSelected = false; // false = 1P, true = 2P
+
+        int returnCode = 1;
+        do {
+
 			switch (returnCode) {
 				case 1:
 					currentScreen = new TitleScreen(width, height, FPS);
 					LOGGER.info("Starting " + WIDTH + "x" + HEIGHT + " title screen at " + FPS + " fps.");
 					returnCode = frame.setScreen(currentScreen);
-					LOGGER.info("Closing title screen.");
+                    LOGGER.info("Closing title screen.");
+
+                    // 2P mode: reading the mode which user chose from TitleScreen
+                    if (returnCode == 2 || returnCode == 3) {
+                        coopSelected = ((TitleScreen) currentScreen).isCoopSelected();
+                    }
+
 					break;
 
 				case 2:
+                    // 2P mode: building gameState now using user choice
+                    gameState = new GameState(1, MAX_LIVES, coopSelected);
+
 					do {
 						// Extra life this level? Give it if team pool is below cap.
 						int teamCap = gameState.isCoop() ? (MAX_LIVES * GameState.NUM_PLAYERS) : MAX_LIVES;

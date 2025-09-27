@@ -333,47 +333,55 @@ public final class DrawManager {
 	}
 
 	/**
-	 * Draws main menu.
+	 * Draws main menu. - remodified for 2P mode, using string array for efficiency
 	 *
 	 * @param screen
 	 *               Screen to draw on.
-	 * @param option
+	 * @param selectedIndex
 	 *               Option selected.
 	 */
-	public void drawMenu(final Screen screen, final int option) {
-        String playString = "1-Player Mode";
-        String play2String = "2-Player Mode";
-        String highScoresString = "High scores";
-        String exitString = "exit";
-        int spacing = fontRegularMetrics.getHeight() + 10;
+	public void drawMenu(final Screen screen, final int selectedIndex) {
+        String[] items = {"1 Player", "2 Players", "High scores", "Exit"};
 
-        if (option == 2)
-            backBufferGraphics.setColor(Color.GREEN);
-        else
-            backBufferGraphics.setColor(Color.WHITE);
-        drawCenteredRegularString(screen, playString,
-                screen.getHeight() / 3 * 2);
-        if (option == 1)
-            backBufferGraphics.setColor(Color.GREEN);
-        else
-            backBufferGraphics.setColor(Color.WHITE);
-        drawCenteredRegularString(screen, play2String,
-                screen.getHeight() / 3 * 2 + spacing);
-        if (option == 3)
-            backBufferGraphics.setColor(Color.GREEN);
-        else
-            backBufferGraphics.setColor(Color.WHITE);
-        drawCenteredRegularString(screen, highScoresString, screen.getHeight()
-                / 3 * 2 + spacing * 2);
-        if (option == 0)
-            backBufferGraphics.setColor(Color.GREEN);
-        else
-            backBufferGraphics.setColor(Color.WHITE);
-        drawCenteredRegularString(screen, exitString, screen.getHeight() / 3
-                * 2 + spacing * 3);
-    }
+        int baseY = screen.getHeight() / 3 * 2; // same option choice, different formatting
+        for (int i = 0; i < items.length; i++) {
+            backBufferGraphics.setColor(i == selectedIndex ? Color.GREEN : Color.WHITE);
+            drawCenteredRegularString(screen, items[i], baseY + fontRegularMetrics.getHeight() * 2 * i);
+        }
 
-    /**
+		/** String playString = "1-Player Mode";
+		String play2String = "2-Player Mode";
+		String highScoresString = "High scores";
+		String exitString = "exit";
+		int spacing = fontRegularMetrics.getHeight() + 10;
+
+		if (option == 2)
+			backBufferGraphics.setColor(Color.GREEN);
+		else
+			backBufferGraphics.setColor(Color.WHITE);
+		drawCenteredRegularString(screen, playString,
+				screen.getHeight() / 3 * 2);
+		if (option == 1)
+			backBufferGraphics.setColor(Color.GREEN);
+		else
+			backBufferGraphics.setColor(Color.WHITE);
+		drawCenteredRegularString(screen, play2String,
+				screen.getHeight() / 3 * 2 + spacing);
+		if (option == 3)
+			backBufferGraphics.setColor(Color.GREEN);
+		else
+			backBufferGraphics.setColor(Color.WHITE);
+		drawCenteredRegularString(screen, highScoresString, screen.getHeight()
+				/ 3 * 2 + spacing * 2);
+		if (option == 0)
+			backBufferGraphics.setColor(Color.GREEN);
+		else
+			backBufferGraphics.setColor(Color.WHITE);
+		drawCenteredRegularString(screen, exitString, screen.getHeight() / 3
+				* 2 + spacing * 3); */
+	}
+
+	/**
 	 * Draws game results.
 	 *
 	 * @param screen
@@ -501,21 +509,23 @@ public final class DrawManager {
 		String highScoreString = "High Scores";
 		String instructionsString = "Press Space to return";
 
-        int midX = screen.getWidth() / 2;
-        int startY = screen.getHeight() / 3;
+		int midX = screen.getWidth() / 2;
+		int startY = screen.getHeight() / 3;
 
-        backBufferGraphics.setColor(Color.GREEN);
+		backBufferGraphics.setColor(Color.GREEN);
 		drawCenteredBigString(screen, highScoreString, screen.getHeight() / 8);
 
 		backBufferGraphics.setColor(Color.GRAY);
 		drawCenteredRegularString(screen, instructionsString,
 				screen.getHeight() / 5);
 
-        backBufferGraphics.setColor(Color.GREEN);
-        backBufferGraphics.drawString("1-PLAYER MODE", midX / 2 - fontBigMetrics.stringWidth("1-PLAYER MODE") / 2 + 40, startY);
+		backBufferGraphics.setColor(Color.GREEN);
+		backBufferGraphics.drawString("1-PLAYER MODE", midX / 2 - fontBigMetrics.stringWidth("1-PLAYER MODE") / 2 + 40,
+				startY);
 
-        backBufferGraphics.drawString("2-PLAYER MODE", midX + midX / 2 - fontBigMetrics.stringWidth("2-PLAYER MODE") / 2 +40, startY);
-    }
+		backBufferGraphics.drawString("2-PLAYER MODE",
+				midX + midX / 2 - fontBigMetrics.stringWidth("2-PLAYER MODE") / 2 + 40, startY);
+	}
 
 	/**
 	 * Draws high scores.
@@ -531,23 +541,23 @@ public final class DrawManager {
 		int i = 0;
 		String scoreString = "";
 
-        int midX = screen.getWidth() / 2;
-        int startY = screen.getHeight() / 3 + fontBigMetrics.getHeight() + 20;
-        int lineHeight = fontRegularMetrics.getHeight() + 5;
+		int midX = screen.getWidth() / 2;
+		int startY = screen.getHeight() / 3 + fontBigMetrics.getHeight() + 20;
+		int lineHeight = fontRegularMetrics.getHeight() + 5;
 
-        backBufferGraphics.setColor(Color.WHITE);
-        for (Score score : highScores) {
-            scoreString = String.format("%s        %04d", score.getName(), score.getScore());
-            backBufferGraphics.drawString(scoreString,
-                    midX / 2 - fontRegularMetrics.stringWidth(scoreString) / 2,
-                    startY + lineHeight * i);
+		backBufferGraphics.setColor(Color.WHITE);
+		for (Score score : highScores) {
+			scoreString = String.format("%s        %04d", score.getName(), score.getScore());
+			backBufferGraphics.drawString(scoreString,
+					midX / 2 - fontRegularMetrics.stringWidth(scoreString) / 2,
+					startY + lineHeight * i);
 
-            backBufferGraphics.drawString(scoreString,
-                    midX + midX / 2 - fontRegularMetrics.stringWidth(scoreString) / 2,
-                    startY + lineHeight * i);
-            i++;
+			backBufferGraphics.drawString(scoreString,
+					midX + midX / 2 - fontRegularMetrics.stringWidth(scoreString) / 2,
+					startY + lineHeight * i);
+			i++;
 
-        }
+		}
 	}
 
 	/**
