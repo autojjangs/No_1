@@ -4,7 +4,6 @@ import java.awt.event.KeyEvent;
 
 import engine.Cooldown;
 import engine.Core;
-import engine.InputManager;
 
 /**
  * Implements the title screen.

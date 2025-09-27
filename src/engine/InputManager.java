@@ -92,14 +92,6 @@ public final class InputManager implements KeyListener, MouseListener {
 
 	}
 
-    /**
-     * * Returns true if the mouse is clicked.
-     * @return Mouse pressed state.
-     */
-    public boolean isMousePressed() {
-        return mousePressed;
-    }
-
     public int getMouseX() { return mouseX; }
 
     public int getMouseY() { return mouseY; }

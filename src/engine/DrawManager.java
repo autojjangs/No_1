@@ -578,10 +578,6 @@ public final class DrawManager {
 					+ fontBigMetrics.getHeight() / 3);
 	}
 
-    public void setMenuHitboxOffset(final int dy) {
-        this.menuHitboxOffset = dy;
-    }
-
     public Rectangle[] getMenuHitboxes (final Screen screen) {
         if (fontRegularMetrics == null) {
             backBufferGraphics.setFont(fontRegular);
