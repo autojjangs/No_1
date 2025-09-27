@@ -91,8 +91,9 @@ public class GameScreen extends Screen {
 		enemyShipFormation = new EnemyShipFormation(this.gameSettings);
 		enemyShipFormation.attach(this);
 
-		this.ships[0] = new Ship(this.width / 2 - 60, this.height - 30); // P1
-		this.ships[1] = new Ship(this.width / 2 + 60, this.height - 30); // P2
+		// 2P mode: create both ships, tagged to their respective teams
+		this.ships[0] = new Ship(this.width / 2 - 60, this.height - 30, Entity.Team.PLAYER1); // P1
+		this.ships[1] = new Ship(this.width / 2 + 60, this.height - 30, Entity.Team.PLAYER2); // P2
 
 		this.enemyShipSpecialCooldown = Core.getVariableCooldown(BONUS_SHIP_INTERVAL, BONUS_SHIP_VARIANCE);
 		this.enemyShipSpecialCooldown.reset();
