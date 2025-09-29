@@ -325,6 +325,7 @@ public final class DrawManager {
 		String highScoresString = "High scores";
 		String exitString = "exit";
 
+		//Added hoverOption to change menu color by mouse position
 		if (option == 2 || (hoverOption != null && hoverOption == 2))
 			backBufferGraphics.setColor(Color.GREEN);
 		else

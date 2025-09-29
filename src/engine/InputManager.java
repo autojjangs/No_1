@@ -24,6 +24,7 @@ public final class InputManager implements KeyListener, MouseListener, MouseMoti
 	/** Singleton instance of the class. */
 	private static InputManager instance;
 
+
     private static int mouseX;
     private static int mouseY;
     private static boolean mouseClicked;
@@ -133,6 +134,8 @@ public final class InputManager implements KeyListener, MouseListener, MouseMoti
     public void mouseExited(final MouseEvent e) {
 
     }
+
+	/** Added mouse move/drag event to update mouse position right now */
 	@Override
 	public void mouseMoved(final MouseEvent e){
 		mouseX = e.getX();
