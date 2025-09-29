@@ -79,6 +79,7 @@ public class TitleScreen extends Screen {
 	private void nextMenuItem() {
 		if (this.returnCode == 3)
 			this.returnCode = 0;
+
 		else if (this.returnCode == 0)
 			this.returnCode = 2;
 		else
@@ -102,6 +103,9 @@ public class TitleScreen extends Screen {
 	 */
 	private void draw() {
 		drawManager.initDrawing(this);
+
+        // Main menu space animation
+        drawManager.updateMenuSpace();
 
 		drawManager.drawTitle(this);
 		drawManager.drawMenu(this, this.returnCode);
