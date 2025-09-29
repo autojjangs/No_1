@@ -1,10 +1,11 @@
-{
-  "itemId": "1",
-  "name": "HealthUp",
-  "spriteType" : "Ship",
-  "Type": "Heal",
-  "effectValue": 1,
-  "effectDuration": 0,
-  "dropChance": 0.3
-
-}
+[
+  {
+    "itemId": "1",
+    "name": "HealthUp",
+    "spriteType": "Ship",
+    "Type": "Heal",
+    "effectValue": 1,
+    "effectDuration": 0,
+    "dropChance": 0.3
+  }
+]
