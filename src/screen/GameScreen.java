@@ -44,8 +44,6 @@ public class GameScreen extends Screen {
 	private long gameStartTime;
 	private boolean levelFinished;
 	private boolean bonusLife;
-	/** Current coin count. */ // ADD THIS LINE
-	private int coins; // ADD THIS LINE
 
 	/**
 	 * Constructor, establishes the properties of the screen.
@@ -75,10 +73,15 @@ public class GameScreen extends Screen {
 		this.gameSettings = gameSettings;
 		this.bonusLife = bonusLife;
 
-		// 2P: bonus life adds to TEAM pool when in co-op - no hard cap
-		if (this.bonusLife && state.isCoop()) {
-			state.setLivesRemaining(state.getLivesRemaining() + 1);
-		}
+		// 2P: bonus life adds to team pool + singleplayer mode
+        if (this.bonusLife) {
+            if (state.isSharedLives()) {
+                state.addTeamLife(1); // two player
+            } else {
+                // 1P legacy: grant to P1
+                state.addLife(0, 1);  // singleplayer
+            }
+        }
 	}
 
 	public final void initialize() {
@@ -226,7 +229,22 @@ public class GameScreen extends Screen {
 		// Aggregate UI (team score & team lives)
 		drawManager.drawScore(this, state.getScore());
 		drawManager.drawLives(this, state.getLivesRemaining());
-		drawManager.drawCoins(this, this.coins); // ADD THIS LINE
+		drawManager.drawCoins(this,  state.getCoins()); // ADD THIS LINE - 2P mode: team total
+
+        // 2P mode: setting per-player coin count
+        if (state.isCoop()) {
+            // left: P1
+            String p1 = String.format("P1  S:%d  K:%d  B:%d  C:%d",
+                    state.getScore(0), state.getShipsDestroyed(0),
+                    state.getBulletsShot(0), state.getCoins(0));
+            // right: P2
+            String p2 = String.format("P2  S:%d  K:%d  B:%d  C:%d",
+                    state.getScore(1), state.getShipsDestroyed(1),
+                    state.getBulletsShot(1), state.getCoins(1));
+
+            drawManager.drawCenteredRegularString(this, p1, 40);
+            drawManager.drawCenteredRegularString(this, p2, 60);
+        }
 
 		drawManager.drawHorizontalLine(this, SEPARATION_LINE_HEIGHT - 1);
 
@@ -268,8 +286,7 @@ public class GameScreen extends Screen {
 						recyclable.add(bullet);
 
 						ship.destroy(); // explosion/respawn handled by Ship.update()
-						state.setLivesRemaining(Math.max(0, state.getLivesRemaining() - 1)); // decrement shared/team
-																								// lives by 1
+                        state.decLife(p); // decrement shared/team lives by 1
 
 						this.logger.info("Hit on player " + (p + 1) + ", team lives now: " + state.getLivesRemaining());
 						break;
@@ -284,7 +301,7 @@ public class GameScreen extends Screen {
 				for (EnemyShip enemyShip : this.enemyShipFormation)
 					if (!enemyShip.isDestroyed() && checkCollision(bullet, enemyShip)) {
 						int points = enemyShip.getPointValue();
-						this.coins += enemyShip.getCoinValue();
+                        state.addCoins(pIdx, enemyShip.getCoinValue()); // 2P mode: modified to per-player coins
 
 						state.addScore(pIdx, points); // 2P mode: modified to add to P1 score for now
 						state.incShipsDestroyed(pIdx);
@@ -299,7 +316,7 @@ public class GameScreen extends Screen {
 						&& checkCollision(bullet, this.enemyShipSpecial)) {
 					int points = this.enemyShipSpecial.getPointValue();
 
-					this.coins += this.enemyShipSpecial.getCoinValue();
+                    state.addCoins(pIdx, this.enemyShipSpecial.getCoinValue()); // 2P mode: modified to per-player coins
 
 					state.addScore(pIdx, points);
 					state.incShipsDestroyed(pIdx); // 2P mode: modified incrementing ships destroyed

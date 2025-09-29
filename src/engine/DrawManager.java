@@ -299,6 +299,15 @@ public final class DrawManager {
 		backBufferGraphics.drawString(coinString, screen.getWidth() - 180, 25); // ADD THIS METHOD
 	} // ADD THIS METHOD
 
+    // 2P mode: drawCoins method but for both players, but separate coin counts
+    public void drawCoinsP1P2(final Screen screen, final int coinsP1, final int coinsP2) {
+        backBufferGraphics.setFont(fontRegular);
+        backBufferGraphics.setColor(Color.YELLOW);
+
+        backBufferGraphics.drawString("P1: " + String.format("%04d", coinsP1), screen.getWidth() - 200, 25);
+        backBufferGraphics.drawString("P2: " + String.format("%04d", coinsP2), screen.getWidth() - 100, 25);
+    }
+
 	/**
 	 * Draws a thick line from side to side of the screen.
 	 *

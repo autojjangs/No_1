@@ -173,22 +173,43 @@ public class ScoreScreen extends Screen {
 	private void draw() {
 		drawManager.initDrawing(this);
 
-		drawManager.drawGameOver(this, this.inputDelay.checkFinished(),
-				this.isNewRecord);
+		drawManager.drawGameOver(this, this.inputDelay.checkFinished(), this.isNewRecord);
 
 		float accuracy = (this.bulletsShot > 0)
 				? (float) this.shipsDestroyed / this.bulletsShot
 				: 0f;
 
-		// draw results, changed to handle if bulletShots == 0 (avoiding NaN)
-		drawManager.drawResults(this, this.score, this.livesRemaining,
-				this.shipsDestroyed, this.bulletsShot == 0 ? 0f : (float) this.shipsDestroyed / this.bulletsShot,
-				this.isNewRecord);
-		// You could add drawing for totalCoins here if desired
-		// drawManager.drawCenteredRegularString(this, "Total Coins: " +
-		// this.totalCoins, this.getHeight() / 4 + fontRegularMetrics.getHeight() * 8);
+        // 2P mode: edit to include co-op + individual score/coins
+        if (this.gameState != null && this.gameState.isCoop()) {
+            // team summary
+            drawManager.drawResults(this,
+                    this.gameState.getScore(), // team score
+                    this.gameState.getLivesRemaining(),
+                    this.gameState.getShipsDestroyed(),
+                    0f, // leaving out team accuracy
+                    this.isNewRecord
+            );
 
-		if (this.isNewRecord)
+            // show per-player lines when in 2P mode
+
+            float p1Acc = this.gameState.getBulletsShot(0) > 0 ? (float) this.gameState.getShipsDestroyed(0) / this.gameState.getBulletsShot(0) : 0f;
+            float p2Acc = this.gameState.getBulletsShot(1) > 0 ? (float) this.gameState.getShipsDestroyed(1) / this.gameState.getBulletsShot(1) : 0f;
+
+            String p1 = String.format("P1  %04d  |  acc %.2f%%", this.gameState.getScore(0), p1Acc * 100f);
+            String p2 = String.format("P2  %04d  |  acc %.2f%%", this.gameState.getScore(1), p2Acc * 100f);
+
+            int y = this.getHeight() / 2 + 60;   // tweak these two numbers if you want
+            drawManager.drawCenteredRegularString(this, p1, y);
+            drawManager.drawCenteredRegularString(this, p2, y + 20);
+
+        } else {
+            // 1P legacy summary with accuracy
+            float acc = (this.bulletsShot > 0) ? (float) this.shipsDestroyed / this.bulletsShot : 0f;
+
+            drawManager.drawResults(this, this.score, this.livesRemaining, this.shipsDestroyed, acc, this.isNewRecord);
+        }
+
+        if (this.isNewRecord)
 			drawManager.drawNameInput(this, this.name, this.nameCharSelected);
 
 		drawManager.completeDrawing(this);

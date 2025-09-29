@@ -28,7 +28,7 @@ public class GameState {
 	private int teamLivesCap;
 
 	/** Current coin count. */ // ADD THIS LINE
-	private int coins; // ADD THIS LINE
+    private final int[] coins = new int[NUM_PLAYERS]; // ADD THIS LINE - edited for 2P mode
 
 	// 2P mode: co-op aware constructor used by the updated Core loop - livesEach
 	// applies per-player; co-op uses shared pool.
@@ -47,7 +47,6 @@ public class GameState {
 			// legacy: put all lives on P1
 			lives[0] = Math.max(0, livesEach);
 		}
-		this.coins = 0; // coins start at 0 by default instead of extra parameter
 	}
 
 	// 2P mode: per-player tallies (used for stats/scoring; lives[] unused in shared
@@ -89,7 +88,7 @@ public class GameState {
 		this.bulletsShot[0] = bulletsShot;
 		this.shipsDestroyed[0] = shipsDestroyed;
 
-		this.coins = coins; // ADD THIS LINE
+        this.coins[0] = Math.max(0, coins); // ADD THIS LINE - edited for 2P mode
 		this.coop = false; // 2P: single-player mode
 	}
 
@@ -120,9 +119,6 @@ public class GameState {
 
 	}
 
-	public int getCoins() {
-		return coins;
-	}
 
 	/* ----- Per-player getters (needed by Score.java) ----- */
 	public int getScore(final int p) {
@@ -149,6 +145,22 @@ public class GameState {
 		shipsDestroyed[p]++;
 	}
 
+    // 2P mode: per-player coin tracking
+    public int getCoins(final int p) { return (p >= 0 && p < NUM_PLAYERS) ? coins[p] : 0; }
+    public int getCoins() { return coins[0] + coins[1]; } // legacy total for ScoreScreen
+
+    public void addCoins(final int p, final int delta) {
+        if (p >= 0 && p < NUM_PLAYERS && delta > 0)
+            coins[p] = Math.max(0, coins[p] + delta);
+    }
+
+    public boolean spendCoins(final int p, final int amount) {
+        if (p < 0 || p >= NUM_PLAYERS || amount < 0) return false;
+        if (coins[p] < amount) return false;
+        coins[p] -= amount;
+        return true;
+    }
+
 	// ===== Mode / life-pool helpers expected elsewhere =====
 	public boolean isCoop() {
 		return coop;
@@ -167,21 +179,31 @@ public class GameState {
 			teamLives = Math.min(teamLivesCap, teamLives + Math.max(0, n));
 	}
 
-	public void decTeamLife(final int n) {
+	private void decTeamLife(final int n) {
 		if (sharedLives)
 			teamLives = Math.max(0, teamLives - Math.max(0, n));
 	}
 
-	// map "remaining lives" to team pool in co-op; P1 in 1P legacy
-	public void setLivesRemaining(int v) {
-		if (sharedLives) {
-			teamLives = Math.max(0, Math.min(teamLivesCap, v));
-		} else {
-			lives[0] = Math.max(0, v);
-		}
-	}
+    // 2P mode: decrement life (shared pool if enabled; otherwise per player). */
+    public void decLife(final int p) {
+        if (sharedLives) {
+            decTeamLife(1);
+        } else if (p >= 0 && p < NUM_PLAYERS && lives[p] > 0) {
+            lives[p]--;
+        }
+    }
 
-	public int getLevel() {
+    // for bonusLife, balance out decLife (+/- life)
+    public void addLife(final int p, final int n) {
+        if (sharedLives) {
+            addTeamLife(n);
+        } else if (p >= 0 && p < NUM_PLAYERS) {
+            lives[p] = Math.max(0, lives[p] + Math.max(0, n));
+        }
+    }
+
+
+    public int getLevel() {
 		return level;
 	}
 
