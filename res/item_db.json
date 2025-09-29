@@ -7,5 +7,14 @@
     "effectValue": 1,
     "effectDuration": 0,
     "dropChance": 0.3
+  },
+  {
+    "itemId": 2,
+    "name": "Coin",
+    "spriteType": "Ship",
+    "Type": "Score",
+    "effectValue": 10,
+    "effectDuration": 0,
+    "dropChance": 0.3
   }
 ]
