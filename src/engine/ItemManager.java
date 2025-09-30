@@ -46,7 +46,8 @@ public final class ItemManager {
         int centerX = enemy.getPositionX() + enemy.getWidth() / 2;
         int centerY = enemy.getPositionY() + enemy.getHeight() / 2;
         // create and initialize item
-        Item drop = ItemPool.getItem(centerX, centerY, 2);
+//        Item drop = ItemPool.getItem(centerX, centerY, 2);
+        Item drop = new Item(centerX, centerY, 2);
 
         ItemType type = ItemType.ITEM_1;
 //        double typeRoll = itemRoll.nextDouble();

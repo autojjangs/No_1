@@ -351,71 +351,74 @@ public class GameScreen extends Screen {
     }
 
 	/**
-	 * Enemy bullets hit players → decrement TEAM lives; player bullets hit enemies
-	 * → add score.
+	 * Enemy bullets hit players -> decrement TEAM lives; player bullets hit enemies
+	 * -> add score.
 	 */
 	private void manageCollisions() {
 		Set<Bullet> recyclable = new HashSet<Bullet>();
         for (Bullet bullet : this.bullets) {
-            if (bullet.getSpeed() > 0) {
-                // Enemy bullet vs both players
-                for (int p = 0; p < GameState.NUM_PLAYERS; p++) {
-                    Ship ship = this.ships[p];
-                    if (ship != null && !ship.isDestroyed()
-                            && checkCollision(bullet, ship) && !this.levelFinished) {
-                        recyclable.add(bullet);
+			if (bullet.getSpeed() > 0) {
+				// Enemy bullet vs both players
+				for (int p = 0; p < GameState.NUM_PLAYERS; p++) {
+					Ship ship = this.ships[p];
+					if (ship != null && !ship.isDestroyed()
+							&& checkCollision(bullet, ship) && !this.levelFinished) {
+						recyclable.add(bullet);
 
-                        ship.destroy(); // explosion/respawn handled by Ship.update()
-                        state.decLife(p); // decrement shared/team lives by 1
+						ship.destroy(); // explosion/respawn handled by Ship.update()
+						state.decLife(p); // decrement shared/team lives by 1
 
-                        this.logger.info("Hit on player " + (p + 1) + ", team lives now: " + state.getLivesRemaining());
-                        break;
-                    }
-                }
-            } else {
-                // Player bullet vs enemies
-                // map Bullet owner id (1 or 2) to per-player index (0 or 1)
-                final int ownerId = bullet.getOwnerPlayerId(); // 1 or 2 (0 if unset)
-                final int pIdx = (ownerId == 2) ? 1 : 0; // default to P1 when unset
+						this.logger.info("Hit on player " + (p + 1) + ", team lives now: " + state.getLivesRemaining());
+						break;
+					}
+				}
+			} else {
+				// Player bullet vs enemies
+				// map Bullet owner id (1 or 2) to per-player index (0 or 1)
+				final int ownerId = bullet.getOwnerPlayerId(); // 1 or 2 (0 if unset)
+				final int pIdx = (ownerId == 2) ? 1 : 0; // default to P1 when unset
 
-                for (EnemyShip enemyShip : this.enemyShipFormation)
-                    if (!enemyShip.isDestroyed() && checkCollision(bullet, enemyShip)) {
-                        int points = enemyShip.getPointValue();
-                        state.addCoins(pIdx, enemyShip.getCoinValue()); // 2P mode: modified to per-player coins
+				for (EnemyShip enemyShip : this.enemyShipFormation)
+					if (!enemyShip.isDestroyed() && checkCollision(bullet, enemyShip)) {
+						int points = enemyShip.getPointValue();
+						state.addCoins(pIdx, enemyShip.getCoinValue()); // 2P mode: modified to per-player coins
 
-                        state.addScore(pIdx, points); // 2P mode: modified to add to P1 score for now
-                        state.incShipsDestroyed(pIdx);
+						state.addScore(pIdx, points); // 2P mode: modified to add to P1 score for now
+						state.incShipsDestroyed(pIdx);
 
-                        this.enemyShipFormation.destroy(enemyShip);
-                        this.logger.info("Hit on enemy ship.");
+						// obtain drop from ItemManager (may return null)
+						Item drop = engine.ItemManager.getInstance().obtainDrop(enemyShip);
+						if (drop != null) {
+							this.items.add(drop);
+							this.logger.info("Spawned item at " + drop.getPositionX() + "," + drop.getPositionY());
+						}
 
-                        // obtain drop from ItemManager (may return null)
-                        Item drop = engine.ItemManager.getInstance().obtainDrop(enemyShip);
-                        if (drop != null) {
-                            this.items.add(drop);
-                            this.logger.info("Spawned item at " + drop.getPositionX() + "," + drop.getPositionY());
-                        }
+						this.enemyShipFormation.destroy(enemyShip);
+						this.logger.info("Hit on enemy ship.");
 
-                        recyclable.add(bullet);
-                    }
-                if (this.enemyShipSpecial != null
-                        && !this.enemyShipSpecial.isDestroyed()
-                        && checkCollision(bullet, this.enemyShipSpecial)) {
-                    int points = this.enemyShipSpecial.getPointValue();
 
-                    state.addCoins(pIdx, this.enemyShipSpecial.getCoinValue()); // 2P mode: modified to per-player coins
 
-                    state.addScore(pIdx, points);
-                    state.incShipsDestroyed(pIdx); // 2P mode: modified incrementing ships destroyed
+						recyclable.add(bullet);
+					}
+				if (this.enemyShipSpecial != null
+						&& !this.enemyShipSpecial.isDestroyed()
+						&& checkCollision(bullet, this.enemyShipSpecial)) {
+					int points = this.enemyShipSpecial.getPointValue();
 
-                    this.enemyShipSpecial.destroy();
-                    this.enemyShipSpecialExplosionCooldown.reset();
-                    recyclable.add(bullet);
-                }
-            }
-            this.bullets.removeAll(recyclable);
-            BulletPool.recycle(recyclable);
-        }
+					state.addCoins(pIdx, this.enemyShipSpecial.getCoinValue()); // 2P mode: modified to per-player coins
+
+					state.addScore(pIdx, points);
+					state.incShipsDestroyed(pIdx); // 2P mode: modified incrementing ships destroyed
+
+					this.enemyShipSpecial.destroy();
+					this.enemyShipSpecialExplosionCooldown.reset();
+					recyclable.add(bullet);
+				}
+			}
+		}
+		this.bullets.removeAll(recyclable);
+		BulletPool.recycle(recyclable);
+
     }
 
     /**
