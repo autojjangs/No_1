@@ -173,4 +173,7 @@ log*
 *.ttf
 .checkstyle
 .idea/
+.vscode/
 *.iml
+*.class
+

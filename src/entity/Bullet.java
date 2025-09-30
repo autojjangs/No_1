@@ -19,15 +19,24 @@ public class Bullet extends Entity {
 	private int speed;
 
 	/**
+	 * 2P mode: id number to specifying who fired the bullet -
+	 * 0 = enemy, 1 = P1, 2 = P2
+	 **/
+	private int ownerPlayerId = 0;
+
+	// standardised for DrawManager scaling
+	private int playerId = 0;
+
+	/**
 	 * Constructor, establishes the bullet's properties.
 	 *
 	 * @param positionX
-	 *            Initial position of the bullet in the X axis.
+	 *                  Initial position of the bullet in the X axis.
 	 * @param positionY
-	 *            Initial position of the bullet in the Y axis.
+	 *                  Initial position of the bullet in the Y axis.
 	 * @param speed
-	 *            Speed of the bullet, positive or negative depending on
-	 *            direction - positive is down.
+	 *                  Speed of the bullet, positive or negative depending on
+	 *                  direction - positive is down.
 	 */
 	public Bullet(final int positionX, final int positionY, final int speed) {
 		super(positionX, positionY, 3 * 2, 5 * 2, Color.WHITE);
@@ -41,9 +50,10 @@ public class Bullet extends Entity {
 	 */
 	public final void setSprite() {
 		if (speed < 0)
-			this.spriteType = SpriteType.Bullet;
+			this.spriteType = SpriteType.Bullet; // player bullet fired, team remains NEUTRAL
 		else
-			this.spriteType = SpriteType.EnemyBullet;
+			this.spriteType = SpriteType.EnemyBullet; // enemy fired bullet
+		this.team = Team.ENEMY; // enemy bullets always belong to ENEMY team
 	}
 
 	/**
@@ -57,7 +67,7 @@ public class Bullet extends Entity {
 	 * Setter of the speed of the bullet.
 	 *
 	 * @param speed
-	 *            New speed of the bullet.
+	 *              New speed of the bullet.
 	 */
 	public final void setSpeed(final int speed) {
 		this.speed = speed;
@@ -71,4 +81,23 @@ public class Bullet extends Entity {
 	public final int getSpeed() {
 		return this.speed;
 	}
+
+	// 2P mode: adding owner API, standardised player API
+	public final int getOwnerPlayerId() {
+		return ownerPlayerId;
+	}
+
+	public final void setOwnerPlayerId(final int ownerPlayerId) {
+		this.ownerPlayerId = ownerPlayerId;
+	}
+
+	public int getPlayerId() {
+		return this.playerId;
+	}
+
+	public void setPlayerId(int playerId) {
+		this.playerId = playerId;
+		this.ownerPlayerId = playerId; // keep them in sync
+	}
+
 }

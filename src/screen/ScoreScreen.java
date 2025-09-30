@@ -27,6 +27,9 @@ public class ScoreScreen extends Screen {
 	/** Code of last mayus character. */
 	private static final int LAST_CHAR = 90;
 
+	// Added for persist per-player breakdown
+	private final GameState gameState;
+
 	/** Current score. */
 	private int score;
 	/** Player lives left. */
@@ -52,17 +55,18 @@ public class ScoreScreen extends Screen {
 	 * Constructor, establishes the properties of the screen.
 	 *
 	 * @param width
-	 *            Screen width.
+	 *                  Screen width.
 	 * @param height
-	 *            Screen height.
+	 *                  Screen height.
 	 * @param fps
-	 *            Frames per second, frame rate at which the game is run.
+	 *                  Frames per second, frame rate at which the game is run.
 	 * @param gameState
-	 *            Current game state.
+	 *                  Current game state.
 	 */
 	public ScoreScreen(final int width, final int height, final int fps,
-					   final GameState gameState) {
+			final GameState gameState) {
 		super(width, height, fps);
+		this.gameState = gameState; // Added
 
 		this.score = gameState.getScore();
 		this.livesRemaining = gameState.getLivesRemaining();
@@ -78,8 +82,7 @@ public class ScoreScreen extends Screen {
 		try {
 			this.highScores = Core.getFileManager().loadHighScores();
 			if (highScores.size() < MAX_HIGH_SCORE_NUM
-					|| highScores.get(highScores.size() - 1).getScore()
-					< this.score)
+					|| highScores.get(highScores.size() - 1).getScore() < this.score)
 				this.isNewRecord = true;
 
 		} catch (IOException e) {
@@ -132,17 +135,15 @@ public class ScoreScreen extends Screen {
 					this.selectionCooldown.reset();
 				}
 				if (inputManager.isKeyDown(KeyEvent.VK_UP)) {
-					this.name[this.nameCharSelected] =
-							(char) (this.name[this.nameCharSelected]
-									== LAST_CHAR ? FIRST_CHAR
-									: this.name[this.nameCharSelected] + 1);
+					this.name[this.nameCharSelected] = (char) (this.name[this.nameCharSelected] == LAST_CHAR
+							? FIRST_CHAR
+							: this.name[this.nameCharSelected] + 1);
 					this.selectionCooldown.reset();
 				}
 				if (inputManager.isKeyDown(KeyEvent.VK_DOWN)) {
-					this.name[this.nameCharSelected] =
-							(char) (this.name[this.nameCharSelected]
-									== FIRST_CHAR ? LAST_CHAR
-									: this.name[this.nameCharSelected] - 1);
+					this.name[this.nameCharSelected] = (char) (this.name[this.nameCharSelected] == FIRST_CHAR
+							? LAST_CHAR
+							: this.name[this.nameCharSelected] - 1);
 					this.selectionCooldown.reset();
 				}
 			}
@@ -154,7 +155,7 @@ public class ScoreScreen extends Screen {
 	 * Saves the score as a high score.
 	 */
 	private void saveScore() {
-		highScores.add(new Score(new String(this.name), score));
+		highScores.add(new Score(new String(this.name), this.gameState));
 		Collections.sort(highScores);
 		if (highScores.size() > MAX_HIGH_SCORE_NUM)
 			highScores.remove(highScores.size() - 1);
@@ -172,18 +173,46 @@ public class ScoreScreen extends Screen {
 	private void draw() {
 		drawManager.initDrawing(this);
 
-		drawManager.drawGameOver(this, this.inputDelay.checkFinished(),
-				this.isNewRecord);
-		drawManager.drawResults(this, this.score, this.livesRemaining,
-				this.shipsDestroyed, (float) this.shipsDestroyed
-						/ this.bulletsShot, this.isNewRecord);
-		// You could add drawing for totalCoins here if desired
-		// drawManager.drawCenteredRegularString(this, "Total Coins: " + this.totalCoins, this.getHeight() / 4 + fontRegularMetrics.getHeight() * 8);
+		drawManager.drawGameOver(this, this.inputDelay.checkFinished(), this.isNewRecord);
 
+		float accuracy = (this.bulletsShot > 0)
+				? (float) this.shipsDestroyed / this.bulletsShot
+				: 0f;
 
-		if (this.isNewRecord)
+        // 2P mode: edit to include co-op + individual score/coins
+        if (this.gameState != null && this.gameState.isCoop()) {
+            // team summary
+            drawManager.drawResults(this,
+                    this.gameState.getScore(), // team score
+                    this.gameState.getLivesRemaining(),
+                    this.gameState.getShipsDestroyed(),
+                    0f, // leaving out team accuracy
+                    this.isNewRecord
+            );
+
+            // show per-player lines when in 2P mode
+
+            float p1Acc = this.gameState.getBulletsShot(0) > 0 ? (float) this.gameState.getShipsDestroyed(0) / this.gameState.getBulletsShot(0) : 0f;
+            float p2Acc = this.gameState.getBulletsShot(1) > 0 ? (float) this.gameState.getShipsDestroyed(1) / this.gameState.getBulletsShot(1) : 0f;
+
+            String p1 = String.format("P1  %04d  |  acc %.2f%%", this.gameState.getScore(0), p1Acc * 100f);
+            String p2 = String.format("P2  %04d  |  acc %.2f%%", this.gameState.getScore(1), p2Acc * 100f);
+
+            int y = this.getHeight() / 2 + 60;   // tweak these two numbers if you want
+            drawManager.drawCenteredRegularString(this, p1, y);
+            drawManager.drawCenteredRegularString(this, p2, y + 20);
+
+        } else {
+            // 1P legacy summary with accuracy
+            float acc = (this.bulletsShot > 0) ? (float) this.shipsDestroyed / this.bulletsShot : 0f;
+
+            drawManager.drawResults(this, this.score, this.livesRemaining, this.shipsDestroyed, acc, this.isNewRecord);
+        }
+
+        if (this.isNewRecord)
 			drawManager.drawNameInput(this, this.name, this.nameCharSelected);
 
 		drawManager.completeDrawing(this);
 	}
+
 }

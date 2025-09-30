@@ -21,16 +21,16 @@ public class GameSettings {
 	 * Constructor.
 	 *
 	 * @param formationWidth
-	 *            Width of the level's enemy formation.
+	 *                          Width of the level's enemy formation.
 	 * @param formationHeight
-	 *            Height of the level's enemy formation.
+	 *                          Height of the level's enemy formation.
 	 * @param baseSpeed
-	 *            Speed of the enemies.
+	 *                          Speed of the enemies.
 	 * @param shootingFrecuency
-	 *            Frecuency of enemy shootings, +/- 30%.
+	 *                          Frecuency of enemy shootings, +/- 30%.
 	 */
 	public GameSettings(final int formationWidth, final int formationHeight,
-						final int baseSpeed, final int shootingFrecuency) {
+			final int baseSpeed, final int shootingFrecuency) {
 		this.formationWidth = formationWidth;
 		this.formationHeight = formationHeight;
 		this.baseSpeed = baseSpeed;
