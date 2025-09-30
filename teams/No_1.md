@@ -14,16 +14,29 @@ Team members:
 - Jo In Jun: Developer + (visual)
 - Kim Isak: Developer
 ## Team Requirements
-Item System
+- screen/GameScreen: Item spawn, despawn and collision.
+- entity/Item
+- entity/ItemPool
+- engine/ItemManager
 ## Detailed Requirements
-- UI elements for held items
-- Hierarchy interface for item system
-- Item shopp system
-- Item 'pickup' system
-	- V1: Trophy system from fallen enemies
-	- V2: Shop system using virtual currency
-- config file for item variable
+- Item Collision System || Pick up items upon collision
+- Item Drop System on Enemy Destruction
+- Point Item || Adds points when picked up
+- Healing Item || Restores health when picked up
+- Item Management || Handles items spawned on the field and removes those that go off-screen
 ## Dependencies on Other Teams
-- UI Design
-- Currency system
-- Sound Development
+- SystemD || Currency System  → Potential shop system collaboration
+
+	Files: engine/DrawManager, screen/GameScreen etc
+
+- An Pans Man Fan || SoundEffects/BGM → dependency on item pickup/activation sound effects
+
+- 666 || Visual Effects System → Item graphics, Item effects
+
+	Files: engine/DrawManager.java etc
+
+- Team scraps || Two-player Mode → Item pickup/effects for different players
+
+	Files: engine/GameState, screen/GameScreen
+
+- TEAM4 || Gameplay HUD → Possible shop system collaboration
