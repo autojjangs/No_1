@@ -15,6 +15,11 @@ import entity.EnemyShipFormation;
 import entity.Entity;
 import entity.Ship;
 
+// NEW Item code
+import entity.Item;
+import entity.ItemPool;
+import engine.ItemManager;
+
 /**
  * Implements the game screen, where the action happens.
  * 
@@ -56,6 +61,10 @@ public class GameScreen extends Screen {
 	private Cooldown screenFinishedCooldown;
 	/** Set of all bullets fired by on screen ships. */
 	private Set<Bullet> bullets;
+
+    /** Set of all items spawned. */
+    private Set<Item> items;
+
 	/** Current score. */
 	private int score;
 	/** Player lives left. */
@@ -78,7 +87,7 @@ public class GameScreen extends Screen {
 	 *            Current game state.
 	 * @param gameSettings
 	 *            Current game settings.
-	 * @param bonnusLife
+	 * @param bonusLife
 	 *            Checks if a bonus life is awarded this level.
 	 * @param width
 	 *            Screen width.
@@ -120,6 +129,9 @@ public class GameScreen extends Screen {
 				.getCooldown(BONUS_SHIP_EXPLOSION);
 		this.screenFinishedCooldown = Core.getCooldown(SCREEN_CHANGE_INTERVAL);
 		this.bullets = new HashSet<Bullet>();
+
+        // New Item Code
+        this.items = new HashSet<Item>();
 
 		// Special input delay / countdown.
 		this.gameStartTime = System.currentTimeMillis();
@@ -197,7 +209,12 @@ public class GameScreen extends Screen {
 
 		manageCollisions();
 		cleanBullets();
-		draw();
+
+        // New Item Code
+        cleanItems();
+        manageItemPickups();
+
+        draw();
 
 		if ((this.enemyShipFormation.isEmpty() || this.lives == 0)
 				&& !this.levelFinished) {
@@ -228,6 +245,11 @@ public class GameScreen extends Screen {
 		for (Bullet bullet : this.bullets)
 			drawManager.drawEntity(bullet, bullet.getPositionX(),
 					bullet.getPositionY());
+
+        // draw items
+        for (Item item : this.items)
+            drawManager.drawEntity(item, item.getPositionX(),
+                    item.getPositionY());
 
 		// Interface.
 		drawManager.drawScore(this, this.score);
@@ -265,6 +287,35 @@ public class GameScreen extends Screen {
 		BulletPool.recycle(recyclable);
 	}
 
+    /**
+     * Cleans items that go off screen.
+     */
+    private void cleanItems() {
+        Set<Item> recyclableItems = new HashSet<Item>();
+        for (Item item : this.items) {
+            item.update();
+            if (item.getPositionY() > this.height)
+                recyclableItems.add(item);
+        }
+        this.items.removeAll(recyclableItems);
+        ItemPool.recycle(recyclableItems);
+    }
+
+    /**
+     * Manages pickups between player and items.
+     */
+    private void manageItemPickups() {
+        Set<Item> collected = new HashSet<Item>();
+        for (Item item : this.items) {
+            if (checkCollision(item, this.ship)) {
+                collected.add(item);
+                //applyItemEffect(item);
+            }
+        }
+        this.items.removeAll(collected);
+        ItemPool.recycle(collected);
+    }
+
 	/**
 	 * Manages collisions between bullets and ships.
 	 */
@@ -288,7 +339,16 @@ public class GameScreen extends Screen {
 						this.score += enemyShip.getPointValue();
 						this.shipsDestroyed++;
 						this.enemyShipFormation.destroy(enemyShip);
-						recyclable.add(bullet);
+                        this.logger.info("Hit on enemy ship.");
+
+                        // obtain drop from ItemManager (may return null)
+                        Item drop = engine.ItemManager.getInstance().obtainDrop(enemyShip);
+                        if (drop != null) {
+                            this.items.add(drop);
+                            this.logger.info("Spawned item at " + drop.getPositionX() + "," + drop.getPositionY());
+                        }
+
+                        recyclable.add(bullet);
 					}
 				if (this.enemyShipSpecial != null
 						&& !this.enemyShipSpecial.isDestroyed()
