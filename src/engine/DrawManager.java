@@ -15,6 +15,7 @@ import java.util.logging.Logger;
 import screen.Screen;
 import entity.Entity;
 import entity.Ship;
+import screen.SettingScreen;
 
 /**
  * Manages screen drawing.
@@ -50,7 +51,7 @@ public final class DrawManager {
 	/** Sprite types mapped to their images. */
 	private static Map<SpriteType, boolean[][]> spriteMap;
 
-	/** Sprite types. */
+    /** Sprite types. */
 	public static enum SpriteType {
 		/** Player ship. */
 		Ship,
@@ -321,6 +322,7 @@ public final class DrawManager {
 		String playString = "Play";
 		String highScoresString = "High scores";
 		String exitString = "exit";
+        String settingsString = "Settings"; // ADD THIS LINE
 
 		if (option == 2)
 			backBufferGraphics.setColor(Color.GREEN);
@@ -334,12 +336,18 @@ public final class DrawManager {
 			backBufferGraphics.setColor(Color.WHITE);
 		drawCenteredRegularString(screen, highScoresString, screen.getHeight()
 				/ 3 * 2 + fontRegularMetrics.getHeight() * 2);
+        if (option == 4)
+            backBufferGraphics.setColor(Color.GREEN);
+        else
+            backBufferGraphics.setColor(Color.WHITE);
+        drawCenteredRegularString(screen, settingsString, screen.getHeight()
+                / 3 * 2 + fontRegularMetrics.getHeight() * 4); // ADD THIS BLOCK
 		if (option == 0)
 			backBufferGraphics.setColor(Color.GREEN);
 		else
 			backBufferGraphics.setColor(Color.WHITE);
 		drawCenteredRegularString(screen, exitString, screen.getHeight() / 3
-				* 2 + fontRegularMetrics.getHeight() * 4);
+				* 2 + fontRegularMetrics.getHeight() * 6);
 	}
 
 	/**
@@ -501,6 +509,23 @@ public final class DrawManager {
 			i++;
 		}
 	}
+    /**
+     * Draws settings menu.
+     *
+     * @param settingScreen
+     *            Setting screen to draw on.
+     */
+    public void drawSettingMenu(SettingScreen settingScreen) {
+        String settingsString = "Settings";
+        String instructionsString = "Press Space to return";
+
+        backBufferGraphics.setColor(Color.GREEN);
+        drawCenteredBigString(settingScreen, settingsString, settingScreen.getHeight() / 8);
+
+        backBufferGraphics.setColor(Color.GRAY);
+        drawCenteredRegularString(settingScreen, instructionsString,
+                settingScreen.getHeight() / 5);
+    }
 
 	/**
 	 * Draws a centered string on regular font.
