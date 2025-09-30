@@ -6,7 +6,7 @@ import java.awt.FontFormatException;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
-import java.awt.Rectangle;
+import java.awt.Rectangle; // add this line
 import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -42,7 +42,7 @@ public final class DrawManager {
 	/** Normal sized font. */
 	private static Font fontRegular;
 	/** Normal sized font properties. */
-	private static FontMetrics fontRegularMetrics;
+	private static FontMetrics fontRegularMetrics; // add this line
 	/** Big sized font. */
 	private static Font fontBig;
 	/** Big sized font properties. */
@@ -51,7 +51,8 @@ public final class DrawManager {
 	/** Sprite types mapped to their images. */
 	private static Map<SpriteType, boolean[][]> spriteMap;
 
-    private int menuHitboxOffset = 20;
+    // Variables for hitbox fine-tuning
+    private int menuHitboxOffset = 20; // add this line
 
 	/** Sprite types. */
 	public static enum SpriteType {
@@ -578,6 +579,8 @@ public final class DrawManager {
 					+ fontBigMetrics.getHeight() / 3);
 	}
 
+    // add this line
+    // hitbox coordinate function
     public Rectangle[] getMenuHitboxes (final Screen screen) {
         if (fontRegularMetrics == null) {
             backBufferGraphics.setFont(fontRegular);
@@ -599,6 +602,10 @@ public final class DrawManager {
         return new Rectangle[] {hitbox_play, hitbox_score, hitbox_exit};
     }
 
+    /*
+    When a given string is aligned in the middle of the screen,
+    the pixel area occupied by the string is calculated as Rectangle and returned
+     */
     private Rectangle centeredStringBounds(final Screen screen, final String string, final int baselineY) {
         backBufferGraphics.setFont(fontRegular);
         final int pad = 4;

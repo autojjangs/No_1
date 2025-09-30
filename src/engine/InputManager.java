@@ -2,8 +2,8 @@ package engine;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
+import java.awt.event.MouseEvent; // add this line
+import java.awt.event.MouseListener; // add this line
 
 /**
  * Manages keyboard input for the provided screen.
@@ -11,7 +11,7 @@ import java.awt.event.MouseListener;
  * @author <a href="mailto:RobertoIA1987@gmail.com">Roberto Izquierdo Amo</a>
  *
  */
-public final class InputManager implements KeyListener, MouseListener {
+public final class InputManager implements KeyListener, MouseListener { // add MouseListener param
 
 	/** Number of recognised keys. */
 	private static final int NUM_KEYS = 256;
@@ -19,11 +19,12 @@ public final class InputManager implements KeyListener, MouseListener {
 	private static boolean[] keys;
 
     /** Mouse pressed state. */
-    private static  boolean mousePressed;
+    private static  boolean mousePressed; // add this line
 
 	/** Singleton instance of the class. */
 	private static InputManager instance;
 
+    // add three variable
     private static int mouseX;
     private static int mouseY;
     private static boolean mouseClicked;
@@ -92,11 +93,11 @@ public final class InputManager implements KeyListener, MouseListener {
 
 	}
 
-    public int getMouseX() { return mouseX; }
+    public int getMouseX() { return mouseX; } // add this function
 
-    public int getMouseY() { return mouseY; }
+    public int getMouseY() { return mouseY; } // add this function
 
-    public boolean isMouseClicked() {
+    public boolean isMouseClicked() { // add this function
         if (mouseClicked) {
             mouseClicked = false;
             return true;
@@ -105,19 +106,19 @@ public final class InputManager implements KeyListener, MouseListener {
     }
 
     @Override
-    public void mouseClicked(final MouseEvent e) {
+    public void mouseClicked(final MouseEvent e) { // add this function
         // Can be left empty or used if needed
     }
 
     @Override
-    public void mousePressed(final MouseEvent e) {
+    public void mousePressed(final MouseEvent e) { // add this function
         mousePressed = true;
         mouseX = e.getX();
         mouseY = e.getY();
     }
 
     @Override
-    public void mouseReleased(final MouseEvent e) {
+    public void mouseReleased(final MouseEvent e) { // add this function
         mousePressed = false;
         mouseX = e.getX();
         mouseY = e.getY();
@@ -125,12 +126,12 @@ public final class InputManager implements KeyListener, MouseListener {
     }
 
     @Override
-    public void mouseEntered(final MouseEvent e) {
+    public void mouseEntered(final MouseEvent e) { // add this function
 
     }
 
     @Override
-    public void mouseExited(final MouseEvent e) {
+    public void mouseExited(final MouseEvent e) { // add this function
 
     }
 }
