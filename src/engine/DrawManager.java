@@ -15,7 +15,7 @@ import java.util.logging.Logger;
 import screen.Screen;
 import entity.Entity;
 import entity.Ship;
-import screen.SettingScreen;
+import entity.Bullet;
 
 /**
  * Manages screen drawing.
@@ -51,7 +51,7 @@ public final class DrawManager {
 	/** Sprite types mapped to their images. */
 	private static Map<SpriteType, boolean[][]> spriteMap;
 
-    /** Sprite types. */
+	/** Sprite types. */
 	public static enum SpriteType {
 		/** Player ship. */
 		Ship,
@@ -133,18 +133,18 @@ public final class DrawManager {
 	 * Sets the frame to draw the image on.
 	 *
 	 * @param currentFrame
-	 *            Frame to draw on.
+	 *                     Frame to draw on.
 	 */
 	public void setFrame(final Frame currentFrame) {
 		frame = currentFrame;
 	}
 
 	/**
-	 * First part of the drawing process. Initialices buffers, draws the
+	 * First part of the drawing process. Initialises buffers, draws the
 	 * background and prepares the images.
 	 *
 	 * @param screen
-	 *            Screen to draw in.
+	 *               Screen to draw in.
 	 */
 	public void initDrawing(final Screen screen) {
 		backBuffer = new BufferedImage(screen.getWidth(), screen.getHeight(),
@@ -168,7 +168,7 @@ public final class DrawManager {
 	 * Draws the completed drawing on screen.
 	 *
 	 * @param screen
-	 *            Screen to draw on.
+	 *               Screen to draw on.
 	 */
 	public void completeDrawing(final Screen screen) {
 		graphics.drawImage(backBuffer, frame.getInsets().left,
@@ -176,20 +176,43 @@ public final class DrawManager {
 	}
 
 	/**
-	 * Draws an entity, using the apropiate image.
+	 * Draws an entity, using the appropriate image.
 	 *
 	 * @param entity
-	 *            Entity to be drawn.
+	 *                  Entity to be drawn.
 	 * @param positionX
-	 *            Coordinates for the left side of the image.
+	 *                  Coordinates for the left side of the image.
 	 * @param positionY
-	 *            Coordinates for the upper side of the image.
+	 *                  Coordinates for the upper side of the image.
 	 */
 	public void drawEntity(final Entity entity, final int positionX,
-						   final int positionY) {
+			final int positionY) {
 		boolean[][] image = spriteMap.get(entity.getSpriteType());
 
-		backBufferGraphics.setColor(entity.getColor());
+		// 2P mode: start with the entity's own color
+		Color color = entity.getColor();
+
+		// Color-code by player when applicable
+		if (entity instanceof Ship) {
+			Ship ship = (Ship) entity;
+			int pid = ship.getPlayerId(); // requires Ship.getPlayerId()
+			if (pid == 1)
+				color = Color.BLUE; // P1 ship
+			else if (pid == 2)
+				color = Color.RED; // P2 ship
+
+			// else leave default (e.g., green) for legacy/unknown
+		} else if (entity instanceof Bullet) {
+			Bullet bullet = (Bullet) entity;
+			int pid = bullet.getPlayerId(); // requires Bullet.getPlayerId()
+			if (pid == 1)
+				color = Color.CYAN; // P1 bullet
+			else if (pid == 2)
+				color = Color.MAGENTA; // P2 bullet
+			// enemy bullets will keep their default color from the entity
+		}
+
+		backBufferGraphics.setColor(color);
 		for (int i = 0; i < image.length; i++)
 			for (int j = 0; j < image[i].length; j++)
 				if (image[i][j])
@@ -198,10 +221,10 @@ public final class DrawManager {
 	}
 
 	/**
-	 * For debugging purpouses, draws the canvas borders.
+	 * For debugging purposes, draws the canvas borders.
 	 *
 	 * @param screen
-	 *            Screen to draw in.
+	 *               Screen to draw in.
 	 */
 	@SuppressWarnings("unused")
 	private void drawBorders(final Screen screen) {
@@ -215,10 +238,10 @@ public final class DrawManager {
 	}
 
 	/**
-	 * For debugging purpouses, draws a grid over the canvas.
+	 * For debugging purposes, draws a grid over the canvas.
 	 *
 	 * @param screen
-	 *            Screen to draw in.
+	 *               Screen to draw in.
 	 */
 	@SuppressWarnings("unused")
 	private void drawGrid(final Screen screen) {
@@ -233,9 +256,9 @@ public final class DrawManager {
 	 * Draws current score on screen.
 	 *
 	 * @param screen
-	 *            Screen to draw on.
+	 *               Screen to draw on.
 	 * @param score
-	 *            Current score.
+	 *               Current score.
 	 */
 	public void drawScore(final Screen screen, final int score) {
 		backBufferGraphics.setFont(fontRegular);
@@ -248,9 +271,9 @@ public final class DrawManager {
 	 * Draws number of remaining lives on screen.
 	 *
 	 * @param screen
-	 *            Screen to draw on.
+	 *               Screen to draw on.
 	 * @param lives
-	 *            Current lives.
+	 *               Current lives.
 	 */
 	public void drawLives(final Screen screen, final int lives) {
 		backBufferGraphics.setFont(fontRegular);
@@ -265,9 +288,9 @@ public final class DrawManager {
 	 * Draws current coin count on screen.
 	 *
 	 * @param screen
-	 *            Screen to draw on.
+	 *               Screen to draw on.
 	 * @param coins
-	 *            Current coin count.
+	 *               Current coin count.
 	 */ // ADD THIS METHOD
 	public void drawCoins(final Screen screen, final int coins) { // ADD THIS METHOD
 		backBufferGraphics.setFont(fontRegular); // ADD THIS METHOD
@@ -276,13 +299,22 @@ public final class DrawManager {
 		backBufferGraphics.drawString(coinString, screen.getWidth() - 180, 25); // ADD THIS METHOD
 	} // ADD THIS METHOD
 
+    // 2P mode: drawCoins method but for both players, but separate coin counts
+    public void drawCoinsP1P2(final Screen screen, final int coinsP1, final int coinsP2) {
+        backBufferGraphics.setFont(fontRegular);
+        backBufferGraphics.setColor(Color.YELLOW);
+
+        backBufferGraphics.drawString("P1: " + String.format("%04d", coinsP1), screen.getWidth() - 200, 25);
+        backBufferGraphics.drawString("P2: " + String.format("%04d", coinsP2), screen.getWidth() - 100, 25);
+    }
+
 	/**
 	 * Draws a thick line from side to side of the screen.
 	 *
 	 * @param screen
-	 *            Screen to draw on.
+	 *                  Screen to draw on.
 	 * @param positionY
-	 *            Y coordinate of the line.
+	 *                  Y coordinate of the line.
 	 */
 	public void drawHorizontalLine(final Screen screen, final int positionY) {
 		backBufferGraphics.setColor(Color.GREEN);
@@ -295,12 +327,11 @@ public final class DrawManager {
 	 * Draws game title.
 	 *
 	 * @param screen
-	 *            Screen to draw on.
+	 *               Screen to draw on.
 	 */
 	public void drawTitle(final Screen screen) {
 		String titleString = "Invaders";
-		String instructionsString =
-				"select with w+s / arrows, confirm with space";
+		String instructionsString = "select with w+s / arrows, confirm with space";
 
 		backBufferGraphics.setColor(Color.GRAY);
 		drawCenteredRegularString(screen, instructionsString,
@@ -311,18 +342,27 @@ public final class DrawManager {
 	}
 
 	/**
-	 * Draws main menu.
+	 * Draws main menu. - remodified for 2P mode, using string array for efficiency
 	 *
 	 * @param screen
-	 *            Screen to draw on.
-	 * @param option
-	 *            Option selected.
+	 *               Screen to draw on.
+	 * @param selectedIndex
+	 *               Option selected.
 	 */
-	public void drawMenu(final Screen screen, final int option) {
-		String playString = "Play";
+	public void drawMenu(final Screen screen, final int selectedIndex) {
+        String[] items = {"1 Player", "2 Players", "High scores", "Exit"};
+
+        int baseY = screen.getHeight() / 3 * 2; // same option choice, different formatting
+        for (int i = 0; i < items.length; i++) {
+            backBufferGraphics.setColor(i == selectedIndex ? Color.GREEN : Color.WHITE);
+            drawCenteredRegularString(screen, items[i], baseY + fontRegularMetrics.getHeight() * 2 * i);
+        }
+
+		/** String playString = "1-Player Mode";
+		String play2String = "2-Player Mode";
 		String highScoresString = "High scores";
 		String exitString = "exit";
-        String settingsString = "Settings"; // ADD THIS LINE
+		int spacing = fontRegularMetrics.getHeight() + 10;
 
 		if (option == 2)
 			backBufferGraphics.setColor(Color.GREEN);
@@ -330,45 +370,45 @@ public final class DrawManager {
 			backBufferGraphics.setColor(Color.WHITE);
 		drawCenteredRegularString(screen, playString,
 				screen.getHeight() / 3 * 2);
+		if (option == 1)
+			backBufferGraphics.setColor(Color.GREEN);
+		else
+			backBufferGraphics.setColor(Color.WHITE);
+		drawCenteredRegularString(screen, play2String,
+				screen.getHeight() / 3 * 2 + spacing);
 		if (option == 3)
 			backBufferGraphics.setColor(Color.GREEN);
 		else
 			backBufferGraphics.setColor(Color.WHITE);
 		drawCenteredRegularString(screen, highScoresString, screen.getHeight()
-				/ 3 * 2 + fontRegularMetrics.getHeight() * 2);
-        if (option == 4)
-            backBufferGraphics.setColor(Color.GREEN);
-        else
-            backBufferGraphics.setColor(Color.WHITE);
-        drawCenteredRegularString(screen, settingsString, screen.getHeight()
-                / 3 * 2 + fontRegularMetrics.getHeight() * 4); // ADD THIS BLOCK
+				/ 3 * 2 + spacing * 2);
 		if (option == 0)
 			backBufferGraphics.setColor(Color.GREEN);
 		else
 			backBufferGraphics.setColor(Color.WHITE);
 		drawCenteredRegularString(screen, exitString, screen.getHeight() / 3
-				* 2 + fontRegularMetrics.getHeight() * 6);
+				* 2 + spacing * 3); */
 	}
 
 	/**
 	 * Draws game results.
 	 *
 	 * @param screen
-	 *            Screen to draw on.
+	 *                       Screen to draw on.
 	 * @param score
-	 *            Score obtained.
+	 *                       Score obtained.
 	 * @param livesRemaining
-	 *            Lives remaining when finished.
+	 *                       Lives remaining when finished.
 	 * @param shipsDestroyed
-	 *            Total ships destroyed.
+	 *                       Total ships destroyed.
 	 * @param accuracy
-	 *            Total accuracy.
+	 *                       Total accuracy.
 	 * @param isNewRecord
-	 *            If the score is a new high score.
+	 *                       If the score is a new high score.
 	 */
 	public void drawResults(final Screen screen, final int score,
-							final int livesRemaining, final int shipsDestroyed,
-							final float accuracy, final boolean isNewRecord) {
+			final int livesRemaining, final int shipsDestroyed,
+			final float accuracy, final boolean isNewRecord) {
 		String scoreString = String.format("score %04d", score);
 		String livesRemainingString = "lives remaining " + livesRemaining;
 		String shipsDestroyedString = "enemies destroyed " + shipsDestroyed;
@@ -394,14 +434,14 @@ public final class DrawManager {
 	 * Draws interactive characters for name input.
 	 *
 	 * @param screen
-	 *            Screen to draw on.
+	 *                         Screen to draw on.
 	 * @param name
-	 *            Current name selected.
+	 *                         Current name selected.
 	 * @param nameCharSelected
-	 *            Current character selected for modification.
+	 *                         Current character selected for modification.
 	 */
 	public void drawNameInput(final Screen screen, final char[] name,
-							  final int nameCharSelected) {
+			final int nameCharSelected) {
 		String newRecordString = "New Record!";
 		String introduceNameString = "Introduce name:";
 
@@ -416,9 +456,9 @@ public final class DrawManager {
 		int positionX = screen.getWidth()
 				/ 2
 				- (fontRegularMetrics.getWidths()[name[0]]
-				+ fontRegularMetrics.getWidths()[name[1]]
-				+ fontRegularMetrics.getWidths()[name[2]]
-				+ fontRegularMetrics.getWidths()[' ']) / 2;
+						+ fontRegularMetrics.getWidths()[name[1]]
+						+ fontRegularMetrics.getWidths()[name[2]]
+						+ fontRegularMetrics.getWidths()[' ']) / 2;
 
 		for (int i = 0; i < 3; i++) {
 			if (i == nameCharSelected)
@@ -429,8 +469,8 @@ public final class DrawManager {
 			positionX += fontRegularMetrics.getWidths()[name[i]] / 2;
 			positionX = i == 0 ? positionX
 					: positionX
-					+ (fontRegularMetrics.getWidths()[name[i - 1]]
-					+ fontRegularMetrics.getWidths()[' ']) / 2;
+							+ (fontRegularMetrics.getWidths()[name[i - 1]]
+									+ fontRegularMetrics.getWidths()[' ']) / 2;
 
 			backBufferGraphics.drawString(Character.toString(name[i]),
 					positionX,
@@ -443,17 +483,16 @@ public final class DrawManager {
 	 * Draws basic content of game over screen.
 	 *
 	 * @param screen
-	 *            Screen to draw on.
+	 *                     Screen to draw on.
 	 * @param acceptsInput
-	 *            If the screen accepts input.
+	 *                     If the screen accepts input.
 	 * @param isNewRecord
-	 *            If the score is a new high score.
+	 *                     If the score is a new high score.
 	 */
 	public void drawGameOver(final Screen screen, final boolean acceptsInput,
-							 final boolean isNewRecord) {
+			final boolean isNewRecord) {
 		String gameOverString = "Game Over";
-		String continueOrExitString =
-				"Press Space to play again, Escape to exit";
+		String continueOrExitString = "Press Space to play again, Escape to exit";
 
 		int height = isNewRecord ? 4 : 2;
 
@@ -473,11 +512,14 @@ public final class DrawManager {
 	 * Draws high score screen title and instructions.
 	 *
 	 * @param screen
-	 *            Screen to draw on.
+	 *               Screen to draw on.
 	 */
 	public void drawHighScoreMenu(final Screen screen) {
 		String highScoreString = "High Scores";
 		String instructionsString = "Press Space to return";
+
+		int midX = screen.getWidth() / 2;
+		int startY = screen.getHeight() / 3;
 
 		backBufferGraphics.setColor(Color.GREEN);
 		drawCenteredBigString(screen, highScoreString, screen.getHeight() / 8);
@@ -485,60 +527,60 @@ public final class DrawManager {
 		backBufferGraphics.setColor(Color.GRAY);
 		drawCenteredRegularString(screen, instructionsString,
 				screen.getHeight() / 5);
+
+		backBufferGraphics.setColor(Color.GREEN);
+		backBufferGraphics.drawString("1-PLAYER MODE", midX / 2 - fontBigMetrics.stringWidth("1-PLAYER MODE") / 2 + 40,
+				startY);
+
+		backBufferGraphics.drawString("2-PLAYER MODE",
+				midX + midX / 2 - fontBigMetrics.stringWidth("2-PLAYER MODE") / 2 + 40, startY);
 	}
 
 	/**
 	 * Draws high scores.
 	 *
 	 * @param screen
-	 *            Screen to draw on.
+	 *                   Screen to draw on.
 	 * @param highScores
-	 *            List of high scores.
+	 *                   List of high scores.
 	 */
 	public void drawHighScores(final Screen screen,
-							   final List<Score> highScores) {
+			final List<Score> highScores) {
 		backBufferGraphics.setColor(Color.WHITE);
 		int i = 0;
 		String scoreString = "";
 
+		int midX = screen.getWidth() / 2;
+		int startY = screen.getHeight() / 3 + fontBigMetrics.getHeight() + 20;
+		int lineHeight = fontRegularMetrics.getHeight() + 5;
+
+		backBufferGraphics.setColor(Color.WHITE);
 		for (Score score : highScores) {
-			scoreString = String.format("%s        %04d", score.getName(),
-					score.getScore());
-			drawCenteredRegularString(screen, scoreString, screen.getHeight()
-					/ 4 + fontRegularMetrics.getHeight() * (i + 1) * 2);
+			scoreString = String.format("%s        %04d", score.getName(), score.getScore());
+			backBufferGraphics.drawString(scoreString,
+					midX / 2 - fontRegularMetrics.stringWidth(scoreString) / 2,
+					startY + lineHeight * i);
+
+			backBufferGraphics.drawString(scoreString,
+					midX + midX / 2 - fontRegularMetrics.stringWidth(scoreString) / 2,
+					startY + lineHeight * i);
 			i++;
+
 		}
 	}
-    /**
-     * Draws settings menu.
-     *
-     * @param settingScreen
-     *            Setting screen to draw on.
-     */
-    public void drawSettingMenu(SettingScreen settingScreen) {
-        String settingsString = "Settings";
-        String instructionsString = "Press Space to return";
-
-        backBufferGraphics.setColor(Color.GREEN);
-        drawCenteredBigString(settingScreen, settingsString, settingScreen.getHeight() / 8);
-
-        backBufferGraphics.setColor(Color.GRAY);
-        drawCenteredRegularString(settingScreen, instructionsString,
-                settingScreen.getHeight() / 5);
-    }
 
 	/**
 	 * Draws a centered string on regular font.
 	 *
 	 * @param screen
-	 *            Screen to draw on.
+	 *               Screen to draw on.
 	 * @param string
-	 *            String to draw.
+	 *               String to draw.
 	 * @param height
-	 *            Height of the drawing.
+	 *               Height of the drawing.
 	 */
 	public void drawCenteredRegularString(final Screen screen,
-										  final String string, final int height) {
+			final String string, final int height) {
 		backBufferGraphics.setFont(fontRegular);
 		backBufferGraphics.drawString(string, screen.getWidth() / 2
 				- fontRegularMetrics.stringWidth(string) / 2, height);
@@ -548,14 +590,14 @@ public final class DrawManager {
 	 * Draws a centered string on big font.
 	 *
 	 * @param screen
-	 *            Screen to draw on.
+	 *               Screen to draw on.
 	 * @param string
-	 *            String to draw.
+	 *               String to draw.
 	 * @param height
-	 *            Height of the drawing.
+	 *               Height of the drawing.
 	 */
 	public void drawCenteredBigString(final Screen screen, final String string,
-									  final int height) {
+			final int height) {
 		backBufferGraphics.setFont(fontBig);
 		backBufferGraphics.drawString(string, screen.getWidth() / 2
 				- fontBigMetrics.stringWidth(string) / 2, height);
@@ -565,16 +607,16 @@ public final class DrawManager {
 	 * Countdown to game start.
 	 *
 	 * @param screen
-	 *            Screen to draw on.
+	 *                  Screen to draw on.
 	 * @param level
-	 *            Game difficulty level.
+	 *                  Game difficulty level.
 	 * @param number
-	 *            Countdown number.
+	 *                  Countdown number.
 	 * @param bonusLife
-	 *            Checks if a bonus life is received.
+	 *                  Checks if a bonus life is received.
 	 */
 	public void drawCountDown(final Screen screen, final int level,
-							  final int number, final boolean bonusLife) {
+			final int number, final boolean bonusLife) {
 		int rectWidth = screen.getWidth();
 		int rectHeight = screen.getHeight() / 6;
 		backBufferGraphics.setColor(Color.BLACK);
@@ -588,7 +630,7 @@ public final class DrawManager {
 								+ fontBigMetrics.getHeight() / 3);
 			} else {
 				drawCenteredBigString(screen, "Level " + level
-								+ " - Bonus life!",
+						+ " - Bonus life!",
 						screen.getHeight() / 2
 								+ fontBigMetrics.getHeight() / 3);
 			}
