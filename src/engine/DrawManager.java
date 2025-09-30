@@ -77,7 +77,7 @@ public final class DrawManager {
 		EnemyShipSpecial,
 		/** Destroyed enemy ship. */
 		Explosion
-	};
+	}
 
 	/**
 	 * Private constructor.

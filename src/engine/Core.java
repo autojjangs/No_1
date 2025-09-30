@@ -152,7 +152,6 @@ public final class Core {
                 case 4:
                     // Play : Use the play to decide 1p and 2p
                     currentScreen = new PlayScreen(width, height, FPS);
-                    returnCode = frame.setScreen(currentScreen);
                     coopSelected = ((PlayScreen) currentScreen).isCoopSelected();
                     LOGGER.info("Starting " + WIDTH + "x" + HEIGHT + " title screen at " + FPS + " fps.");
                     returnCode = frame.setScreen(currentScreen);
