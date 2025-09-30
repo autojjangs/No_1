@@ -6,6 +6,7 @@ import entity.EnemyShip;
 import entity.Item;
 import entity.Item.ItemType;
 import entity.ItemPool;
+import engine.DrawManager.SpriteType;
 
 /**
  * Responsible for item drop decisions and applying item effects.
@@ -41,13 +42,11 @@ public final class ItemManager {
             return null;
         }
 
-
-
         int centerX = enemy.getPositionX() + enemy.getWidth() / 2;
         int centerY = enemy.getPositionY() + enemy.getHeight() / 2;
         // create and initialize item
 //        Item drop = ItemPool.getItem(centerX, centerY, 2);
-        Item drop = new Item(centerX, centerY, 2);
+        Item drop = new Item(centerX, centerY, 2, 1, SpriteType.Ship, ItemType.ITEM_1, 1, 1, 0.5);
 
         ItemType type = ItemType.ITEM_1;
 //        double typeRoll = itemRoll.nextDouble();
@@ -58,7 +57,6 @@ public final class ItemManager {
 //        else
 //            type = ItemType.ITEM_3;
 
-        drop.init(centerX, centerY, type, 2, DrawManager.SpriteType.ItemDefault);
         Core.getLogger().info("ItemManager: created item " + type + " at " + centerX + "," + centerY);
         return drop;
     }

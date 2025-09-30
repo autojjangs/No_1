@@ -23,7 +23,23 @@ public class Item extends Entity {
      */
     private int itemSpeed;
 
+    private int itemId;
+
+    private String name;
+
+    private SpriteType spriteType;
+
     private ItemType type;
+
+    private int effectValue;
+
+    private int effectDuration;
+
+    private double dropChance;
+
+
+
+
 
     /**
      * Constructor, establishes the Item's properties.
@@ -37,31 +53,41 @@ public class Item extends Entity {
      *            direction - positive is down.
      */
 
-    public Item(final int positionX, final int positionY, final int speed) {
+    public Item(final int positionX, final int positionY, final int speed,
+                int itemId, SpriteType spriteType, ItemType itemType, int effectValue, int effectDuration, double dropChance) {
         super(positionX, positionY, 3 * 2, 5 * 2, Color.WHITE);
-
         this.itemSpeed = speed;
+        this.itemId = itemId;
         this.type = ItemType.ITEM_1;
+        this.spriteType = spriteType;
+        this.effectValue = effectValue;
+        this.effectDuration = effectDuration;
+        this.dropChance = dropChance;
         setSprite();
     }
     public Item() {
         super(0, 0, 3 * 2, 5 * 2, Color.WHITE);
         this.itemSpeed = 0;
+        this.itemId = 0;
         this.type = ItemType.ITEM_1;
+        this.spriteType = SpriteType.Ship;
+        this.effectValue = 0;
+        this.effectDuration = 0;
+        this.dropChance = 0;
         setSprite();
     }
 
-    /**
-     * Sets correct sprite for the Item, based on speed.
-     */
-    public final void init(final int x, final int y, final ItemType type,
-                           final int speed, final SpriteType sprite) {
-        this.positionX = x;
-        this.positionY = y;
-        this.type = type;
-        this.itemSpeed = speed;
-        this.spriteType = sprite;
-    }
+//    /**
+//     * Sets correct sprite for the Item, based on speed.
+//     */
+//    public final void init(final int x, final int y, final ItemType type,
+//                           final int speed, final SpriteType sprite) {
+//        this.positionX = x;
+//        this.positionY = y;
+//        this.type = type;
+//        this.itemSpeed = speed;
+//        this.spriteType = sprite;
+//    }
 
     public final void setSprite() {
         // keep the same sprite for now; choose based on speed if you want
@@ -74,6 +100,11 @@ public class Item extends Entity {
     public final void update() {
         this.positionY += this.itemSpeed;
     }
+
+    /**
+     * Apply the Item's effect.
+     */
+    public void applyEffect(){};
 
     /**
      * Setter of the speed of the Item.

@@ -1,5 +1,7 @@
 package entity;
 
+import engine.DrawManager;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -43,7 +45,7 @@ public final class ItemPool {
             item.setItemSpeed(speed);
             item.setSprite();
         } else {
-            item = new Item(positionX, positionY, speed);
+            item = new Item(positionX, positionY, 2, 1, DrawManager.SpriteType.Ship, Item.ItemType.ITEM_1, 1, 1, 0.5);
             item.setPositionX(positionX - item.getWidth() / 2);
         }
         return item;
