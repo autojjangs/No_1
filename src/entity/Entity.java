@@ -25,22 +25,30 @@ public class Entity {
 	/** Sprite type assigned to the entity. */
 	protected SpriteType spriteType;
 
+	// 2P mode: adding team for multiplayer
+	public enum Team {
+		PLAYER1, PLAYER2, ENEMY, NEUTRAL
+	}
+
+	// every entity knows their team - possibility for friendly-fire?
+	protected Team team = Team.NEUTRAL;
+
 	/**
 	 * Constructor, establishes the entity's generic properties.
 	 *
 	 * @param positionX
-	 *            Initial position of the entity in the X axis.
+	 *                  Initial position of the entity in the X axis.
 	 * @param positionY
-	 *            Initial position of the entity in the Y axis.
+	 *                  Initial position of the entity in the Y axis.
 	 * @param width
-	 *            Width of the entity.
+	 *                  Width of the entity.
 	 * @param height
-	 *            Height of the entity.
+	 *                  Height of the entity.
 	 * @param color
-	 *            Color of the entity.
+	 *                  Color of the entity.
 	 */
 	public Entity(final int positionX, final int positionY, final int width,
-				  final int height, final Color color) {
+			final int height, final Color color) {
 		this.positionX = positionX;
 		this.positionY = positionY;
 		this.width = width;
@@ -79,7 +87,7 @@ public class Entity {
 	 * Setter for the X axis position of the entity.
 	 *
 	 * @param positionX
-	 *            New position of the entity in the X axis.
+	 *                  New position of the entity in the X axis.
 	 */
 	public final void setPositionX(final int positionX) {
 		this.positionX = positionX;
@@ -89,7 +97,7 @@ public class Entity {
 	 * Setter for the Y axis position of the entity.
 	 *
 	 * @param positionY
-	 *            New position of the entity in the Y axis.
+	 *                  New position of the entity in the Y axis.
 	 */
 	public final void setPositionY(final int positionY) {
 		this.positionY = positionY;
@@ -121,4 +129,15 @@ public class Entity {
 	public final int getHeight() {
 		return this.height;
 	}
+
+	// 2P mode: adding getters for Team
+	// TODO: add team-based canHit() later - friendly fire?
+	public Team getTeam() {
+		return team;
+	}
+
+	public void setTeam(Team t) {
+		this.team = (t == null ? Team.NEUTRAL : t);
+	}
+
 }
