@@ -27,8 +27,6 @@ public class Item extends Entity {
 
     private String name;
 
-    private SpriteType spriteType;
-
     private ItemType type;
 
     private int effectValue;
@@ -65,17 +63,17 @@ public class Item extends Entity {
         this.dropChance = dropChance;
         setSprite();
     }
-    public Item() {
-        super(0, 0, 3 * 2, 5 * 2, Color.WHITE);
-        this.itemSpeed = 0;
-        this.itemId = 0;
-        this.type = ItemType.ITEM_1;
-        this.spriteType = SpriteType.Ship;
-        this.effectValue = 0;
-        this.effectDuration = 0;
-        this.dropChance = 0;
-        setSprite();
-    }
+//    public Item() {
+//        super(0, 0, 3 * 2, 5 * 2, Color.WHITE);
+//        this.itemSpeed = 0;
+//        this.itemId = 0;
+//        this.type = ItemType.ITEM_1;
+//        this.spriteType = SpriteType.Ship;
+//        this.effectValue = 0;
+//        this.effectDuration = 0;
+//        this.dropChance = 0;
+//        setSprite();
+//    }
 
 //    /**
 //     * Sets correct sprite for the Item, based on speed.
