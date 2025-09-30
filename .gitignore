@@ -182,7 +182,6 @@ out/
 *.iml
 =======
 *.ttf
-.checkstyle
 .vscode
 .idea
 >>>>>>> 8d4ebff (fix gitignore')
