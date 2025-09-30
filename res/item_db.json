@@ -1,17 +1,16 @@
 [
   {
-    "itemId": 1,
     "name": "HealthUp",
-    "spriteType": "Ship",
+    "spriteType": "ItemDefault",
     "Type": "Heal",
     "effectValue": 1,
     "effectDuration": 0,
     "dropChance": 0.3
   },
   {
-    "itemId": 2,
+
     "name": "Coin",
-    "spriteType": "Ship",
+    "spriteType": "ItemDefault",
     "Type": "Score",
     "effectValue": 10,
     "effectDuration": 0,
