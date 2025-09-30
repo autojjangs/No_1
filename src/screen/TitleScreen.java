@@ -72,27 +72,20 @@ public class TitleScreen extends Screen {
                 this.selectionCooldown.reset();
             }
 
-            // 2P mode: changed to switch case to accommodate input selection for users
+            // Play : Adjust the case so that 1p and 2p can be determined within the play.
             if (inputManager.isKeyDown(KeyEvent.VK_SPACE)) {
                 switch (this.menuIndex) {
-                    case 0: // "1 Player"
-                        this.coopSelected = false;
-                        this.returnCode = 2; // go to GameScreen
+                    case 0: // "Play"
+                        this.returnCode = 4; // go to PlayScreen
                         this.isRunning = false;
                         break;
 
-                    case 1: // "2 Players"
-                        this.coopSelected = true;
-                        this.returnCode = 2; // go to GameScreen
-                        this.isRunning = false;
-                        break;
-
-                    case 2: // "High scores"
+                    case 1: // "High scores"
                         this.returnCode = 3;
                         this.isRunning = false;
                         break;
 
-                    case 3: // "Quit"
+                    case 2: // "Quit"
                         this.returnCode = 0;
                         this.isRunning = false;
                         break;

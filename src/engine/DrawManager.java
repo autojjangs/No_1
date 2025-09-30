@@ -350,7 +350,7 @@ public final class DrawManager {
 	 *               Option selected.
 	 */
 	public void drawMenu(final Screen screen, final int selectedIndex) {
-        String[] items = {"1 Player", "2 Players", "High scores", "Exit"};
+        String[] items = {"Play", "High scores", "Exit"};
 
         int baseY = screen.getHeight() / 3 * 2; // same option choice, different formatting
         for (int i = 0; i < items.length; i++) {
@@ -641,4 +641,24 @@ public final class DrawManager {
 			drawCenteredBigString(screen, "GO!", screen.getHeight() / 2
 					+ fontBigMetrics.getHeight() / 3);
 	}
+
+    /**
+     * Draws the play mode selection menu (1P / 2P / Back).
+     *
+     * @param screen
+     *                  Screen to draw on.
+     * @param selectedIndex
+     *                  Currently selected option (0 = 1P, 1 = 2P, 2 = Back).
+     */
+
+    public void drawPlayMenu(final Screen screen, final int selectedIndex) {
+        String[] items = {"1 Player", "2 Players", "Back"};
+
+        int baseY = screen.getHeight() / 3 * 2;
+        for (int i = 0; i < items.length; i++) {
+            backBufferGraphics.setColor(i == selectedIndex ? Color.GREEN : Color.WHITE);
+            drawCenteredRegularString(screen, items[i],
+                    baseY + fontRegularMetrics.getHeight() * 3 * i);
+        }
+    }
 }
