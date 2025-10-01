@@ -30,7 +30,6 @@ import engine.DrawManager.SpriteType;
  *
  */
 public final class FileManager {
-
     /**
      * Singleton instance of the class.
      */
@@ -253,4 +252,119 @@ public final class FileManager {
                 bufferedWriter.close();
         }
     }
+
+	/**
+	 * Search Achievement list of user
+	 *
+	 * @param userName user's name to search.
+	 * @throws IOException In case of loading problems.
+	 */
+	public List<Boolean> searchAchievementsByName(String userName)
+			throws IOException {
+		List<Boolean> achievementList = new ArrayList<Boolean>();
+
+		try {
+			String jarPath = FileManager.class.getProtectionDomain()
+					.getCodeSource().getLocation().getPath();
+			jarPath = URLDecoder.decode(jarPath, "UTF-8");
+
+			String achievementPath = String.valueOf(new File(jarPath));
+			achievementPath += File.separator;
+			achievementPath += "achievement.csv";
+
+			InputStream iStream = new FileInputStream(achievementPath);
+			BufferedReader bReader = new BufferedReader(
+					new InputStreamReader(iStream, Charset.forName("UTF-8")));
+
+			bReader.readLine(); // Dump header
+			String line;
+			boolean flag = false;
+			while ((line = bReader.readLine()) != null) {
+				String[] playRecord = line.split(",");
+				if (playRecord[0].equals(userName)) {
+					flag = true;
+					logger.info("Loading user achievements.");
+					for (int i = 1; i < playRecord.length; i++) {
+						achievementList.add(playRecord[i].equals("1") ? true : false);
+					}
+					break;
+				}
+			}
+			if (!flag)
+				for (int i = 0; i < 5; i++) {
+					logger.info("Loading default achievement.");
+					achievementList.add(false);
+				}
+		} catch (FileNotFoundException e) {
+			logger.info("Loading default achievement.");
+			for (int i = 0; i < 5; i++) {
+				achievementList.add(false);
+			}
+		}
+		return achievementList;
+	}
+
+	/**
+	 * Unlocks an achievement for the given user.
+	 *
+	 * @param userName            user's name to search.
+	 * @param unlockedAchievement A list of booleans representing which achievements
+	 * @throws IOException In case of loading problems.
+	 */
+	public void unlockAchievement(String userName, List<Boolean> unlockedAchievement)
+			throws IOException {
+		List<String[]> records = new ArrayList<>();
+		try {
+			String jarPath = FileManager.class.getProtectionDomain()
+					.getCodeSource().getLocation().getPath();
+			jarPath = URLDecoder.decode(jarPath, "UTF-8");
+
+			String achievementPath = String.valueOf(new File(jarPath));
+			achievementPath += File.separator;
+			achievementPath += "achievement.csv";
+
+			InputStream iStream = new FileInputStream(achievementPath);
+			BufferedReader bReader = new BufferedReader(
+					new InputStreamReader(iStream, Charset.forName("UTF-8")));
+
+			String line;
+			boolean flag = false;
+			List<String[]> recorder = new ArrayList<>();
+			while ((line = bReader.readLine()) != null) {
+				String[] playRecord = line.split(",");
+				if (playRecord[0].equals(userName)) {
+					flag = true;
+					logger.info("Achievement has been updated");
+					for (int i = 1; i < playRecord.length; i++) {
+						if (playRecord[i].equals("0") && unlockedAchievement.get(i))
+							playRecord[i] = "1";
+					}
+				}
+				recorder.add(playRecord);
+			}
+			if (!flag){
+				logger.info("User not found, creating new record.");
+				String[] newRecord = new String[unlockedAchievement.size() + 1];
+				newRecord[0] = userName;
+				for (int i = 0; i < unlockedAchievement.size(); i++)
+					newRecord[i+1] = unlockedAchievement.get(i) ? "1" : "0";
+				recorder.add(newRecord);
+			}
+
+
+			OutputStream outStream = new FileOutputStream(achievementPath);
+			BufferedWriter bWriter = new BufferedWriter(
+					new OutputStreamWriter(outStream, Charset.forName("UTF-8")));
+
+			for (String[] record : recorder) {
+				bWriter.write(String.join(",", record));
+				bWriter.newLine();
+			}
+
+			bWriter.close();
+
+		} catch (FileNotFoundException e) {
+			logger.info("No achievements to save");
+		}
+	}
 }
