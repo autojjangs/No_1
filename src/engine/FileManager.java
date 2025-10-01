@@ -37,6 +37,10 @@ public final class FileManager {
     private static final int MAX_SCORES = 7;
     /** The filename used for high scores and coin count. */
     private static final String SCORE_FILENAME = "score.csv"; // CSV 파일명으로 변경
+    /** The filename for high scores. */
+    private static final String SCORE_FILENAME = "scores.csv"; // 점수 파일
+    /** The filename for coin data. */
+    private static final String COIN_FILENAME = "coins.csv"; // 코인 파일
 
     /**
      * private constructor.
@@ -231,8 +235,6 @@ public final class FileManager {
      */
     public void saveHighScores(final List<Score> highScores)
             throws IOException {
-        // 코인 수를 보존하기 위해 현재 코인 수를 먼저 로드
-        int currentCoins = this.loadCoins();
 
         OutputStream outputStream = null;
         BufferedWriter bufferedWriter = null;
@@ -257,17 +259,13 @@ public final class FileManager {
 
             logger.info("Saving user high scores to " + SCORE_FILENAME + ".");
 
-            // 파일 맨 첫 줄에 코인 수를 먼저 저장
-            bufferedWriter.write(Integer.toString(currentCoins));
-            bufferedWriter.newLine();
-
             // Saves 7 or less scores.
             int savedCount = 0;
             for (Score score : highScores) {
                 if (savedCount >= MAX_SCORES)
                     break;
 
-                // CSV 형식: 이름,점수 (줄바꿈은 한 번만)
+                // CSV 형식: 이름,점수
                 bufferedWriter.write(score.getName());
                 bufferedWriter.write(","); // 쉼표로 구분
                 bufferedWriter.write(Integer.toString(score.getScore()));
@@ -285,7 +283,7 @@ public final class FileManager {
     // [추가된 함수] 코인 수를 파일에서 불러옵니다.
     // ----------------------------------------------------
     /**
-     * Loads the coin count from the first line of the scores file.
+     * Loads the coin count from the coins.csv file.
      *
      * @return The saved coin count, or 0 if the file is not found or empty.
      * @throws IOException
@@ -300,18 +298,18 @@ public final class FileManager {
                     .getCodeSource().getLocation().getPath();
             jarPath = URLDecoder.decode(jarPath, "UTF-8");
 
-            String scoresPath = new File(jarPath).getParent();
-            scoresPath += File.separator;
-            scoresPath += SCORE_FILENAME;
+            String coinsPath = new File(jarPath).getParent();
+            coinsPath += File.separator;
+            coinsPath += COIN_FILENAME; // coins.csv 사용
 
-            File scoresFile = new File(scoresPath);
-            inputStream = new FileInputStream(scoresFile);
+            File coinsFile = new File(coinsPath);
+            inputStream = new FileInputStream(coinsFile);
             bufferedReader = new BufferedReader(new InputStreamReader(
                     inputStream, Charset.forName("UTF-8")));
 
-            logger.info("Loading coin count from " + SCORE_FILENAME + ".");
+            logger.info("Loading coin count from " + COIN_FILENAME + ".");
 
-            // 맨 첫 줄을 읽어 코인 수를 가져옴
+            // 맨 첫 줄을 읽어 코인 수를 가져옴 (coins.csv는 코인 수만 저장)
             String line = bufferedReader.readLine();
 
             if (line != null && !line.trim().isEmpty()) {
@@ -325,7 +323,7 @@ public final class FileManager {
             }
 
         } catch (FileNotFoundException e) {
-            logger.info(SCORE_FILENAME + " not found. Returning 0 coins.");
+            logger.info(COIN_FILENAME + " not found. Returning 0 coins.");
             return 0;
         } finally {
             if (bufferedReader != null)
@@ -339,8 +337,7 @@ public final class FileManager {
     // [추가된 함수] 코인 수를 파일에 저장합니다.
     // ----------------------------------------------------
     /**
-     * Saves the current coin count to the first line of the scores file,
-     * while preserving the existing high scores.
+     * Saves the current coin count to the coins.csv file.
      *
      * @param coins
      * The total number of coins acquired.
@@ -348,9 +345,6 @@ public final class FileManager {
      * In case of saving problems.
      */
     public void saveCoins(final int coins) throws IOException {
-        // 1. 현재 점수 목록을 불러와서 메모리에 임시 저장
-        List<Score> currentHighScores = this.loadHighScores();
-
         OutputStream outputStream = null;
         BufferedWriter bufferedWriter = null;
 
@@ -359,38 +353,24 @@ public final class FileManager {
                     .getCodeSource().getLocation().getPath();
             jarPath = URLDecoder.decode(jarPath, "UTF-8");
 
-            String scoresPath = new File(jarPath).getParent();
-            scoresPath += File.separator;
-            scoresPath += SCORE_FILENAME;
+            String coinsPath = new File(jarPath).getParent();
+            coinsPath += File.separator;
+            coinsPath += COIN_FILENAME; // coins.csv 사용
 
-            File scoresFile = new File(scoresPath);
+            File coinsFile = new File(coinsPath);
 
-            if (!scoresFile.exists())
-                scoresFile.createNewFile();
+            if (!coinsFile.exists())
+                coinsFile.createNewFile();
 
-            outputStream = new FileOutputStream(scoresFile);
+            outputStream = new FileOutputStream(coinsFile);
             bufferedWriter = new BufferedWriter(new OutputStreamWriter(
                     outputStream, Charset.forName("UTF-8")));
 
-            logger.info("Saving new coin count (" + coins + ") to " + SCORE_FILENAME + ".");
+            logger.info("Saving new coin count (" + coins + ") to " + COIN_FILENAME + ".");
 
-            // 2. 맨 첫 줄에 새로운 코인 수 저장
+            // coins.csv 파일에 코인 수만 한 줄 저장
             bufferedWriter.write(Integer.toString(coins));
             bufferedWriter.newLine();
-
-            // 3. 그 아래에 기존 점수 목록 다시 저장 (saveHighScores 로직 재현)
-            int savedCount = 0;
-            for (Score score : currentHighScores) {
-                if (savedCount >= MAX_SCORES)
-                    break;
-
-                // CSV 형식: 이름,점수
-                bufferedWriter.write(score.getName());
-                bufferedWriter.write(",");
-                bufferedWriter.write(Integer.toString(score.getScore()));
-                bufferedWriter.newLine();
-                savedCount++;
-            }
 
         } finally {
             if (bufferedWriter != null)
