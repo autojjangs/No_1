@@ -145,7 +145,7 @@ public final class FileManager {
             inputStream = FileManager.class.getClassLoader()
                     .getResourceAsStream("scores.csv");
             reader = new BufferedReader(new InputStreamReader(inputStream));
-            // except number of coins
+            // except first line
             reader.readLine();
             String input;
             while ((input = reader.readLine()) != null) {
@@ -190,7 +190,7 @@ public final class FileManager {
                     inputStream, Charset.forName("UTF-8")));
 
             logger.info("Loading user high scores.");
-            // except the number of coins
+            // except first line
             bufferedReader.readLine();
             String input;
             while ((input = bufferedReader.readLine()) != null) {
