@@ -244,7 +244,7 @@ public final class FileManager {
             logger.info("Saving user high scores.");
 
             for (Score score : highScores) {
-                bufferedWriter.write(score.getName()+","+Integer.toString(score.getScore()));
+                bufferedWriter.write(score.getName()+","+score.getScore());
                 bufferedWriter.newLine();
             }
 
