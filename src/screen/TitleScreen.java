@@ -77,6 +77,8 @@ public class TitleScreen extends Screen {
 			if (inputManager.isKeyDown(KeyEvent.VK_SPACE))
 				this.isRunning = false;
 
+            // add code 76 - 90
+            // When mouse click input comes in, return code accordingly
             if (inputManager.isMouseClicked()) {
                 int temp_x = inputManager.getMouseX();
                 int temp_y = inputManager.getMouseY();
