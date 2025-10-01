@@ -242,8 +242,7 @@ public class GameScreen extends Screen {
                     state.getScore(1), state.getShipsDestroyed(1),
                     state.getBulletsShot(1), state.getCoins(1));
 
-            drawManager.drawCenteredRegularString(this, p1, 40);
-            drawManager.drawCenteredRegularString(this, p2, 60);
+			// remove the unnecessary "P1 S: K: B: C:" and "P2 S: K: B: C:" lines from the game screen
         }
 
 		drawManager.drawHorizontalLine(this, SEPARATION_LINE_HEIGHT - 1);

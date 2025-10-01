@@ -408,7 +408,7 @@ public final class DrawManager {
 	 */
 	public void drawResults(final Screen screen, final int score,
 			final int livesRemaining, final int shipsDestroyed,
-			final float accuracy, final boolean isNewRecord) {
+			final float accuracy, final boolean isNewRecord, final boolean accuracy1P) {
 		String scoreString = String.format("score %04d", score);
 		String livesRemainingString = "lives remaining " + livesRemaining;
 		String shipsDestroyedString = "enemies destroyed " + shipsDestroyed;
@@ -426,8 +426,11 @@ public final class DrawManager {
 		drawCenteredRegularString(screen, shipsDestroyedString,
 				screen.getHeight() / height + fontRegularMetrics.getHeight()
 						* 4);
-		drawCenteredRegularString(screen, accuracyString, screen.getHeight()
-				/ height + fontRegularMetrics.getHeight() * 6);
+		// Draw accuracy for player in 1P modeadd
+		if (accuracy1P) {
+			drawCenteredRegularString(screen, accuracyString, screen.getHeight()
+					/ height + fontRegularMetrics.getHeight() * 6);
+		}
 	}
 
 	/**
