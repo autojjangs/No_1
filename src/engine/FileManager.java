@@ -243,16 +243,9 @@ public final class FileManager {
 
             logger.info("Saving user high scores.");
 
-            // Saves 7 or less scores.
-            int savedCount = 0;
             for (Score score : highScores) {
-                if (savedCount >= MAX_SCORES)
-                    break;
-                bufferedWriter.write(score.getName());
+                bufferedWriter.write(score.getName()+","+Integer.toString(score.getScore()));
                 bufferedWriter.newLine();
-                bufferedWriter.write(Integer.toString(score.getScore()));
-                bufferedWriter.newLine();
-                savedCount++;
             }
 
         } finally {
