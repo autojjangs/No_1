@@ -287,11 +287,6 @@ public final class FileManager {
 			achievementPath += File.separator;
 			achievementPath += "achievement.csv";
 
-			// 디버그 출력
-			System.out.println(">>> achievementPath = " + achievementPath);
-			File testFile = new File(achievementPath);
-			System.out.println(">>> File exists? " + testFile.exists());
-
 			InputStream iStream = new FileInputStream(achievementPath);
 			BufferedReader bReader = new BufferedReader(
 					new InputStreamReader(iStream, Charset.forName("UTF-8")));
