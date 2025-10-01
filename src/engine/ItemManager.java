@@ -1,6 +1,9 @@
 package engine;
 
+import java.util.HashSet;
 import java.util.Random;
+import java.util.Set;
+import java.util.logging.Logger;
 
 import entity.EnemyShip;
 import entity.Item;
@@ -14,17 +17,21 @@ import engine.DrawManager.SpriteType;
  */
 public final class ItemManager {
 
-    private static final ItemManager INSTANCE = new ItemManager();
+    private static ItemManager instance;
 
     /** Base drop chance for normal enemies (0..1). Default 1.0 => always drop. */
     private double baseDropChance = 1.0;
 
     private final Random itemRoll = new Random();
 
-    private ItemManager() { }
+    private Logger logger;
+
+    private ItemManager() { logger = Core.getLogger(); }
 
     public static ItemManager getInstance() {
-        return INSTANCE;
+        if (instance == null)
+            instance = new ItemManager();
+        return instance;
     }
 
     /**
@@ -35,9 +42,7 @@ public final class ItemManager {
         if (enemy == null) return null;
 
         double dropRoll = itemRoll.nextDouble();
-        Core.getLogger().info("Calculating item drop chance: roll=" + dropRoll
-                + " threshold=" + this.baseDropChance);
-
+        this.logger.info(String.format("[ItemManager]: dropRoll/baseDropChance %.1f/%.1f", dropRoll, this.baseDropChance));
         if (dropRoll >= this.baseDropChance) {
             return null;
         }
@@ -45,19 +50,9 @@ public final class ItemManager {
         int centerX = enemy.getPositionX() + enemy.getWidth() / 2;
         int centerY = enemy.getPositionY() + enemy.getHeight() / 2;
         // create and initialize item
-//        Item drop = ItemPool.getItem(centerX, centerY, 2);
+        // TODO: Should perform different actions depending on the ITEM TYPE.
         Item drop = new Item(centerX, centerY, 2, 1, SpriteType.Ship, ItemType.ITEM_1, 1, 1, 0.5);
-
-        ItemType type = ItemType.ITEM_1;
-//        double typeRoll = itemRoll.nextDouble();
-//        if (typeRoll < 0.15)
-//            type = ItemType.ITEM_1;
-//        else if (typeRoll < 0.65)
-//            type = ItemType.ITEM_2;
-//        else
-//            type = ItemType.ITEM_3;
-
-        Core.getLogger().info("ItemManager: created item " + type + " at " + centerX + "," + centerY);
+        this.logger.info("[ItemManager]: created item " + drop.getType() + " at (" + centerX + ", " + centerY + ")");
         return drop;
     }
 
@@ -66,22 +61,11 @@ public final class ItemManager {
      * the provided gameScreen. This keeps game-screen responsibilities limited
      * to world state and rendering while letting ItemManager centralize item logic.
      */
-    public void handlePickup(final Item item, final screen.GameScreen gameScreen) {
-        if (item == null || gameScreen == null) return;
-
-        switch (item.getType()) {
-            case ITEM_1:
-                Core.getLogger().info("ItemManager: ITEM_1");
-                break;
-            case ITEM_2:
-                Core.getLogger().info("ItemManager: ITEM_2");
-                break;
-            case ITEM_3:
-                Core.getLogger().info("ItemManager: ITEM_3");
-                break;
-            default:
-                Core.getLogger().info("ItemManager: DEFAULT_ITEM");
-                break;
+    public void handlePickup(final Set<Item> items, final screen.GameScreen gameScreen) {
+        if (items == null || gameScreen == null) return;
+        for (Item item : items) {
+            item.applyEffect();
+            this.logger.info(item.getType() + " picked up");
         }
     }
 }
