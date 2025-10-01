@@ -91,8 +91,12 @@ public class TitleScreen extends Screen {
                         this.returnCode = 3;
                         this.isRunning = false;
                         break;
+                    case 3: // "Settings"
+                        this.returnCode = 4;
+                        this.isRunning = false;
+                        break;
 
-                    case 3: // "Quit"
+                    case 4: // "Quit"
                         this.returnCode = 0;
                         this.isRunning = false;
                         break;
@@ -108,14 +112,14 @@ public class TitleScreen extends Screen {
 	 * Shifts the focus to the next menu item. - modified for 2P mode selection
 	 */
 	private void nextMenuItem() {
-        this.menuIndex = (this.menuIndex + 1) % 4;
+        this.menuIndex = (this.menuIndex + 1) % 5;
 	}
 
 	/**
 	 * Shifts the focus to the previous menu item.
 	 */
 	private void previousMenuItem() {
-        this.menuIndex = (this.menuIndex + 3) % 4; // wrap upwards
+        this.menuIndex = (this.menuIndex + 4) % 5; // wrap upwards
     }
 	/**
 	 * Draws the elements associated with the screen.
