@@ -426,7 +426,7 @@ public final class DrawManager {
 		drawCenteredRegularString(screen, shipsDestroyedString,
 				screen.getHeight() / height + fontRegularMetrics.getHeight()
 						* 4);
-		// Draw accuracy for player in 1P modeadd
+		// Draw accuracy for player in 1P mode
 		if (accuracy1P) {
 			drawCenteredRegularString(screen, accuracyString, screen.getHeight()
 					/ height + fontRegularMetrics.getHeight() * 6);
