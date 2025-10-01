@@ -149,14 +149,23 @@ public final class Core {
 					LOGGER.info("Closing high score screen.");
 					break;
 
-                case 4:
-                    // Play : Use the play to decide 1p and 2p
-                    currentScreen = new PlayScreen(width, height, FPS);
-                    LOGGER.info("Starting " + WIDTH + "x" + HEIGHT + " play screen at " + FPS + " fps.");
-                    returnCode = frame.setScreen(currentScreen);
-                    coopSelected = ((PlayScreen) currentScreen).isCoopSelected();
-                    LOGGER.info("Closing play screen.");
-                    break;
+          case 4:
+              // settings screen
+              currentScreen = new SettingScreen(width, height, FPS);
+              LOGGER.info("Starting " + WIDTH + "x" + HEIGHT
+                      + " setting screen at " + FPS + " fps.");
+              returnCode = frame.setScreen(currentScreen);
+              LOGGER.info("Closing setting screen.");
+              break;
+          
+          case 5:
+              // Play : Use the play to decide 1p and 2p
+              currentScreen = new PlayScreen(width, height, FPS);
+              LOGGER.info("Starting " + WIDTH + "x" + HEIGHT + " play screen at " + FPS + " fps.");
+              returnCode = frame.setScreen(currentScreen);
+              coopSelected = ((PlayScreen) currentScreen).isCoopSelected();
+              LOGGER.info("Closing play screen.");
+              break;
           
 				default:
 					break;

@@ -350,12 +350,12 @@ public final class DrawManager {
 	 *               Option selected.
 	 */
 	public void drawMenu(final Screen screen, final int selectedIndex) {
-        String[] items = {"Play", "High scores", "Exit"};
+        String[] items = {"Play", "High scores", "Settings", "Exit"};
 
         int baseY = screen.getHeight() / 3 * 2; // same option choice, different formatting
         for (int i = 0; i < items.length; i++) {
             backBufferGraphics.setColor(i == selectedIndex ? Color.GREEN : Color.WHITE);
-            drawCenteredRegularString(screen, items[i], baseY + fontRegularMetrics.getHeight() * 2 * i);
+            drawCenteredRegularString(screen, items[i], (int) (baseY + fontRegularMetrics.getHeight() * 1.5 * i));
         }
 
 		/** String playString = "1-Player Mode";
@@ -568,6 +568,17 @@ public final class DrawManager {
 
 		}
 	}
+    public void drawSettingMenu(final Screen screen) {
+        String settingsString = "Settings";
+        String instructionsString = "Press Space to return";
+
+        backBufferGraphics.setColor(Color.GREEN);
+        drawCenteredBigString(screen, settingsString, screen.getHeight() / 8);
+
+        backBufferGraphics.setColor(Color.GRAY);
+        drawCenteredRegularString(screen, instructionsString,
+                screen.getHeight() / 5);
+    }
 
 	/**
 	 * Draws a centered string on regular font.
