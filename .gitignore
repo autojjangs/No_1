@@ -167,6 +167,7 @@ pip-log.txt
 #############
 
 log*
+<<<<<<< HEAD
 #*.ttf
 .checkstyle
 
@@ -179,3 +180,8 @@ out/
 
 # team iml files
 *.iml
+=======
+*.ttf
+.vscode
+.idea
+>>>>>>> 8d4ebff (fix gitignore')
