@@ -19,6 +19,10 @@ public class TitleScreen extends Screen {
 	/** Time between changes in user selection. */
 	private Cooldown selectionCooldown;
 
+
+	/** Added variable to store which menu option is currently hovered */
+	private Integer hoverOption = null;
+
 	/**
 	 * Constructor, establishes the properties of the screen.
 	 *
@@ -54,6 +58,8 @@ public class TitleScreen extends Screen {
 	 */
 	protected final void update() {
 		super.update();
+
+
 
 		draw();
 		if (this.selectionCooldown.checkFinished()
@@ -118,11 +124,30 @@ public class TitleScreen extends Screen {
 	/**
 	 * Draws the elements associated with the screen.
 	 */
+
+	/** Check hover based on mouse position and menu hitbox. */
 	private void draw() {
 		drawManager.initDrawing(this);
 
+		int mx = inputManager.getMouseX();
+		int my = inputManager.getMouseY();
+		java.awt.Rectangle[] boxesForHover = drawManager.getMenuHitboxes(this);
+
+		Integer newHover = null;
+		if(boxesForHover[0].contains(mx, my))
+			newHover = 2;
+		if(boxesForHover[1].contains(mx, my))
+			newHover = 3;
+		if(boxesForHover[2].contains(mx, my))
+			newHover = 0;
+
+		if (newHover != null && !newHover.equals(this.returnCode)){
+			this.returnCode = newHover;
+		}
+
+		//pass hoverOption for menu highlights respond to mouse hover
 		drawManager.drawTitle(this);
-		drawManager.drawMenu(this, this.returnCode);
+		drawManager.drawMenu(this, this.returnCode, hoverOption);
 
 		drawManager.completeDrawing(this);
 	}

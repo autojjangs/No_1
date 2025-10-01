@@ -321,24 +321,25 @@ public final class DrawManager {
 	 * @param option
 	 *            Option selected.
 	 */
-	public void drawMenu(final Screen screen, final int option) {
+	public void drawMenu(final Screen screen, final int option, final Integer hoverOption) {
 		String playString = "Play";
 		String highScoresString = "High scores";
 		String exitString = "exit";
 
-		if (option == 2)
+		//Added hoverOption to change menu color by mouse position
+		if (option == 2 || (hoverOption != null && hoverOption == 2))
 			backBufferGraphics.setColor(Color.GREEN);
 		else
 			backBufferGraphics.setColor(Color.WHITE);
 		drawCenteredRegularString(screen, playString,
 				screen.getHeight() / 3 * 2);
-		if (option == 3)
+		if (option == 3 || (hoverOption != null && hoverOption == 3))
 			backBufferGraphics.setColor(Color.GREEN);
 		else
 			backBufferGraphics.setColor(Color.WHITE);
 		drawCenteredRegularString(screen, highScoresString, screen.getHeight()
 				/ 3 * 2 + fontRegularMetrics.getHeight() * 2);
-		if (option == 0)
+		if (option == 0 || (hoverOption != null && hoverOption == 0))
 			backBufferGraphics.setColor(Color.GREEN);
 		else
 			backBufferGraphics.setColor(Color.WHITE);

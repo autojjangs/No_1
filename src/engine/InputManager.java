@@ -2,8 +2,12 @@ package engine;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.awt.event.MouseEvent; // add this line
-import java.awt.event.MouseListener; // add this line
+
+import java.awt.event.MouseEvent;//add this line
+import java.awt.event.MouseListener;//add this line
+import java.awt.event.MouseMotionListener;//add this line
+
+
 
 /**
  * Manages keyboard input for the provided screen.
@@ -11,7 +15,9 @@ import java.awt.event.MouseListener; // add this line
  * @author <a href="mailto:RobertoIA1987@gmail.com">Roberto Izquierdo Amo</a>
  *
  */
-public final class InputManager implements KeyListener, MouseListener { // add MouseListener param
+
+public final class InputManager implements KeyListener, MouseListener, MouseMotionListener { // add MouseListener, MouseMotionListener param
+
 
 	/** Number of recognised keys. */
 	private static final int NUM_KEYS = 256;
@@ -24,7 +30,9 @@ public final class InputManager implements KeyListener, MouseListener { // add M
 	/** Singleton instance of the class. */
 	private static InputManager instance;
 
+
     // add three variable
+
     private static int mouseX;
     private static int mouseY;
     private static boolean mouseClicked;
@@ -134,4 +142,17 @@ public final class InputManager implements KeyListener, MouseListener { // add M
     public void mouseExited(final MouseEvent e) { // add this function
 
     }
+
+	/** Added mouse move/drag event to update mouse position right now */
+	@Override
+	public void mouseMoved(final MouseEvent e){
+		mouseX = e.getX();
+		mouseY = e.getY();
+	}
+	@Override
+	public void mouseDragged(final MouseEvent e){
+		mouseX = e.getX();
+		mouseY = e.getY();
+	}
+
 }
