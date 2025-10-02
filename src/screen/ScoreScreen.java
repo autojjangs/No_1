@@ -199,7 +199,12 @@ public class ScoreScreen extends Screen {
             String p1 = String.format("P1  %04d  |  acc %.2f%%", this.gameState.getScore(0), p1Acc * 100f);
             String p2 = String.format("P2  %04d  |  acc %.2f%%", this.gameState.getScore(1), p2Acc * 100f);
 
-            int y = this.getHeight() / 2 - 5;   // tweak these two numbers if you want
+            int y;  // tweak these if you want
+			if (this.isNewRecord) {
+				y = this.getHeight() / 2 - 5; // Position if new record is True
+			} else {
+				y = this.getHeight() / 2 + 60; // Position if new record is False
+			}
             drawManager.drawCenteredRegularString(this, p1, y);
             drawManager.drawCenteredRegularString(this, p2, y + 40); // Increase spacing
 
