@@ -211,9 +211,13 @@ public class GameScreen extends Screen {
 	private void draw() {
 		drawManager.initDrawing(this);
 
+
+    drawManager.updateGameSpace();
+
 		for (Ship s : this.ships)
 			if (s != null)
 				drawManager.drawEntity(s, s.getPositionX(), s.getPositionY());
+
 
 		if (this.enemyShipSpecial != null)
 			drawManager.drawEntity(this.enemyShipSpecial,
