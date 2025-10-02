@@ -347,10 +347,14 @@ public class GameScreen extends Screen {
     private void manageItemPickups() {
         Set<Item> collected = new HashSet<Item>();
         for (Item item : this.items) {
-            if (checkCollision(item, this.ships[0])) {
-                collected.add(item);
-                //applyItemEffect(item);
-            }
+			for(Ship ship: this.ships) {
+				if (checkCollision(item, ship) && !collected.contains(item)) {
+					collected.add(item);
+					item.applyEffect();
+					this.logger.info("Item picked up by ship " + ship.getPlayerId());
+				}
+			}
+
         }
         this.items.removeAll(collected);
         ItemPool.recycle(collected);
