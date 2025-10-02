@@ -51,7 +51,7 @@ public final class ItemManager {
         int centerY = enemy.getPositionY() + enemy.getHeight() / 2;
         // create and initialize item
         // TODO: Should perform different actions depending on the ITEM TYPE.
-        Item drop = new Item(centerX, centerY, 2, 1, SpriteType.Ship, ItemType.ITEM_1, 1, 1, 0.5);
+        Item drop = ItemPool.getItem(centerX, centerY, 2);
         this.logger.info("[ItemManager]: created item " + drop.getType() + " at (" + centerX + ", " + centerY + ")");
         return drop;
     }

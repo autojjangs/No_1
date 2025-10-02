@@ -238,6 +238,12 @@ public class GameScreen extends Screen {
 
 		// End condition: formation cleared or TEAM lives exhausted.
 		if ((this.enemyShipFormation.isEmpty() || !state.teamAlive()) && !this.levelFinished) {
+			// The object managed by the object pool pattern must be recycled at the end of the level.
+			BulletPool.recycle(this.bullets);
+			this.bullets.removeAll(this.bullets);
+			ItemPool.recycle(items);
+			this.items.removeAll(this.items);
+
 			this.levelFinished = true;
 			this.screenFinishedCooldown.reset();
 		}
