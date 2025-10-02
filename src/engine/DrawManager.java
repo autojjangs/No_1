@@ -2,7 +2,7 @@ package engine;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
+import java.io.*;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,6 +10,7 @@ import java.util.logging.Logger;
 
 import Animations.BasicGameSpace;
 import Animations.MenuSpace;
+import com.sun.tools.javac.Main;
 import screen.Screen;
 import entity.Entity;
 import entity.Ship;
@@ -217,6 +218,11 @@ public final class DrawManager {
 			// enemy bullets will keep their default color from the entity
 		}
 
+        if(entity instanceof Ship){
+            drawSpecialShip(positionX, positionY);
+            return;
+        }
+
 		backBufferGraphics.setColor(color);
 		for (int i = 0; i < image.length; i++)
 			for (int j = 0; j < image[i].length; j++)
@@ -225,6 +231,62 @@ public final class DrawManager {
 							+ j * 2, 1, 1);
 	}
 
+    public void drawSpecialShip(final int positionX, final int positionY) {
+        char[][] image = {
+                {'0','0','0','0','0','0','0','B','0','0'},
+                {'0','0','0','0','0','0','B','B','B','0'},
+                {'0','0','0','0','0','B','R','B','B','0'},
+                {'0','0','0','0','B','R','Q','Y','Y','Y'},
+                {'0','0','0','B','R','Q','R','Y','Y','Y'},
+                {'0','0','B','R','Q','R','B','B','0','0'},
+                {'0','B','R','Q','R','B','L','B','0','0'},
+                {'B','R','Q','R','B','L','L','L','0','0'},
+                {'0','B','R','Q','R','B','L','B','0','0'},
+                {'0','0','B','R','Q','R','B','B','0','0'},
+                {'0','0','0','B','R','Q','R','Y','Y','Y'},
+                {'0','0','0','0','B','R','Q','Y','Y','Y'},
+                {'0','0','0','0','0','B','R','B','B','0'},
+                {'0','0','0','0','0','0','B','B','B','0'},
+                {'0','0','0','0','0','0','0','B','0','0'}
+        };
+
+
+        for (int i = 0; i < image.length; i++) {
+
+            for (int j = 0; j < image[i].length; j++) {
+
+                switch(image[i][j]){
+                    case 'B':
+                        backBufferGraphics.setColor(Color.green);
+                        backBufferGraphics.drawRect(positionX + i * 2, positionY + j * 2, 1, 1);
+                        break;
+                    case 'R':
+                        backBufferGraphics.setColor(Color.RED);
+                        backBufferGraphics.drawRect(positionX + i * 2, positionY + j * 2, 1, 1);
+                        break;
+                    case 'Q':
+                        backBufferGraphics.setColor(Color.PINK);
+                        backBufferGraphics.drawRect(positionX + i * 2, positionY + j * 2, 1, 1);
+                        break;
+                    case 'L':
+                        backBufferGraphics.setColor(Color.BLUE);
+                        backBufferGraphics.drawRect(positionX + i * 2, positionY + j * 2, 1, 1);
+                        break;
+                    case 'Y':
+                        backBufferGraphics.setColor(Color.YELLOW);
+                        backBufferGraphics.drawRect(positionX + i * 2, positionY + j * 2, 1, 1);
+                        break;
+                }
+            }
+
+        }
+    }
+
+
+    public void menuHover(final int state){
+        menuSpace.setColor(state);
+        menuSpace.setSpeed(state == 3);
+    }
 
     /**
      * Draws the main menu stars background animation
@@ -245,7 +307,7 @@ public final class DrawManager {
 
             float[] dist = {0.0f, 1.0f};
             Color[] colors = {
-                    new Color(255, 255, 200, 255),
+                    menuSpace.getColor(),
                     new Color(255, 255, 200, 0)
             };
 
