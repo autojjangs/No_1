@@ -33,7 +33,7 @@ public class Item extends Entity {
 
     private int effectDuration;
 
-    private double dropChance;
+    private static double dropChance = 0.5;
 
 
 
@@ -132,4 +132,6 @@ public class Item extends Entity {
     public final ItemType getType() {
         return this.type;
     }
+
+    public static double getDropChance() { return dropChance; }
 }

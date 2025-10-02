@@ -41,16 +41,16 @@ public final class ItemManager {
     public Item obtainDrop(final EnemyShip enemy) {
         if (enemy == null) return null;
 
+        // TODO: Should perform different actions depending on the ITEM TYPE.
         double dropRoll = itemRoll.nextDouble();
-        this.logger.info(String.format("[ItemManager]: dropRoll/baseDropChance %.1f/%.1f", dropRoll, this.baseDropChance));
-        if (dropRoll >= this.baseDropChance) {
+        this.logger.info(String.format("[ItemManager]: dropRoll/baseDropChance*ItemDropChance %.1f/%.1f", dropRoll, this.baseDropChance * Item.getDropChance()));
+        if (dropRoll < this.baseDropChance * Item.getDropChance()) {
             return null;
         }
 
         int centerX = enemy.getPositionX() + enemy.getWidth() / 2;
         int centerY = enemy.getPositionY() + enemy.getHeight() / 2;
         // create and initialize item
-        // TODO: Should perform different actions depending on the ITEM TYPE.
         Item drop = ItemPool.getItem(centerX, centerY, 2);
         this.logger.info("[ItemManager]: created item " + drop.getType() + " at (" + centerX + ", " + centerY + ")");
         return drop;
