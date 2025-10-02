@@ -218,6 +218,36 @@ public final class DrawManager {
 				if (image[i][j])
 					backBufferGraphics.drawRect(positionX + i * 2, positionY
 							+ j * 2, 1, 1);
+
+		// --- 스케일링 로직 추가 ---
+		// 원본 스프라이트의 너비와 높이
+		int spriteWidth = image.length;
+		int spriteHeight = image[0].length;
+
+		// 엔티티에 설정된 너비와 높이 (Bullet 생성자에서 변경한 값)
+		int entityWidth = entity.getWidth();
+		int entityHeight = entity.getHeight();
+
+		// 원본 스프라이트 대비 엔티티 크기의 비율 계산
+		float widthRatio = (float) entityWidth / (spriteWidth * 2);
+		float heightRatio = (float) entityHeight / (spriteHeight * 2);
+		// --- 스케일링 로직 종료 ---
+
+
+		backBufferGraphics.setColor(color);
+		for (int i = 0; i < spriteWidth; i++) {
+			for (int j = 0; j < spriteHeight; j++) {
+				if (image[i][j]) {
+					//계산된 비율을 적용하여 점의 위치와 크기를 조절
+					backBufferGraphics.fillRect(
+							positionX + (int)(i * 2 * widthRatio),
+							positionY + (int)(j * 2 * heightRatio),
+							(int)Math.ceil(widthRatio * 2), // 점 하나의 크기도 비율에 맞게 조절
+							(int)Math.ceil(heightRatio * 2)
+					);
+				}
+			}
+		}
 	}
 
 	/**

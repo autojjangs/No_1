@@ -13,6 +13,9 @@ public final class BulletPool {
 
 	/** Set of already created bullets. */
 	private static Set<Bullet> pool = new HashSet<Bullet>();
+	//기본 총알 크기
+	private static final int BASE_WIDTH = 3*2;
+	private static final int BASE_HEIGHT = 5*2;
 
 	/**
 	 * Constructor, not called.
@@ -34,18 +37,25 @@ public final class BulletPool {
 	 *            on direction - positive is down.
 	 * @return Requested bullet.
 	 */
+	//기본 크기 bullet
 	public static Bullet getBullet(final int positionX,
 								   final int positionY, final int speed) {
+		return getBullet(positionX, positionY, speed, BASE_WIDTH, BASE_HEIGHT);
+	}
+
+	public static Bullet getBullet(final int positionX,
+								   final int positionY, final int speed, final int width, final int height) {
 		Bullet bullet;
 		if (!pool.isEmpty()) {
 			bullet = pool.iterator().next();
 			pool.remove(bullet);
+			bullet.setSize(width, height);	//bullet 크기 초기화
 			bullet.setPositionX(positionX - bullet.getWidth() / 2);
 			bullet.setPositionY(positionY);
 			bullet.setSpeed(speed);
 			bullet.setSprite();
 		} else {
-			bullet = new Bullet(positionX, positionY, speed);
+			bullet = new Bullet(positionX, positionY, speed, width, height);
 			bullet.setPositionX(positionX - bullet.getWidth() / 2);
 		}
 		return bullet;
