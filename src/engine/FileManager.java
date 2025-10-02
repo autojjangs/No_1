@@ -117,7 +117,7 @@ public final class FileManager {
 		try {
 			// Font loading.
 			inputStream = FileManager.class.getClassLoader()
-					.getResourceAsStream("space_invaders.ttf");
+					.getResourceAsStream("font.ttf");
 			font = Font.createFont(Font.TRUETYPE_FONT, inputStream).deriveFont(
 					size);
 		} finally {
