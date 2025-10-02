@@ -21,7 +21,8 @@ public class AchievementManager {
         List<Achievement> list = new ArrayList<>();
         list.add(new Achievement("First Blood", "Defeat your first enemy."));
         list.add(new Achievement("Survivor", "Clear a round without losing a life."));
-        list.add(new Achievement("Clear", "Clear 5 levels."));
+        list.add(new Achievement("Clear", "Clear all levels.")); //2025-10-02 fix description
+        list.add(new Achievement("Perfect Shooter", "clear all levels without no damage")); //2025-10-02 add new Achievement
         return list;
     }
 

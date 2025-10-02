@@ -4,10 +4,7 @@ import java.awt.event.KeyEvent;
 import java.util.HashSet;
 import java.util.Set;
 
-import engine.Cooldown;
-import engine.Core;
-import engine.GameSettings;
-import engine.GameState;
+import engine.*;
 import entity.Bullet;
 import entity.BulletPool;
 import entity.EnemyShip;
@@ -37,7 +34,9 @@ public class GameScreen extends Screen {
 	private static final int SCREEN_CHANGE_INTERVAL = 1500;
 	/** Height of the interface separation line. */
 	private static final int SEPARATION_LINE_HEIGHT = 40;
-
+	/** For Check Achievement
+	 * 2015-10-02 add new */
+	private AchievementManager achievementManager;
 	/** Current game difficulty settings. */
 	private GameSettings gameSettings;
 	/** Current difficulty level number. */
@@ -70,6 +69,10 @@ public class GameScreen extends Screen {
 	private boolean levelFinished;
 	/** Checks if a bonus life is received. */
 	private boolean bonusLife;
+	/** checks if player took damage
+	 * 2025-10-02 add new 변수
+	 * */
+	private boolean tookDamageThisLevel;
 
 	/**
 	 * Constructor, establishes the properties of the screen.
@@ -101,6 +104,10 @@ public class GameScreen extends Screen {
 			this.lives++;
 		this.bulletsShot = gameState.getBulletsShot();
 		this.shipsDestroyed = gameState.getShipsDestroyed();
+
+		// for check Achievement 2025-10-02 add
+		this.achievementManager = new AchievementManager();
+		this.tookDamageThisLevel = false;
 	}
 
 	/**
@@ -203,6 +210,23 @@ public class GameScreen extends Screen {
 				&& !this.levelFinished) {
 			this.levelFinished = true;
 			this.screenFinishedCooldown.reset();
+
+			/*
+			  check of achievement release
+			  2025-10-02 add three 'if'statements
+			 */
+			// Survivor
+			if(!this.tookDamageThisLevel){
+				achievementManager.unlock("Survivor");
+			}
+			// Clear
+			if(this.level == Core.getNumLevels()){
+				achievementManager.unlock("Clear");
+			}
+			//Perfect Shooter
+			if(this.bulletsShot > 0 && this.bulletsShot == this.shipsDestroyed){
+				achievementManager.unlock("Perfect Shooter");
+			}
 		}
 
 		if (this.levelFinished && this.screenFinishedCooldown.checkFinished())
@@ -277,6 +301,7 @@ public class GameScreen extends Screen {
 					if (!this.ship.isDestroyed()) {
 						this.ship.destroy();
 						this.lives--;
+						this.tookDamageThisLevel = true; // For check 'Survivor' Achievement 2025-10-02
 						this.logger.info("Hit on player ship, " + this.lives
 								+ " lives remaining.");
 					}
@@ -288,6 +313,17 @@ public class GameScreen extends Screen {
 						this.score += enemyShip.getPointValue();
 						this.shipsDestroyed++;
 						this.enemyShipFormation.destroy(enemyShip);
+
+						/*
+						  check of 'First Blood' achievement release
+						  2025.10.02 add
+						  */
+						if(this.shipsDestroyed ==1){
+							//achievementManager.unlockFirstBlood();
+							achievementManager.unlock("First Blood");
+						}
+
+
 						recyclable.add(bullet);
 					}
 				if (this.enemyShipSpecial != null
