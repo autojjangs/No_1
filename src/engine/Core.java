@@ -108,8 +108,11 @@ public final class Core {
 								bonusLife, width, height, FPS, achievementManager);
 
 						LOGGER.info("Starting " + WIDTH + "x" + HEIGHT + " game screen at " + FPS + " fps.");
-						frame.setScreen(currentScreen);
+						returnCode = frame.setScreen(currentScreen);
 						LOGGER.info("Closing game screen.");
+						if(returnCode == 1) {
+							break;
+						}
 
 						gameState = ((GameScreen) currentScreen).getGameState();
 
@@ -119,6 +122,9 @@ public final class Core {
 
 					} while (gameState.teamAlive() && gameState.getLevel() <= gameSettings.size());
 
+					if (returnCode== 1) {
+						break;
+					}
 					LOGGER.info("Starting " + WIDTH + "x" + HEIGHT + " score screen at " + FPS + " fps, with a score of "
 							+ gameState.getScore() + ", "
 							+ gameState.getLivesRemaining() + " lives remaining, "
