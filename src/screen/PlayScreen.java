@@ -17,6 +17,14 @@ public class PlayScreen extends Screen {
     private Cooldown selectionCooldown;
     private int menuIndex = 0; // 0 = 1P, 1 = 2P, 2 = Back
 
+/**
+ * Constructor, establishes the properties of the screen.
+ *
+ * @param width  Screen width.
+ * @param height Screen height.
+ * @param fps    Frames per second, frame rate at which the game is run.
+ *  **/
+
     public PlayScreen(final int width, final int height, final int fps) {
         super(width, height, fps);
         this.returnCode = 2; // default 1P
@@ -48,20 +56,19 @@ public class PlayScreen extends Screen {
                     case 0: // "1 Player"
                         this.coopSelected = false;
                         this.returnCode = 2; // go to GameScreen
-                        this.isRunning = false;
                         break;
 
                     case 1: // "2 Players"
                         this.coopSelected = true;
                         this.returnCode = 2; // go to GameScreen
-                        this.isRunning = false;
                         break;
 
                     case 2: // "Back"
                         this.returnCode = 1; // go back to TitleScreen
-                        this.isRunning = false;
                         break;
                 }
+                this.isRunning = false;
+
             }
         }
     }
@@ -72,3 +79,5 @@ public class PlayScreen extends Screen {
         drawManager.completeDrawing(this);
     }
 }
+
+

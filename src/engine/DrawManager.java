@@ -665,11 +665,13 @@ public final class DrawManager {
     public void drawPlayMenu(final Screen screen, final int selectedIndex) {
         String[] items = {"1 Player", "2 Players", "Back"};
 
-        int baseY = screen.getHeight() / 3 * 2;
+        int baseY = screen.getHeight() / 3 * 1;
         for (int i = 0; i < items.length; i++) {
             backBufferGraphics.setColor(i == selectedIndex ? Color.GREEN : Color.WHITE);
             drawCenteredRegularString(screen, items[i],
                     baseY + fontRegularMetrics.getHeight() * 3 * i);
         }
+
+
     }
 }
