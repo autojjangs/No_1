@@ -13,8 +13,7 @@ public class Item extends Entity {
 
     public enum ItemType {
         ITEM_1,
-        ITEM_2,
-        ITEM_3
+        COIN
     }
 
 
