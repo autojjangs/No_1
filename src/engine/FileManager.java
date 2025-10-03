@@ -45,7 +45,7 @@ public final class FileManager {
   
     // coins.csv file to save changes about coin content
     private static final String COIN_FILENAME = "coins.csv";
-   
+
     /**
      * private constructor.
      */
@@ -67,9 +67,11 @@ public final class FileManager {
     /**
      * Loads sprites from disk.
      *
-     * @param spriteMap Mapping of sprite type and empty boolean matrix that will
-     * contain the image.
-     * @throws IOException In case of loading problems.
+     * @param spriteMap
+     *            Mapping of sprite type and empty boolean matrix that will
+     *            contain the image.
+     * @throws IOException
+     *             In case of loading problems.
      */
     public void loadSprite(final Map<SpriteType, boolean[][]> spriteMap)
             throws IOException {
@@ -107,10 +109,13 @@ public final class FileManager {
     /**
      * Loads a font of a given size.
      *
-     * @param size Point size of the font.
+     * @param size
+     *            Point size of the font.
      * @return New font.
-     * @throws IOException In case of loading problems.
-     * @throws FontFormatException In case of incorrect font format.
+     * @throws IOException
+     *             In case of loading problems.
+     * @throws FontFormatException
+     *             In case of incorrect font format.
      */
     public Font loadFont(final float size) throws IOException,
             FontFormatException {
@@ -136,7 +141,8 @@ public final class FileManager {
      * file.
      *
      * @return Default high scores.
-     * @throws IOException In case of loading problems.
+     * @throws IOException
+     *             In case of loading problems.
      */
     private List<Score> loadDefaultHighScores() throws IOException {
         List<Score> highScores = new ArrayList<Score>();
@@ -147,6 +153,7 @@ public final class FileManager {
             inputStream = FileManager.class.getClassLoader()
                     .getResourceAsStream("scores.csv");
             reader = new BufferedReader(new InputStreamReader(inputStream));
+
             // except first line
             reader.readLine();
             String input;
@@ -169,7 +176,8 @@ public final class FileManager {
      * value.
      *
      * @return Sorted list of scores - players.
-     * @throws IOException In case of loading problems.
+     * @throws IOException
+     *             In case of loading problems.
      */
     public List<Score> loadHighScores() throws IOException {
 
@@ -217,8 +225,10 @@ public final class FileManager {
     /**
      * Saves user high scores to disk.
      *
-     * @param highScores High scores to save.
-     * @throws IOException In case of loading problems.
+     * @param highScores
+     *            High scores to save.
+     * @throws IOException
+     *             In case of loading problems.
      */
     public void saveHighScores(final List<Score> highScores)
             throws IOException {
@@ -245,6 +255,7 @@ public final class FileManager {
 
             logger.info("Saving user high scores.");
 
+            // Before this PR, we can save only 7 scores, but now we can more.
             for (Score score : highScores) {
                 bufferedWriter.write(score.getName() + "," + score.getScore());
                 bufferedWriter.newLine();
@@ -256,7 +267,7 @@ public final class FileManager {
         }
     }
 
-    /**
+        /**
      * Loads the coin count from the coins.csv file.
      *
      * @return The saved coin count, or 0 if the file is not found or empty.
@@ -463,4 +474,5 @@ public final class FileManager {
             logger.info("No achievements to save");
         }
     }
+}
 }
