@@ -8,12 +8,7 @@ import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import screen.GameScreen;
-import screen.HighScoreScreen;
-import screen.ScoreScreen;
-import screen.Screen;
-import screen.TitleScreen;
-import screen.SettingScreen;
+import screen.*;
 
 /**
  * Implements core game logic.
@@ -98,8 +93,12 @@ public final class Core {
                     LOGGER.info("Closing title screen.");
 
                     // 2P mode: reading the mode which user chose from TitleScreen
-                    if (returnCode == 2 || returnCode == 3) {
-                        coopSelected = ((TitleScreen) currentScreen).isCoopSelected();
+                    // (edit) TitleScreen to PlayScreen
+                    if (returnCode == 2) {
+                        currentScreen = new PlayScreen(width, height, FPS);
+                        returnCode = frame.setScreen(currentScreen);
+
+                        coopSelected = ((PlayScreen) currentScreen).isCoopSelected();
                     }
 
 					break;
@@ -149,14 +148,24 @@ public final class Core {
 					returnCode = frame.setScreen(currentScreen);
 					LOGGER.info("Closing high score screen.");
 					break;
-                case 4:
-                    // settings screen
-                    currentScreen = new SettingScreen(width, height, FPS);
-                    LOGGER.info("Starting " + WIDTH + "x" + HEIGHT
-                            + " setting screen at " + FPS + " fps.");
-                    returnCode = frame.setScreen(currentScreen);
-                    LOGGER.info("Closing setting screen.");
-                    break;
+
+          case 4:
+              // settings screen
+              currentScreen = new SettingScreen(width, height, FPS);
+              LOGGER.info("Starting " + WIDTH + "x" + HEIGHT
+                      + " setting screen at " + FPS + " fps.");
+              returnCode = frame.setScreen(currentScreen);
+              LOGGER.info("Closing setting screen.");
+              break;
+          
+          case 5:
+              // Play : Use the play to decide 1p and 2p
+              currentScreen = new PlayScreen(width, height, FPS);
+              LOGGER.info("Starting " + WIDTH + "x" + HEIGHT + " play screen at " + FPS + " fps.");
+              returnCode = frame.setScreen(currentScreen);
+              coopSelected = ((PlayScreen) currentScreen).isCoopSelected();
+              LOGGER.info("Closing play screen.");
+              break;
           
 				default:
 					break;
