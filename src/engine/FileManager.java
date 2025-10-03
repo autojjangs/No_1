@@ -42,7 +42,10 @@ public final class FileManager {
      * Max number of high scores.
      */
     private static final int MAX_SCORES = 7;
-
+  
+    // coins.csv file to save changes about coin content
+    private static final String COIN_FILENAME = "coins.csv";
+   
     /**
      * private constructor.
      */
@@ -65,7 +68,7 @@ public final class FileManager {
      * Loads sprites from disk.
      *
      * @param spriteMap Mapping of sprite type and empty boolean matrix that will
-     *                  contain the image.
+     * contain the image.
      * @throws IOException In case of loading problems.
      */
     public void loadSprite(final Map<SpriteType, boolean[][]> spriteMap)
@@ -106,7 +109,7 @@ public final class FileManager {
      *
      * @param size Point size of the font.
      * @return New font.
-     * @throws IOException         In case of loading problems.
+     * @throws IOException In case of loading problems.
      * @throws FontFormatException In case of incorrect font format.
      */
     public Font loadFont(final float size) throws IOException,
@@ -243,7 +246,7 @@ public final class FileManager {
             logger.info("Saving user high scores.");
 
             for (Score score : highScores) {
-                bufferedWriter.write(score.getName()+","+score.getScore());
+                bufferedWriter.write(score.getName() + "," + score.getScore());
                 bufferedWriter.newLine();
             }
 
@@ -253,137 +256,217 @@ public final class FileManager {
         }
     }
 
-	/**
-	 * Search Achievement list of user
-	 *
-	 * @param userName user's name to search.
-	 * @throws IOException In case of loading problems.
-	 */
-	public List<Boolean> searchAchievementsByName(String userName)
-			throws IOException {
-		List<Boolean> achievementList = new ArrayList<Boolean>();
+    // ----------------------------------------------------
+    // 🌟🌟🌟 변경 코드 : loadCoins 함수 추가 🌟🌟🌟
+    // ----------------------------------------------------
+    /**
+     * Loads the coin count from the coins.csv file.
+     *
+     * @return The saved coin count, or 0 if the file is not found or empty.
+     * @throws IOException In case of loading problems.
+     */
+    public int loadCoins() throws IOException {
+        InputStream inputStream = null;
+        BufferedReader bufferedReader = null;
 
-        // the number of achievement 2025-10-03 add variable
-        int defaultAchievementCount = new AchievementManager().getAchievements().size();
+        try {
+            String jarPath = FileManager.class.getProtectionDomain()
+                    .getCodeSource().getLocation().getPath();
+            jarPath = URLDecoder.decode(jarPath, "UTF-8");
 
-		try {
-			String jarPath = FileManager.class.getProtectionDomain()
-					.getCodeSource().getLocation().getPath();
-			jarPath = URLDecoder.decode(jarPath, "UTF-8");
+            String coinsPath = new File(jarPath).getParent();
+            coinsPath += File.separator;
+            coinsPath += COIN_FILENAME; // coins.csv 사용
 
-			String achievementPath = String.valueOf(new File(jarPath));
-			achievementPath += File.separator;
-			achievementPath += "achievement.csv";
+            File coinsFile = new File(coinsPath);
+            inputStream = new FileInputStream(coinsFile);
+            bufferedReader = new BufferedReader(new InputStreamReader(
+                    inputStream, Charset.forName("UTF-8")));
 
-			InputStream iStream = new FileInputStream(achievementPath);
-			BufferedReader bReader = new BufferedReader(
-					new InputStreamReader(iStream, Charset.forName("UTF-8")));
+            logger.info("Loading coin count from " + COIN_FILENAME + ".");
 
-			bReader.readLine(); // Dump header
-			String line;
-			boolean flag = false;
-			while ((line = bReader.readLine()) != null) {
-				String[] playRecord = line.split(",");
-				if (playRecord[0].equals(userName)) {
-					flag = true;
-					logger.info("Loading user achievements.");
-					for (int i = 1; i < playRecord.length; i++) {
-						achievementList.add(playRecord[i].equals("1") ? true : false);
-					}
-					break;
-				}
-			}
-			if (!flag)
-				for (int i = 0; i < defaultAchievementCount; i++) {
-					logger.info("Loading default achievement.");
-					achievementList.add(false);
-				}
-		} catch (FileNotFoundException e) {
-			logger.info("Loading default achievement.");
-			for (int i = 0; i < defaultAchievementCount; i++) {
-				achievementList.add(false);
-			}
-		}
-		return achievementList;
-	}
+            // coins.csv 파일의 맨 첫 줄을 읽어 코인 수를 가져옴
+            String line = bufferedReader.readLine();
 
-	/**
-	 * Unlocks an achievement for the given user.
-	 *
-	 * @param userName            user's name to search.
-	 * @param unlockedAchievement A list of booleans representing which achievements
-	 * @throws IOException In case of loading problems.
-	 */
-	public void unlockAchievement(String userName, List<Boolean> unlockedAchievement)
-			throws IOException {
-        List<String[]> records = new ArrayList<>();
-
-        String jarPath = FileManager.class.getProtectionDomain()
-                .getCodeSource().getLocation().getPath();
-        jarPath = URLDecoder.decode(jarPath, "UTF-8");
-
-        String achievementPath = new File(jarPath).getParent() + File.separator + "achievement.csv";
-        File file = new File(achievementPath);
-        //Read existing data
-        if (file.exists()) {
-            try (BufferedReader bReader = new BufferedReader(
-                    new InputStreamReader(new FileInputStream(file), Charset.forName("UTF-8")))) {
-                String line;
-                boolean headerSkipped = false;
-                boolean foundUser = false;
-
-                while ((line = bReader.readLine()) != null) {
-                    if (!headerSkipped) {
-                        headerSkipped = true;
-                        continue;
+            if (line != null && !line.trim().isEmpty()) {
+                try {
+                    // 숫자만 추출하여 변환 시도
+                    String rawCoin = line.trim().replaceAll("[^0-9]", "");
+                    if (!rawCoin.isEmpty()) {
+                        return Integer.parseInt(rawCoin);
                     }
-                    String[] playRecord = line.split(",");
-                    if (playRecord[0].equals(userName)) {
-                        foundUser = true;
-                        logger.info("Achievement has been updated");
-                        for (int i = 1; i < playRecord.length; i++) {
-                            if (playRecord[i].equals("0") && unlockedAchievement.get(i))
-                                playRecord[i] = "1";
-                        }
-                    }
-                    records.add(playRecord);
-                }
-
-                if (!foundUser) {
-                    logger.info("User not found, creating new record.");
-                    String[] newRecord = new String[unlockedAchievement.size() + 1];
-                    newRecord[0] = userName;
-                    for (int i = 0; i < unlockedAchievement.size(); i++)
-                        newRecord[i + 1] = unlockedAchievement.get(i) ? "1" : "0";
-                    records.add(newRecord);
+                } catch (NumberFormatException e) {
+                    logger.warning("Coin count line is not a valid number. Returning 0.");
+                    return 0;
                 }
             }
-        } else {
-            String[] newRecord = new String[unlockedAchievement.size() + 1];
-            newRecord[0] = userName;
-            for (int i = 0; i < unlockedAchievement.size(); i++)
-                newRecord[i + 1] = unlockedAchievement.get(i) ? "1" : "0";
-            records.add(newRecord);
+
+        } catch (FileNotFoundException e) {
+            logger.info(COIN_FILENAME + " not found. Returning 0 coins.");
+            return 0;
+        } finally {
+            if (bufferedReader != null)
+                bufferedReader.close();
         }
 
-        //Automatically create csv file headers
-        List<Achievement> defaultAchievements = new AchievementManager().getAchievements();
-        List<String> headers = new ArrayList<>();
-        headers.add("player");
-        for (Achievement a : defaultAchievements) {
-            headers.add(a.getName());
+        return 0;
+    }
+
+    // ----------------------------------------------------
+    // 🌟🌟🌟 변경 코드 : saveCoins 함수 추가 🌟🌟🌟
+    // ----------------------------------------------------
+    /**
+     * Saves the current coin count to the coins.csv file.
+     *
+     * @param coins The total number of coins acquired.
+     * @throws IOException In case of saving problems.
+     */
+    public void saveCoins(final int coins) throws IOException {
+        OutputStream outputStream = null;
+        BufferedWriter bufferedWriter = null;
+
+        try {
+            String jarPath = FileManager.class.getProtectionDomain()
+                    .getCodeSource().getLocation().getPath();
+            jarPath = URLDecoder.decode(jarPath, "UTF-8");
+
+            String coinsPath = new File(jarPath).getParent();
+            coinsPath += File.separator;
+            coinsPath += COIN_FILENAME; // coins.csv 사용
+
+            File coinsFile = new File(coinsPath);
+
+            if (!coinsFile.exists())
+                coinsFile.createNewFile();
+
+            outputStream = new FileOutputStream(coinsFile);
+            bufferedWriter = new BufferedWriter(new OutputStreamWriter(
+                    outputStream, Charset.forName("UTF-8")));
+
+            logger.info("Saving new coin count (" + coins + ") to " + COIN_FILENAME + ".");
+
+            // coins.csv 파일에 코인 수만 한 줄 저장
+            bufferedWriter.write(Integer.toString(coins));
+            bufferedWriter.newLine();
+
+        } finally {
+            if (bufferedWriter != null)
+                bufferedWriter.close();
         }
+    }
 
-        try (BufferedWriter bWriter = new BufferedWriter(
-                new OutputStreamWriter(new FileOutputStream(file), Charset.forName("UTF-8")))) {
+    /**
+     * Search Achievement list of user
+     *
+     * @param userName user's name to search.
+     * @throws IOException In case of loading problems.
+     */
+    public List<Boolean> searchAchievementsByName(String userName)
+            throws IOException {
+        List<Boolean> achievementList = new ArrayList<Boolean>();
 
-            bWriter.write(String.join(",", headers));
-            bWriter.newLine();
+        try {
+            String jarPath = FileManager.class.getProtectionDomain()
+                    .getCodeSource().getLocation().getPath();
+            jarPath = URLDecoder.decode(jarPath, "UTF-8");
 
-            for (String[] record : records) {
+            String achievementPath = String.valueOf(new File(jarPath));
+            achievementPath += File.separator;
+            achievementPath += "achievement.csv";
+
+            InputStream iStream = new FileInputStream(achievementPath);
+            BufferedReader bReader = new BufferedReader(
+                    new InputStreamReader(iStream, Charset.forName("UTF-8")));
+
+            bReader.readLine(); // Dump header
+            String line;
+            boolean flag = false;
+            while ((line = bReader.readLine()) != null) {
+                String[] playRecord = line.split(",");
+                if (playRecord[0].equals(userName)) {
+                    flag = true;
+                    logger.info("Loading user achievements.");
+                    for (int i = 1; i < playRecord.length; i++) {
+                        achievementList.add(playRecord[i].equals("1") ? true : false);
+                    }
+                    break;
+                }
+            }
+            if (!flag)
+                for (int i = 0; i < 5; i++) {
+                    logger.info("Loading default achievement.");
+                    achievementList.add(false);
+                }
+        } catch (FileNotFoundException e) {
+            logger.info("Loading default achievement.");
+            for (int i = 0; i < 5; i++) {
+                achievementList.add(false);
+            }
+        }
+        return achievementList;
+    }
+
+    /**
+     * Unlocks an achievement for the given user.
+     *
+     * @param userName user's name to search.
+     * @param unlockedAchievement A list of booleans representing which achievements
+     * @throws IOException In case of loading problems.
+     */
+    public void unlockAchievement(String userName, List<Boolean> unlockedAchievement)
+            throws IOException {
+        List<String[]> records = new ArrayList<>();
+        try {
+            String jarPath = FileManager.class.getProtectionDomain()
+                    .getCodeSource().getLocation().getPath();
+            jarPath = URLDecoder.decode(jarPath, "UTF-8");
+
+            String achievementPath = String.valueOf(new File(jarPath));
+            achievementPath += File.separator;
+            achievementPath += "achievement.csv";
+
+            InputStream iStream = new FileInputStream(achievementPath);
+            BufferedReader bReader = new BufferedReader(
+                    new InputStreamReader(iStream, Charset.forName("UTF-8")));
+
+            String line;
+            boolean flag = false;
+            List<String[]> recorder = new ArrayList<>();
+            while ((line = bReader.readLine()) != null) {
+                String[] playRecord = line.split(",");
+                if (playRecord[0].equals(userName)) {
+                    flag = true;
+                    logger.info("Achievement has been updated");
+                    for (int i = 1; i < playRecord.length; i++) {
+                        if (playRecord[i].equals("0") && unlockedAchievement.get(i))
+                            playRecord[i] = "1";
+                    }
+                }
+                recorder.add(playRecord);
+            }
+            if (!flag){
+                logger.info("User not found, creating new record.");
+                String[] newRecord = new String[unlockedAchievement.size() + 1];
+                newRecord[0] = userName;
+                for (int i = 0; i < unlockedAchievement.size(); i++)
+                    newRecord[i+1] = unlockedAchievement.get(i) ? "1" : "0";
+                recorder.add(newRecord);
+            }
+
+
+            OutputStream outStream = new FileOutputStream(achievementPath);
+            BufferedWriter bWriter = new BufferedWriter(
+                    new OutputStreamWriter(outStream, Charset.forName("UTF-8")));
+
+            for (String[] record : recorder) {
                 bWriter.write(String.join(",", record));
                 bWriter.newLine();
             }
+
+            bWriter.close();
+
+        } catch (FileNotFoundException e) {
+            logger.info("No achievements to save");
         }
     }
 }
