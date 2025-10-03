@@ -99,7 +99,7 @@ public class Item extends Entity {
     /**
      * Apply the Item's effect.
      */
-    public void applyEffect(final GameState gameState){};
+    public void applyEffect(final GameState gameState, final int playerId){};
 
     /**
      * Setter of the speed of the Item.
