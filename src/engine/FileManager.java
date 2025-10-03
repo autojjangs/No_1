@@ -324,7 +324,7 @@ public final class FileManager {
 
         String achievementPath = new File(jarPath).getParent() + File.separator + "achievement.csv";
         File file = new File(achievementPath);
-        //기존 데이터 읽기
+        //Read existing data
         if (file.exists()) {
             try (BufferedReader bReader = new BufferedReader(
                     new InputStreamReader(new FileInputStream(file), Charset.forName("UTF-8")))) {
@@ -366,7 +366,7 @@ public final class FileManager {
             records.add(newRecord);
         }
 
-        //csv 파일 해더 자동 생성
+        //Automatically create csv file headers
         List<Achievement> defaultAchievements = new AchievementManager().getAchievements();
         List<String> headers = new ArrayList<>();
         headers.add("player");

@@ -42,8 +42,7 @@ public class ScoreScreen extends Screen {
 	private int nameCharSelected;
 	/** Time between changes in user selection. */
 	private Cooldown selectionCooldown;
-	/** manages achievements.
-	 * 2025-10-03 add field*/
+	/** manages achievements.*/
 	private AchievementManager achievementManager;
 
 	/**
@@ -59,7 +58,7 @@ public class ScoreScreen extends Screen {
 	 *            Current game state.
 	 * @param achievementManager
 	 * 			  Achievement manager instance used to track and save player achievements.
-	 * 			  2025-10-03  생성자 para 추가 및 설명 주석추가
+	 * 			  2025-10-03  add generator parameter and comment
 	 */
 	public ScoreScreen(final int width, final int height, final int fps,
 			final GameState gameState, final AchievementManager achievementManager) {
@@ -113,7 +112,7 @@ public class ScoreScreen extends Screen {
 				this.isRunning = false;
 				if (this.isNewRecord) {
 					saveScore();
-					saveAchievement(); //2025-10-03
+					saveAchievement(); //2025-10-03 call method for save achievement released
 				}
 			} else if (inputManager.isKeyDown(KeyEvent.VK_SPACE)) {
 				// Play again.
@@ -121,7 +120,7 @@ public class ScoreScreen extends Screen {
 				this.isRunning = false;
 				if (this.isNewRecord) {
 					saveScore();
-					saveAchievement(); // 2025-10-03
+					saveAchievement(); // 2025-10-03 call method for save achievement released
 				}
 			}
 
@@ -172,9 +171,9 @@ public class ScoreScreen extends Screen {
 	}
 
 	/**
-	 * Saves the achievement released.
+	 * Save the achievement released.
 	 * 2025-10-03
-	 * achievemet.csv파일에 업적 해제 여부 저장 호출 매소드
+	 * add new method
 	 */
 	private void saveAchievement() {
 		try {

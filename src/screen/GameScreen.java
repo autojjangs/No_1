@@ -89,6 +89,9 @@ public class GameScreen extends Screen {
 	 *            Screen height.
 	 * @param fps
 	 *            Frames per second, frame rate at which the game is run.
+	 * @param achievementManager
+	 * 			  Achievement manager instance used to track and save player achievements.
+	 * 			  2025-10-03 add generator parameter and comment
 	 */
 	public GameScreen(final GameState gameState,
 			final GameSettings gameSettings, final boolean bonusLife,
