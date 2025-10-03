@@ -13,8 +13,7 @@ public class Item extends Entity {
 
     public enum ItemType {
         ITEM_1,
-        ITEM_2,
-        ITEM_3
+        COIN
     }
 
 
@@ -28,7 +27,7 @@ public class Item extends Entity {
 
     private ItemType type;
 
-    private int effectValue;
+    protected int effectValue;
 
     private int effectDuration;
 
@@ -100,7 +99,7 @@ public class Item extends Entity {
     /**
      * Apply the Item's effect.
      */
-    public void applyEffect(GameState gameState){};
+    public void applyEffect(final GameState gameState){};
 
     /**
      * Setter of the speed of the Item.
