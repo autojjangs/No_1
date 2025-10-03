@@ -45,7 +45,7 @@ public final class ItemPool {
             item.setItemSpeed(speed);
             item.setSprite();
         } else {
-            item = new Item(positionX, positionY, 2, 1, DrawManager.SpriteType.Ship, Item.ItemType.ITEM_1, 1, 1, 0.5);
+            item = new Item(positionX, positionY, 2, DrawManager.SpriteType.Ship, Item.ItemType.ITEM_1, 1, 1, 0.5);
             item.setPositionX(positionX - item.getWidth() / 2);
         }
         return item;
