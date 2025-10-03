@@ -3,6 +3,7 @@ package entity;
 import java.awt.Color;
 
 import engine.DrawManager.SpriteType;
+import engine.GameState;
 
 /**
  * Implements a Item that moves vertically up or down.
@@ -99,7 +100,7 @@ public class Item extends Entity {
     /**
      * Apply the Item's effect.
      */
-    public void applyEffect(){};
+    public void applyEffect(GameState gameState){};
 
     /**
      * Setter of the speed of the Item.
