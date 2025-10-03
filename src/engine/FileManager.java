@@ -256,9 +256,6 @@ public final class FileManager {
         }
     }
 
-    // ----------------------------------------------------
-    // 🌟🌟🌟 변경 코드 : loadCoins 함수 추가 🌟🌟🌟
-    // ----------------------------------------------------
     /**
      * Loads the coin count from the coins.csv file.
      *
@@ -285,12 +282,12 @@ public final class FileManager {
 
             logger.info("Loading coin count from " + COIN_FILENAME + ".");
 
-            // coins.csv 파일의 맨 첫 줄을 읽어 코인 수를 가져옴
+            // coins.csv Read the first line of the file to get the number of coins
             String line = bufferedReader.readLine();
 
             if (line != null && !line.trim().isEmpty()) {
                 try {
-                    // 숫자만 추출하여 변환 시도
+                    // Attempt to convert by extracting only numbers
                     String rawCoin = line.trim().replaceAll("[^0-9]", "");
                     if (!rawCoin.isEmpty()) {
                         return Integer.parseInt(rawCoin);
@@ -312,9 +309,6 @@ public final class FileManager {
         return 0;
     }
 
-    // ----------------------------------------------------
-    // 🌟🌟🌟 변경 코드 : saveCoins 함수 추가 🌟🌟🌟
-    // ----------------------------------------------------
     /**
      * Saves the current coin count to the coins.csv file.
      *
@@ -332,7 +326,7 @@ public final class FileManager {
 
             String coinsPath = new File(jarPath).getParent();
             coinsPath += File.separator;
-            coinsPath += COIN_FILENAME; // coins.csv 사용
+            coinsPath += COIN_FILENAME; // Use coins.csv
 
             File coinsFile = new File(coinsPath);
 
@@ -345,7 +339,7 @@ public final class FileManager {
 
             logger.info("Saving new coin count (" + coins + ") to " + COIN_FILENAME + ".");
 
-            // coins.csv 파일에 코인 수만 한 줄 저장
+            // Save only one line of coin count to the coins.csv file.
             bufferedWriter.write(Integer.toString(coins));
             bufferedWriter.newLine();
 
