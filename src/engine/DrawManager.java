@@ -489,6 +489,25 @@ public final class DrawManager {
 	 * @param isNewRecord
 	 *                     If the score is a new high score.
 	 */
+	public void drawPauseOverlay(final Screen screen){
+		backBufferGraphics.setColor(new Color(0,0,0,200));
+		backBufferGraphics.fillRect(0, 0, screen.getWidth(), screen.getHeight());
+
+		String pauseString = "PAUSED";
+		backBufferGraphics.setFont(fontBig);
+		backBufferGraphics.setColor(Color.WHITE);
+		drawCenteredBigString(screen, pauseString, screen.getHeight()/2);
+
+		String returnMenu = "PRESS F1 TO RETURN TO TITLE";
+		backBufferGraphics.setFont(fontRegular);
+		backBufferGraphics.setColor(Color.WHITE);
+		drawCenteredRegularString(screen, returnMenu, screen.getHeight()-50);
+	}//ADD This Screen
+	/**
+	 * Draws a pause screen overlay.
+	 *
+	 * @param screen Screen to draw on.
+	 */
 	public void drawGameOver(final Screen screen, final boolean acceptsInput,
 			final boolean isNewRecord) {
 		String gameOverString = "Game Over";
