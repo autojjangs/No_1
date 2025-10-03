@@ -348,6 +348,7 @@ public class GameScreen extends Screen {
         Set<Item> collected = new HashSet<Item>();
         for (Item item : this.items) {
 			for(Ship ship: this.ships) {
+				if(ship == null) continue;
 				if (checkCollision(item, ship) && !collected.contains(item)) {
 					collected.add(item);
 					item.applyEffect();
