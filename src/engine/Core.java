@@ -250,15 +250,4 @@ public final class Core {
 			final int variance) {
 		return new Cooldown(milliseconds, variance);
 	}
-
-	/**
-	 * For Check Achievement release
-	 *
-	 * @return Total Number of level
-	 * 2025-10-02 add
-	 */
-	public static int getNumLevels(){
-		return NUM_LEVELS;
-	}
-
 }
