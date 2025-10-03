@@ -350,7 +350,7 @@ public class GameScreen extends Screen {
 			for(Ship ship: this.ships) {
 				if (checkCollision(item, ship) && !collected.contains(item)) {
 					collected.add(item);
-					item.applyEffect(getGameState());
+					item.applyEffect(getGameState(), ship.getPlayerId());
 					this.logger.info("Item picked up by ship " + ship.getPlayerId());
 				}
 			}
