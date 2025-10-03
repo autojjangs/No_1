@@ -1,5 +1,9 @@
 package engine;
 
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 /**
  * Implements an object that stores a single game's difficulty settings.
  *
@@ -16,6 +20,84 @@ public class GameSettings {
 	private int baseSpeed;
 	/** Frequency of enemy shootings, +/- 30%. */
 	private int shootingFrecuency;
+
+
+    //추가 사항
+    public static class ChangeData {
+        public int x, y;
+
+        public int hp;
+        public Color color = null;
+
+        public int multiplier;
+
+        public ChangeData(int x, int y, int hp, int multiplier) {
+            this.x = x; this.y = y;
+            this.hp = hp;
+            this.multiplier = multiplier;
+        }
+
+        public ChangeData(int x, int y, int hp, int multiplier, Color color) {
+            this.x = x; this.y = y;
+            this.hp = hp;
+            this.multiplier = multiplier;
+            this.color = color;
+        }
+    }
+
+    private List<ChangeData> changeDataList;
+    public final List<ChangeData> getChangeDataList() {
+        return changeDataList;
+    }
+
+    public static List<GameSettings> GetGameSettings(){
+        List<GameSettings> result = new ArrayList<>();
+
+        GameSettings setting;
+
+        //Level 1
+        setting = new GameSettings(4, 3, 80, 2500);
+        result.add(setting);
+
+        //Level 2
+        setting = new GameSettings(5, 3, 70, 2500);
+        setting.changeDataList = Arrays.asList(
+                new ChangeData(0, 0, 0, 0),
+                new ChangeData(4, 0, 0,0),
+                new ChangeData(0, 2, 0, 0),
+                new ChangeData(4, 2, 0,0),
+                new ChangeData(2, 1, 2,2, Color.RED)
+        );
+        result.add(setting);
+
+        //Level 3
+        setting = new GameSettings(8, 2, 1, 1000000);
+        setting.changeDataList = Arrays.asList(
+                new ChangeData(0, 0, 1, 2, Color.yellow),
+                new ChangeData(1, 0, 1,2, Color.yellow),
+                new ChangeData(2, 0, 1, 2, Color.yellow),
+                new ChangeData(3, 0, 0,0),
+                new ChangeData(4, 0, 0, 0),
+                new ChangeData(5, 0, 1,2, Color.yellow),
+                new ChangeData(6, 0, 1, 2, Color.yellow),
+                new ChangeData(7, 0, 1,2, Color.yellow),
+
+                new ChangeData(0, 1, 1, 2, Color.yellow),
+                new ChangeData(1, 1, 1,2, Color.yellow),
+                new ChangeData(2, 1, 1, 2, Color.yellow),
+                new ChangeData(3, 1, 0,0),
+                new ChangeData(4, 1, 0, 0),
+                new ChangeData(5, 1, 1,2, Color.yellow),
+                new ChangeData(6, 1, 1, 2, Color.yellow),
+                new ChangeData(7, 1, 1,2, Color.yellow)
+        );
+        result.add(setting);
+
+
+
+        return result;
+    }
+
 
 	/**
 	 * Constructor.
@@ -35,6 +117,7 @@ public class GameSettings {
 		this.formationHeight = formationHeight;
 		this.baseSpeed = baseSpeed;
 		this.shootingFrecuency = shootingFrecuency;
+        this.changeDataList = new ArrayList<>();
 	}
 
 	/**

@@ -164,6 +164,32 @@ public class EnemyShipFormation implements Iterable<EnemyShip> {
 
 		for (List<EnemyShip> column : this.enemyShips)
 			this.shooters.add(column.get(column.size() - 1));
+
+        for (GameSettings.ChangeData changeData : gameSettings.getChangeDataList()){
+            EnemyShip ship = this.enemyShips.get(changeData.x).get(changeData.y);
+
+            if(changeData.hp == 0){
+                destroy(ship);
+            }
+            else {
+                ship.ChangeShip(changeData);
+            }
+        }
+
+        List<EnemyShip> destroyed;
+        for (List<EnemyShip> column : this.enemyShips) {
+            destroyed = new ArrayList<EnemyShip>();
+            for (EnemyShip ship : column) {
+                if (ship != null && ship.isDestroyed()) {
+                    destroyed.add(ship);
+                    this.logger.info("Removed enemy "
+                            + column.indexOf(ship) + " from column "
+                            + this.enemyShips.indexOf(column));
+                }
+            }
+            column.removeAll(destroyed);
+        }
+
 	}
 
 	/**
