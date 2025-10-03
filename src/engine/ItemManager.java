@@ -72,7 +72,7 @@ public final class ItemManager {
         if (items == null || gameScreen == null) return;
 
         for (Item item : items) {
-            item.applyEffect();
+//            item.applyEffect(gameScreen.getGameState());
             this.logger.info(item.getType() + " picked up");
         }
     }

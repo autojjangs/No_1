@@ -3,27 +3,28 @@ package entity;
 import java.awt.Color;
 
 import engine.DrawManager.SpriteType;
+import engine.GameState;
 
 /**
  * Implements a Item that moves vertically up or down.
  */
 public class Item extends Entity {
 
-    // TODO: Move to ItemManager.
+
     public enum ItemType {
         ITEM_1,
         ITEM_2,
         ITEM_3
     }
 
-    /** Item variables.
-     * Some variables may not be implemented yet.
-     **/
+
+    /**
+     * Speed of the Item, positive or negative depending on direction -
+     * positive is down.
+     */
     private int itemSpeed;
 
-
     private String name;
-
 
     private ItemType type;
 
@@ -31,8 +32,11 @@ public class Item extends Entity {
 
     private int effectDuration;
 
-    // TODO. Apply to each item
     private static double dropChance = 0.5;
+
+
+
+
 
     /**
      * Constructor, establishes the Item's properties.
@@ -47,9 +51,7 @@ public class Item extends Entity {
      */
 
     public Item(final int positionX, final int positionY, final int speed,
-
                 SpriteType spriteType, ItemType itemType, int effectValue, int effectDuration, double dropChance) {
-
         super(positionX, positionY, 3 * 2, 5 * 2, Color.WHITE);
         this.itemSpeed = speed;
         this.type = ItemType.ITEM_1;
@@ -57,22 +59,48 @@ public class Item extends Entity {
         this.effectValue = effectValue;
         this.effectDuration = effectDuration;
         this.dropChance = dropChance;
-
         setSprite();
     }
+//    public Item() {
+//        super(0, 0, 3 * 2, 5 * 2, Color.WHITE);
+//        this.itemSpeed = 0;
+//        this.itemId = 0;
+//        this.type = ItemType.ITEM_1;
+//        this.spriteType = SpriteType.Ship;
+//        this.effectValue = 0;
+//        this.effectDuration = 0;
+//        this.dropChance = 0;
+//        setSprite();
+//    }
+
+//    /**
+//     * Sets correct sprite for the Item, based on speed.
+//     */
+//    public final void init(final int x, final int y, final ItemType type,
+//                           final int speed, final SpriteType sprite) {
+//        this.positionX = x;
+//        this.positionY = y;
+//        this.type = type;
+//        this.itemSpeed = speed;
+//        this.spriteType = sprite;
+//    }
 
     public final void setSprite() {
         // keep the same sprite for now; choose based on speed if you want
         this.spriteType = SpriteType.ItemDefault;
     }
 
-    /** Updates the Item's position. */
+    /**
+     * Updates the Item's position.
+     */
     public final void update() {
         this.positionY += this.itemSpeed;
     }
 
-    /** Apply the Item's effect. */
-    public void applyEffect(){};
+    /**
+     * Apply the Item's effect.
+     */
+    public void applyEffect(GameState gameState){};
 
     /**
      * Setter of the speed of the Item.
