@@ -23,8 +23,6 @@ public class Item extends Entity {
      */
     private int itemSpeed;
 
-    private int itemId;
-
     private String name;
 
     private ItemType type;
@@ -52,10 +50,9 @@ public class Item extends Entity {
      */
 
     public Item(final int positionX, final int positionY, final int speed,
-                int itemId, SpriteType spriteType, ItemType itemType, int effectValue, int effectDuration, double dropChance) {
+                SpriteType spriteType, ItemType itemType, int effectValue, int effectDuration, double dropChance) {
         super(positionX, positionY, 3 * 2, 5 * 2, Color.WHITE);
         this.itemSpeed = speed;
-        this.itemId = itemId;
         this.type = ItemType.ITEM_1;
         this.spriteType = spriteType;
         this.effectValue = effectValue;
