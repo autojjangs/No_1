@@ -7,7 +7,6 @@ import java.util.logging.Logger;
 
 import entity.EnemyShip;
 import entity.Item;
-import entity.Item.ItemType;
 import entity.ItemPool;
 import engine.DrawManager.SpriteType;
 
@@ -16,6 +15,12 @@ import engine.DrawManager.SpriteType;
  * Implemented as a singleton for easy access.
  */
 public final class ItemManager {
+
+    public static enum ItemType {
+        ITEM_1,
+        ITEM_2,
+        ITEM_3
+    }
 
     private static ItemManager instance;
 

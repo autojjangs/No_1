@@ -4,18 +4,13 @@ import java.awt.Color;
 
 import engine.DrawManager.SpriteType;
 
+import engine.ItemManager.ItemType;
+
+
 /**
  * Implements a Item that moves vertically up or down.
  */
 public class Item extends Entity {
-
-
-    public enum ItemType {
-        ITEM_1,
-        ITEM_2,
-        ITEM_3
-    }
-
 
     /**
      * Speed of the Item, positive or negative depending on direction -
@@ -34,10 +29,6 @@ public class Item extends Entity {
     private int effectDuration;
 
     private static double dropChance = 0.5;
-
-
-
-
 
     /**
      * Constructor, establishes the Item's properties.
