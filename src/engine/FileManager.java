@@ -42,10 +42,10 @@ public final class FileManager {
      * Max number of high scores.
      */
     private static final int MAX_SCORES = 7;
-
-    // 🌟🌟🌟 변경 코드 : coin 내용을 저장하기 위한 coins.csv 파일 🌟🌟🌟
+  
+    // coins.csv file to save changes about coin content
     private static final String COIN_FILENAME = "coins.csv";
-    // 🌟🌟🌟 변경 코드 : coin 내용을 저장하기 위한 coins.csv 파일 🌟🌟🌟
+   
     /**
      * private constructor.
      */
