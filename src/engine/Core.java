@@ -129,6 +129,8 @@ public final class Core {
 				break;
 			case 2:
 				// Game & score.
+				// 2025-10-03 1판 시작할 때 새로운 업적 매니저 생성
+				AchievementManager achievementManager = new AchievementManager();
 				do {
 					// One extra live every few levels.
 					boolean bonusLife = gameState.getLevel()
@@ -137,9 +139,9 @@ public final class Core {
 					
 					currentScreen = new GameScreen(gameState,
 							gameSettings.get(gameState.getLevel() - 1),
-							bonusLife, width, height, FPS);
+							bonusLife, width, height, FPS, achievementManager); //2015-10-03 add parameter
 					LOGGER.info("Starting " + WIDTH + "x" + HEIGHT
-							+ " game screen at " + FPS + " fps.");
+							+ " ga	me screen at " + FPS + " fps.");
 					frame.setScreen(currentScreen);
 					LOGGER.info("Closing game screen.");
 
@@ -160,7 +162,8 @@ public final class Core {
 						+ gameState.getLivesRemaining() + " lives remaining, "
 						+ gameState.getBulletsShot() + " bullets shot and "
 						+ gameState.getShipsDestroyed() + " ships destroyed.");
-				currentScreen = new ScoreScreen(width, height, FPS, gameState);
+				currentScreen = new ScoreScreen(width, height, FPS, gameState, achievementManager); //2015-10-03 add parameter
+
 				returnCode = frame.setScreen(currentScreen);
 				LOGGER.info("Closing score screen.");
 				break;

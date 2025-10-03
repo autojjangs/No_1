@@ -92,7 +92,7 @@ public class GameScreen extends Screen {
 	 */
 	public GameScreen(final GameState gameState,
 			final GameSettings gameSettings, final boolean bonusLife,
-			final int width, final int height, final int fps) {
+			final int width, final int height, final int fps, final AchievementManager achievementManager) {
 		super(width, height, fps);
 
 		this.gameSettings = gameSettings;
@@ -106,7 +106,7 @@ public class GameScreen extends Screen {
 		this.shipsDestroyed = gameState.getShipsDestroyed();
 
 		// for check Achievement 2025-10-02 add
-		this.achievementManager = new AchievementManager();
+		this.achievementManager = achievementManager;
 		this.tookDamageThisLevel = false;
 	}
 
@@ -127,7 +127,6 @@ public class GameScreen extends Screen {
 				.getCooldown(BONUS_SHIP_EXPLOSION);
 		this.screenFinishedCooldown = Core.getCooldown(SCREEN_CHANGE_INTERVAL);
 		this.bullets = new HashSet<Bullet>();
-
 		// Special input delay / countdown.
 		this.gameStartTime = System.currentTimeMillis();
 		this.inputDelay = Core.getCooldown(INPUT_DELAY);
@@ -216,7 +215,7 @@ public class GameScreen extends Screen {
 			  2025-10-02 add three 'if'statements
 			 */
 			// Survivor
-			if(!this.tookDamageThisLevel){
+			if(!this.tookDamageThisLevel && this.level == Core.getNumLevels()){
 				achievementManager.unlock("Survivor");
 			}
 			// Clear
