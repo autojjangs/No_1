@@ -140,7 +140,7 @@ public final class Core {
 							gameSettings.get(gameState.getLevel() - 1),
 							bonusLife, width, height, FPS, achievementManager); //2025-10-03 add parameter
 					LOGGER.info("Starting " + WIDTH + "x" + HEIGHT
-							+ " ga	me screen at " + FPS + " fps.");
+							+ " game screen at " + FPS + " fps.");
 					frame.setScreen(currentScreen);
 					LOGGER.info("Closing game screen.");
 
