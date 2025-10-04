@@ -698,6 +698,18 @@ public final class DrawManager {
 		}
 		backBufferGraphics.drawLine(splitPointX, screen.getHeight()/4, splitPointX,(menuY+menuItems.length*60));
 	}
+	public void drawVolumeBar(final Screen screen){
+		int bar_startWidth = screen.getWidth() / 5;
+		int bar_endWidth = screen.getWidth()-bar_startWidth;
+		int barHeight = screen.getHeight()/3;
+
+		backBufferGraphics.setFont(fontRegular);
+		backBufferGraphics.setColor(Color.WHITE);
+		backBufferGraphics.drawLine(bar_startWidth, barHeight, bar_endWidth, barHeight);
+
+
+	}
+
 	/**
 	 * Draws a centered string on regular font.
 	 *
