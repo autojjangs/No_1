@@ -63,7 +63,7 @@ public final class Core {
 		int width = frame.getWidth();
 		int height = frame.getHeight();
 
-		gameSettings = GameSettings.GetGameSettings();
+		gameSettings = GameSettings.getGameSettings();
 
 
         // 2P mode: modified to null to allow for switch between 2 modes

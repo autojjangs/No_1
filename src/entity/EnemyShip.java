@@ -84,7 +84,7 @@ public class EnemyShip extends Entity {
 		}
 	}
 
-    public void ChangeShip(GameSettings.ChangeData changeData){
+    public void changeShip(GameSettings.ChangeData changeData){
         this.hp = changeData.hp;
 
         this.changeColor(changeData.color);

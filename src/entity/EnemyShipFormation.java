@@ -172,7 +172,7 @@ public class EnemyShipFormation implements Iterable<EnemyShip> {
                 destroy(ship);
             }
             else {
-                ship.ChangeShip(changeData);
+                ship.changeShip(changeData);
             }
         }
 

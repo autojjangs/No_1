@@ -24,11 +24,15 @@ public class GameSettings {
 
     //추가 사항
     public static class ChangeData {
+        //바꿀 적 위치
         public int x, y;
 
+        //적 체력
         public int hp;
+        //적 색상
         public Color color = null;
 
+        //보상 배율
         public int multiplier;
 
         public ChangeData(int x, int y, int hp, int multiplier) {
@@ -50,7 +54,7 @@ public class GameSettings {
         return changeDataList;
     }
 
-    public static List<GameSettings> GetGameSettings(){
+    public static List<GameSettings> getGameSettings(){
         List<GameSettings> result = new ArrayList<>();
 
         GameSettings setting;
