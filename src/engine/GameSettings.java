@@ -55,45 +55,82 @@ public class GameSettings {
 
         GameSettings setting;
 
-        //Level 1
-        setting = new GameSettings(4, 3, 80, 2500);
-        result.add(setting);
+            //Level 1
+            setting = new GameSettings(4, 3, 80, 2000);
+            result.add(setting);
 
-        //Level 2
-        setting = new GameSettings(5, 3, 70, 2500);
+            //Level 2
+            setting = new GameSettings(5, 4, 70, 1500);
+            setting.changeDataList = Arrays.asList(
+                    new ChangeData(0, 0, 2, 2, Color.RED),
+                    new ChangeData(1, 0, 2, 2, Color.RED),
+                    new ChangeData(2, 0, 2, 2, Color.RED),
+                    new ChangeData(3, 0, 2, 2, Color.RED),
+                    new ChangeData(4, 0, 2, 2, Color.RED)
+            );
+            result.add(setting);
+
+        //Bonus Stage
+        setting = new GameSettings(5, 4, 1, 1000000);
         setting.changeDataList = Arrays.asList(
                 new ChangeData(0, 0, 0, 0),
-                new ChangeData(4, 0, 0,0),
-                new ChangeData(0, 2, 0, 0),
-                new ChangeData(4, 2, 0,0),
-                new ChangeData(2, 1, 2,2, Color.RED)
-        );
-        result.add(setting);
-
-        //Level 3
-        setting = new GameSettings(8, 2, 1, 1000000);
-        setting.changeDataList = Arrays.asList(
-                new ChangeData(0, 0, 1, 2, Color.yellow),
-                new ChangeData(1, 0, 1,2, Color.yellow),
+                new ChangeData(1, 0, 0, 0),
                 new ChangeData(2, 0, 1, 2, Color.yellow),
-                new ChangeData(3, 0, 0,0),
+                new ChangeData(3, 0, 0, 0),
                 new ChangeData(4, 0, 0, 0),
-                new ChangeData(5, 0, 1,2, Color.yellow),
-                new ChangeData(6, 0, 1, 2, Color.yellow),
-                new ChangeData(7, 0, 1,2, Color.yellow),
 
                 new ChangeData(0, 1, 1, 2, Color.yellow),
-                new ChangeData(1, 1, 1,2, Color.yellow),
+                new ChangeData(1, 1, 1, 2, Color.yellow),
                 new ChangeData(2, 1, 1, 2, Color.yellow),
-                new ChangeData(3, 1, 0,0),
-                new ChangeData(4, 1, 0, 0),
-                new ChangeData(5, 1, 1,2, Color.yellow),
-                new ChangeData(6, 1, 1, 2, Color.yellow),
-                new ChangeData(7, 1, 1,2, Color.yellow)
+                new ChangeData(3, 1, 1, 2, Color.yellow),
+                new ChangeData(4, 1, 1, 2, Color.yellow),
+
+                new ChangeData(0, 2, 0, 0),
+                new ChangeData(1, 2, 1, 2, Color.yellow),
+                new ChangeData(2, 2, 1, 2, Color.yellow),
+                new ChangeData(3, 2, 1, 2, Color.yellow),
+                new ChangeData(4, 2, 0, 0),
+
+                new ChangeData(0, 3, 0, 0),
+                new ChangeData(1, 3, 1, 2, Color.yellow),
+                new ChangeData(2, 3, 0, 0),
+                new ChangeData(3, 3, 1, 2, Color.yellow),
+                new ChangeData(4, 3, 0, 0)
+
         );
         result.add(setting);
 
+        //Level 4
+        setting = new GameSettings(8, 2, 40, 1000);
+        setting.changeDataList = Arrays.asList(
+                new ChangeData(0, 0, 2, 2, Color.RED),
+                new ChangeData(1, 1, 2, 2, Color.RED),
+                new ChangeData(2, 0, 2, 2, Color.RED),
+                new ChangeData(3, 1, 2, 2, Color.RED),
+                new ChangeData(4, 0, 2, 2, Color.RED),
+                new ChangeData(5, 1, 2, 2, Color.RED),
+                new ChangeData(6, 0, 2, 2, Color.RED),
+                new ChangeData(7, 1, 2, 2, Color.RED)
+        );
+        result.add(setting);
 
+        //Level 5
+        setting = new GameSettings(3, 3, 40, 1000);
+        setting.changeDataList = Arrays.asList(
+                new ChangeData(0, 0, 3, 3, Color.BLUE),
+                new ChangeData(1, 0, 3, 3, Color.BLUE),
+                new ChangeData(2, 0, 3, 3, Color.BLUE),
+
+                new ChangeData(0, 1, 3, 3, Color.BLUE),
+                new ChangeData(1, 1, 10, 10, Color.MAGENTA),
+                new ChangeData(2, 1, 3, 3, Color.BLUE),
+
+                new ChangeData(0, 2, 3, 3, Color.BLUE),
+                new ChangeData(1, 2, 3, 3, Color.BLUE),
+                new ChangeData(2, 2, 3, 3, Color.BLUE)
+
+        );
+        result.add(setting);
 
         return result;
     }
