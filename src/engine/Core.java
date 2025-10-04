@@ -154,8 +154,7 @@ public final class Core {
 							gameState.getBulletsShot(),
 							gameState.getShipsDestroyed(), gameState.getCoins());
 
-				} while (gameState.getLivesRemaining() > 0
-						&& gameState.getLevel() <= NUM_LEVELS);
+				} while (gameState.getLivesRemaining() > 0 && gameState.getLevel() <= NUM_LEVELS);
 
 				LOGGER.info("Starting " + WIDTH + "x" + HEIGHT
 						+ " score screen at " + FPS + " fps, with a score of "
