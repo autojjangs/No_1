@@ -42,7 +42,7 @@ public class SettingScreen extends Screen {
      */
     private void draw() {
         drawManager.initDrawing(this);
-
+        drawManager.drawVolumeBar(this);
         drawManager.drawSettingMenu(this);
         drawManager.completeDrawing(this);
     }
