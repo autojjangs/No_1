@@ -1,5 +1,6 @@
 package engine;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.ConsoleHandler;
@@ -53,7 +54,7 @@ public final class Core {
 	 * @param args
 	 *             Program args, ignored.
 	 */
-	public static void main(final String[] args) {
+	public static void main(final String[] args) throws IOException {
 		try {
 			LOGGER.setUseParentHandlers(false);
 			fileHandler = new FileHandler("log");
@@ -127,13 +128,13 @@ public final class Core {
                     gameState.getScore(),
                     gameState.getLivesRemaining(),
                     gameState.getBulletsShot(),
-                    gameState.getShipsDestroyed());
+                    gameState.getShipsDestroyed(), getFileManager().loadCoins());
 
                 if (gameState.teamAlive()) {
                   gameState.nextLevel();
                 }
 
-              } while ((gameState.getLivesRemaining() || gameState.teamAlive()) && gameState.getLevel() <= NUM_LEVELS);
+              } while ((gameState.getLivesRemaining() > 0 || gameState.teamAlive()) && gameState.getLevel() <= NUM_LEVELS);
 
               LOGGER.info("Starting " + WIDTH + "x" + HEIGHT + " score screen at " + FPS + " fps, with a score of "
                   + gameState.getScore() + ", "

@@ -44,7 +44,15 @@ public class GameScreen extends Screen {
 	private long gameStartTime;
 	private boolean levelFinished;
 	private boolean bonusLife;
-	/** checks if player took damage
+
+    private int level;
+    private int score;
+    private int lives;
+    private int bulletsShot;
+    private int shipsDestroyed;
+    private Ship ship;
+
+    /** checks if player took damage
 	 * 2025-10-02 add new variable
 	 * */
 	private boolean tookDamageThisLevel;
@@ -92,14 +100,14 @@ public class GameScreen extends Screen {
 		this.tookDamageThisLevel = false;
 
 		// 2P: bonus life adds to team pool + singleplayer mode
-    if (this.bonusLife) {
-        if (state.isSharedLives()) {
-            state.addTeamLife(1); // two player
-        } else {
-            // 1P legacy: grant to P1
-            state.addLife(0, 1);  // singleplayer
+        if (this.bonusLife) {
+            if (state.isSharedLives()) {
+                state.addTeamLife(1); // two player
+            } else {
+                // 1P legacy: grant to P1
+                state.addLife(0, 1);  // singleplayer
+            }
         }
-     }
 	}
 
 	public final void initialize() {
@@ -308,37 +316,25 @@ public class GameScreen extends Screen {
 	 * Enemy bullets hit players → decrement TEAM lives; player bullets hit enemies
 	 * → add score.
 	 */
-	private void manageCollisions() {
-		Set<Bullet> recyclable = new HashSet<Bullet>();
-		for (Bullet bullet : this.bullets) {
-			if (bullet.getSpeed() > 0) {
-        // Survivor Achievement check
-        if (checkCollision(bullet, this.ship) && !this.levelFinished) {
-          recyclable.add(bullet);
-          if (!this.ship.isDestroyed()) {
-            this.ship.destroy();
-            this.lives--;
-            this.tookDamageThisLevel = true; // For check 'Survivor' Achievement 2025-10-02
-            this.logger.info("Hit on player ship, " + this.lives
-                + " lives remaining.");
-          }
-        }
+    private void manageCollisions() {
+        Set<Bullet> recyclable = new HashSet<Bullet>();
+        for (Bullet bullet : this.bullets) {
+            if (bullet.getSpeed() > 0) {
+                // Enemy bullet vs both players
+                for (int p = 0; p < GameState.NUM_PLAYERS; p++) {
+                    Ship ship = this.ships[p];
+                    if (ship != null && !ship.isDestroyed()
+                            && checkCollision(bullet, ship) && !this.levelFinished) {
+                        recyclable.add(bullet);
 
-        // Enemy bullet vs both players
-        for (int p = 0; p < GameState.NUM_PLAYERS; p++) {
-          Ship ship = this.ships[p];
-          if (ship != null && !ship.isDestroyed()
-              && checkCollision(bullet, ship) && !this.levelFinished) {
-            recyclable.add(bullet);
+                        ship.destroy(); // explosion/respawn handled by Ship.update()
+                        state.decLife(p); // decrement shared/team lives by 1
 
-            ship.destroy(); // explosion/respawn handled by Ship.update()
-                  state.decLife(p); // decrement shared/team lives by 1
-
-            this.logger.info("Hit on player " + (p + 1) + ", team lives now: " + state.getLivesRemaining());
-            break;
-          }
-        }
-      } else {
+                        this.logger.info("Hit on player " + (p + 1) + ", team lives now: " + state.getLivesRemaining());
+                        break;
+                    }
+                }
+            } else {
 				// Player bullet vs enemies
 				// map Bullet owner id (1 or 2) to per-player index (0 or 1)
 				final int ownerId = bullet.getOwnerPlayerId(); // 1 or 2 (0 if unset)
