@@ -141,12 +141,12 @@ public final class Core {
 					break;
 
 				case 3:
-					// High scores.
-					currentScreen = new HighScoreScreen(width, height, FPS);
+					// Achievements.
+					currentScreen = new AchievementScreen(width, height, FPS);
 					LOGGER.info("Starting " + WIDTH + "x" + HEIGHT
-							+ " high score screen at " + FPS + " fps.");
+							+ " achievements screen at " + FPS + " fps.");
 					returnCode = frame.setScreen(currentScreen);
-					LOGGER.info("Closing high score screen.");
+					LOGGER.info("Closing achievement screen.");
 					break;
 
           case 4:
@@ -157,7 +157,7 @@ public final class Core {
               returnCode = frame.setScreen(currentScreen);
               LOGGER.info("Closing setting screen.");
               break;
-          
+
           case 5:
               // Play : Use the play to decide 1p and 2p
               currentScreen = new PlayScreen(width, height, FPS);
@@ -166,7 +166,7 @@ public final class Core {
               coopSelected = ((PlayScreen) currentScreen).isCoopSelected();
               LOGGER.info("Closing play screen.");
               break;
-          
+
 				default:
 					break;
 			}
