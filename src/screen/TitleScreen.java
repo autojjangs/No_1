@@ -80,7 +80,7 @@ public class TitleScreen extends Screen {
                         this.isRunning = false;
                         break;
 
-                    case 1: // "High scores"
+                    case 1: // "Achievements" | High Scores -> Achievements
                         this.returnCode = 3;
                         this.isRunning = false;
                         break;
