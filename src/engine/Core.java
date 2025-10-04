@@ -29,15 +29,6 @@ public final class Core {
 	/** Lives per player (used to compute team pool in shared mode). */
 	private static final int MAX_LIVES = 3;
 	private static final int EXTRA_LIFE_FRECUENCY = 3;
-	private static final int NUM_LEVELS = 7;
-
-	private static final GameSettings SETTINGS_LEVEL_1 = new GameSettings(5, 4, 60, 2000);
-	private static final GameSettings SETTINGS_LEVEL_2 = new GameSettings(5, 5, 50, 2500);
-	private static final GameSettings SETTINGS_LEVEL_3 = new GameSettings(6, 5, 40, 1500);
-	private static final GameSettings SETTINGS_LEVEL_4 = new GameSettings(6, 6, 30, 1500);
-	private static final GameSettings SETTINGS_LEVEL_5 = new GameSettings(7, 6, 20, 1000);
-	private static final GameSettings SETTINGS_LEVEL_6 = new GameSettings(7, 7, 10, 1000);
-	private static final GameSettings SETTINGS_LEVEL_7 = new GameSettings(8, 7, 2, 500);
 
 	/** Frame to draw the screen on. */
 	private static Frame frame;
@@ -72,14 +63,7 @@ public final class Core {
 		int width = frame.getWidth();
 		int height = frame.getHeight();
 
-		gameSettings = new ArrayList<GameSettings>();
-		gameSettings.add(SETTINGS_LEVEL_1);
-		gameSettings.add(SETTINGS_LEVEL_2);
-		gameSettings.add(SETTINGS_LEVEL_3);
-		gameSettings.add(SETTINGS_LEVEL_4);
-		gameSettings.add(SETTINGS_LEVEL_5);
-		gameSettings.add(SETTINGS_LEVEL_6);
-		gameSettings.add(SETTINGS_LEVEL_7);
+		gameSettings = GameSettings.getGameSettings();
 
 
         // 2P mode: modified to null to allow for switch between 2 modes
@@ -128,7 +112,7 @@ public final class Core {
 							gameState.nextLevel();
 						}
 
-					} while (gameState.teamAlive() && gameState.getLevel() <= NUM_LEVELS);
+					} while (gameState.teamAlive() && gameState.getLevel() <= gameSettings.size());
 
 					LOGGER.info("Starting " + WIDTH + "x" + HEIGHT + " score screen at " + FPS + " fps, with a score of "
 							+ gameState.getScore() + ", "
