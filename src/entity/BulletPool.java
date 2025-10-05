@@ -15,7 +15,7 @@ public final class BulletPool {
 	/** Set of already created bullets. */
 	private static Set<Bullet> pool = new HashSet<Bullet>();
 	//기본 총알 크기
-	private static final int BASE_WIDTH = 3*2;
+	private static final int BASE_WIDTH = 3*2;	//Todo PlayerC의 총알 크기 변경값 반영
 	private static final int BASE_HEIGHT = 5*2;
 
 	/**

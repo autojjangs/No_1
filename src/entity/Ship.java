@@ -104,7 +104,7 @@ public class Ship extends Entity {
 			// Different firing depending on ship type
 			switch (this.type) {
 				case DOUBLE_SHOT:
-					int offset = 6;
+					int offset = 6;	//Todo PlayerC의 총알 크기 변경값에 맞춰서 offset 값 조정
 					// left bullet fire
 					Bullet b1 = BulletPool.getBullet(positionX + this.width / 2 - offset, spawnY, BULLET_SPEED,
 							bulletWidth, bulletHeight, this.getTeam());
@@ -113,7 +113,7 @@ public class Ship extends Entity {
 
 					// right bullet fire
 					Bullet b2 = BulletPool.getBullet(positionX + this.width / 2 + offset, spawnY, BULLET_SPEED,
-							positionY, BULLET_SPEED, this.getTeam());
+							bulletWidth, bulletHeight, this.getTeam());
 					b2.setOwnerPlayerId(this.getPlayerId());
 					bullets.add(b2);
 					break;
