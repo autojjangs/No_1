@@ -331,14 +331,18 @@ public class EnemyShipFormation implements Iterable<EnemyShip> {
 	 *            Bullets set to add the bullet being shot.
 	 */
 	public final void shoot(final Set<Bullet> bullets) {
+		if (this.shooters.isEmpty()) return;
 		// For now, only ships in the bottom row are able to shoot.
 		int index = (int) (Math.random() * this.shooters.size());
 		EnemyShip shooter = this.shooters.get(index);
 
 		if (this.shootingCooldown.checkFinished()) {
 			this.shootingCooldown.reset();
+			int bulletWidth = 3 * 2;
+			int bulletHeight = 5 * 2;
+			int spawnY = shooter.getPositionY() + shooter.getHeight(); // 겹침 방지
 			bullets.add(BulletPool.getBullet(shooter.getPositionX()
-					+ shooter.width / 2, shooter.getPositionY(), BULLET_SPEED));
+					+ shooter.width / 2, spawnY,BULLET_SPEED, bulletWidth, bulletHeight, Entity.Team.ENEMY));
 		}
 	}
 

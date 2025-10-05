@@ -40,9 +40,8 @@ public class Bullet extends Entity {
 	 */
 	//생성자에서 width와 height를 받도록 변경
 	public Bullet(final int positionX, final int positionY, final int width, final int height, final int speed) {
-		super(positionX, positionY, width , height , Color.WHITE);
+		super(positionX, positionY,0,0 , Color.WHITE);
 		this.speed = speed;
-		setSprite();
 	}
 
 	//재활용 시 크기 재설정
@@ -59,7 +58,6 @@ public class Bullet extends Entity {
 			this.spriteType = SpriteType.Bullet; // player bullet fired, team remains NEUTRAL
 		} else {
 			this.spriteType = SpriteType.EnemyBullet; // enemy fired bullet
-			this.team = Team.ENEMY; // enemy bullets always belong to ENEMY team
 		}
 	}
 

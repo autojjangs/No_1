@@ -2,6 +2,7 @@ package entity;
 
 import java.util.HashSet;
 import java.util.Set;
+import entity.Entity.Team;
 
 /**
  * Implements a pool of recyclable bullets.
@@ -14,8 +15,8 @@ public final class BulletPool {
 	/** Set of already created bullets. */
 	private static Set<Bullet> pool = new HashSet<Bullet>();
 	//기본 총알 크기
-	private static final int BASE_WIDTH = 3*2*4;
-	private static final int BASE_HEIGHT = 5*2*4;
+	private static final int BASE_WIDTH = 3*2;
+	private static final int BASE_HEIGHT = 5*2;
 
 	/**
 	 * Constructor, not called.
@@ -39,25 +40,28 @@ public final class BulletPool {
 	 */
 	//기본 크기 bullet
 	public static Bullet getBullet(final int positionX,
-								   final int positionY, final int speed) {
-		return getBullet(positionX, positionY, speed, BASE_WIDTH, BASE_HEIGHT);
+								   final int positionY, final int speed, final Team team) {
+		return getBullet(positionX, positionY, speed, BASE_WIDTH, BASE_HEIGHT, team);
 	}
 
 	public static Bullet getBullet(final int positionX,
-								   final int positionY, final int speed, final int width, final int height) {
+								   final int positionY, final int speed, final int width, final int height, final Team team) {
 		Bullet bullet;
 		if (!pool.isEmpty()) {
 			bullet = pool.iterator().next();
 			pool.remove(bullet);
-			bullet.setSize(width, height);	//bullet 크기 초기화
-			bullet.setPositionX(positionX - bullet.getWidth() / 2);
+			bullet.setPositionX(positionX - width / 2);
 			bullet.setPositionY(positionY);
 			bullet.setSpeed(speed);
-			bullet.setSprite();
+			bullet.setSize(width, height);
+			bullet.setTeam(team);	//Team setting
 		} else {
-			bullet = new Bullet(positionX, positionY, speed, width, height);
-			bullet.setPositionX(positionX - bullet.getWidth() / 2);
+			bullet = new Bullet(positionX, positionY, BASE_WIDTH, BASE_HEIGHT, speed);
+			bullet.setPositionX(positionX - width / 2);
+			bullet.setSize(width, height);
+			bullet.setTeam(team); //Team setting
 		}
+		bullet.setSprite();
 		return bullet;
 	}
 
