@@ -64,14 +64,19 @@ public class GameScreen extends Screen {
 
 	private final GameState state;
 
+    private Ship.ShipType shipTypeP1;
+    private Ship.ShipType shipTypeP2;
+
 	public GameScreen(final GameState gameState,
-			final GameSettings gameSettings, final boolean bonusLife,
-			final int width, final int height, final int fps) {
+                      final GameSettings gameSettings, final boolean bonusLife,
+                      final int width, final int height, final int fps, final Ship.ShipType shipTypeP1, final Ship.ShipType shipTypeP2) {
 		super(width, height, fps);
 
 		this.state = gameState;
 		this.gameSettings = gameSettings;
 		this.bonusLife = bonusLife;
+        this.shipTypeP1 = shipTypeP1;
+        this.shipTypeP2 = shipTypeP2;
 
 		// 2P: bonus life adds to team pool + singleplayer mode
         if (this.bonusLife) {
@@ -91,12 +96,12 @@ public class GameScreen extends Screen {
 		enemyShipFormation.attach(this);
 
 		// 2P mode: create both ships, tagged to their respective teams
-		this.ships[0] = new Ship(this.width / 2 - 60, this.height - 30, Entity.Team.PLAYER1, Ship.ShipType.NORMAL); // P1
+		this.ships[0] = new Ship(this.width / 2 - 60, this.height - 30, Entity.Team.PLAYER1, shipTypeP1); // P1
 		this.ships[0].setPlayerId(1);
 
         // only allowing second ship to spawn when 2P mode is chosen
         if (state.isCoop()) {
-            this.ships[1] = new Ship(this.width / 2 + 60, this.height - 30, Entity.Team.PLAYER2, Ship.ShipType.DOUBLE_SHOT); // P2
+            this.ships[1] = new Ship(this.width / 2 + 60, this.height - 30, Entity.Team.PLAYER2, shipTypeP2); // P2
             this.ships[1].setPlayerId(2);
         } else {
             this.ships[1] = null; // ensuring there's no P2 ship in 1P mode

@@ -16,21 +16,22 @@ import engine.DrawManager.SpriteType;
 public class Ship extends Entity {
 
 	/** Time between shots. */
-	private static final int SHOOTING_INTERVAL = 750;
+    private int shootingInterval = 750;
 	/** Speed of the bullets shot by the ship. */
 	private static final int BULLET_SPEED = -6;
 	/** Movement of the ship for each unit of time. */
-	private static final int SPEED = 2;
+	private int speed = 2;
 
 	/** Types of ships. */
 	public enum ShipType {
 		NORMAL,
-		DOUBLE_SHOT
+        BIG_SHOT, // Bullet size is big, but moving speed is slow
+        DOUBLE_SHOT, // Double shot, but moving speed is slow
+        MOVE_FAST // moving speed is fast, but fire rate is slow
 	}
 
 	/** Current ship type. */
 	private ShipType type;
-
 	/** Minimum time between shots. */
 	private Cooldown shootingCooldown;
 	/** Time spent inactive between hits. */
@@ -39,6 +40,8 @@ public class Ship extends Entity {
 	// 2P mode: id number to specifying which player this ship belongs to - 0 =
 	// unknown, 1 = P1, 2 = P2
 	private int playerId = 0; // 0 = unknown, 1 = P1, 2 = P2
+    private int bulletWidth = 3 * 2;
+    private int bulletHeight = 5 * 2;
 
 	/**
 	 * Constructor, establishes the ship's properties.
@@ -48,12 +51,11 @@ public class Ship extends Entity {
 	 * @param positionY
 	 *                  Initial position of the ship in the Y axis.
 	 */
-	public Ship(final int positionX, final int positionY, final ShipType type) {
+	public Ship(final int positionX, final int positionY) {
 		super(positionX, positionY, 13 * 2, 8 * 2, Color.GREEN);
-		this.type = type; // Assigning values gto type variables
 
 		this.spriteType = SpriteType.Ship;
-		this.shootingCooldown = Core.getCooldown(SHOOTING_INTERVAL);
+		this.shootingCooldown = Core.getCooldown(this.shootingInterval);
 		this.destructionCooldown = Core.getCooldown(1000);
 	}
 
@@ -62,11 +64,31 @@ public class Ship extends Entity {
 		super(positionX, positionY, 13 * 2, 8 * 2, Color.GREEN);
 
 		this.spriteType = SpriteType.Ship;
-		this.shootingCooldown = Core.getCooldown(750);
+        this.type = type;
+
+        switch (this.type) {
+            case BIG_SHOT: // Big bullet type
+            case DOUBLE_SHOT: // Double shot type
+                this.speed = 1; // 이동 속도 느림
+                this.shootingInterval = 750; // 연사 속도 보통
+                this.bulletWidth = 3 * 3;
+                this.bulletHeight = 5 * 3;
+                break;
+            case MOVE_FAST: // Move fast type
+                this.speed = 3; // 이동 속도 빠름
+                this.shootingInterval = 900; // 연사 속도 느림
+                break;
+            case NORMAL: // Normal type
+            default:
+                this.speed = 2; // 이동 속도 보통
+                this.shootingInterval = 750; // 연사 속도 보통
+                break;
+        }
+
+		this.shootingCooldown = Core.getCooldown(this.shootingInterval);
 		this.destructionCooldown = Core.getCooldown(1000);
 		this.setTeam(team);
 		this.playerId = (team == Team.PLAYER1 ? 1 : team == Team.PLAYER2 ? 2 : 0);
-		this.type = type;
 	}
 
 
@@ -75,7 +97,7 @@ public class Ship extends Entity {
 	 * reached.
 	 */
 	public final void moveRight() {
-		this.positionX += SPEED;
+		this.positionX += this.speed;
 	}
 
 	/**
@@ -83,7 +105,7 @@ public class Ship extends Entity {
 	 * reached.
 	 */
 	public final void moveLeft() {
-		this.positionX -= SPEED;
+		this.positionX -= this.speed;
 	}
 
 	/**
@@ -97,14 +119,12 @@ public class Ship extends Entity {
 		if (this.shootingCooldown.checkFinished()) {
 			this.shootingCooldown.reset();
 
-			int bulletWidth = 3 * 2;
-			int bulletHeight = 5 * 2;
-			int spawnY = this.positionY - bulletHeight; // 겹침 방지
+			int spawnY = this.positionY - bulletHeight; // Avoid overlap
 
 			// Different firing depending on ship type
 			switch (this.type) {
 				case DOUBLE_SHOT:
-					int offset = 6;	//Todo PlayerC의 총알 크기 변경값에 맞춰서 offset 값 조정
+					int offset = 6;
 					// left bullet fire
 					Bullet b1 = BulletPool.getBullet(positionX + this.width / 2 - offset, spawnY, BULLET_SPEED,
 							bulletWidth, bulletHeight, this.getTeam());
@@ -120,7 +140,7 @@ public class Ship extends Entity {
 				case NORMAL:
 				default:
 					// nomal type
-					Bullet b = BulletPool.getBullet(positionX + this.width / 2, spawnY, BULLET_SPEED, this.getTeam());
+					Bullet b = BulletPool.getBullet(positionX + this.width / 2, spawnY, BULLET_SPEED, bulletWidth, bulletHeight, this.getTeam());
 					b.setOwnerPlayerId(this.getPlayerId());
 					bullets.add(b);
 					break;
@@ -162,7 +182,7 @@ public class Ship extends Entity {
 	 * @return Speed of the ship.
 	 */
 	public final int getSpeed() {
-		return SPEED;
+		return this.speed;
 	}
 
 	// 2P mode: adding playerId getter and setter

@@ -309,7 +309,7 @@ public final class DrawManager {
 		backBufferGraphics.setFont(fontRegular);
 		backBufferGraphics.setColor(Color.WHITE);
 		backBufferGraphics.drawString(Integer.toString(lives), 20, 25);
-		Ship dummyShip = new Ship(0, 0, Entity.Team.PLAYER1, Ship.ShipType.DOUBLE_SHOT);
+		Ship dummyShip = new Ship(0, 0);
 		for (int i = 0; i < lives; i++)
 			drawEntity(dummyShip, 40 + 35 * i, 10);
 	}
@@ -618,6 +618,21 @@ public final class DrawManager {
 		backBufferGraphics.drawString(string, screen.getWidth() / 2
 				- fontRegularMetrics.stringWidth(string) / 2, height);
 	}
+
+    /**
+     * Draws a centered string on regular font at a specific coordinate.
+     *
+     * @param string
+     * String to draw.
+     * @param x
+     * X coordinate to center the string on.
+     * @param y
+     * Y coordinate of the drawing.
+     */
+    public void drawCenteredRegularString(final String string, final int x, final int y) {
+        backBufferGraphics.setFont(fontRegular);
+        backBufferGraphics.drawString(string, x - fontRegularMetrics.stringWidth(string) / 2, y);
+    }
 
 	/**
 	 * Draws a centered string on big font.

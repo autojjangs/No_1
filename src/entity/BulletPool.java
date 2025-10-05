@@ -15,8 +15,8 @@ public final class BulletPool {
 	/** Set of already created bullets. */
 	private static Set<Bullet> pool = new HashSet<Bullet>();
 	//기본 총알 크기
-	private static final int BASE_WIDTH = 3*2;	//Todo PlayerC의 총알 크기 변경값 반영
-	private static final int BASE_HEIGHT = 5*2;
+//	private static final int BASE_WIDTH = 3*2;
+//	private static final int BASE_HEIGHT = 5*2;
 
 	/**
 	 * Constructor, not called.
@@ -36,14 +36,14 @@ public final class BulletPool {
 	 * @param speed
 	 *            Requested speed of the bullet, positive or negative depending
 	 *            on direction - positive is down.
+     * @param width
+     *            Requested size of the bullet width.
+     * @param height
+     *            Requested size of the bullet height.
+     * @param team
+     *            Requested team type.
 	 * @return Requested bullet.
 	 */
-	//기본 크기 bullet
-	public static Bullet getBullet(final int positionX,
-								   final int positionY, final int speed, final Team team) {
-		return getBullet(positionX, positionY, speed, BASE_WIDTH, BASE_HEIGHT, team);
-	}
-
 	public static Bullet getBullet(final int positionX,
 								   final int positionY, final int speed, final int width, final int height, final Team team) {
 		Bullet bullet;
@@ -56,7 +56,7 @@ public final class BulletPool {
 			bullet.setSize(width, height);
 			bullet.setTeam(team);	//Team setting
 		} else {
-			bullet = new Bullet(positionX, positionY, BASE_WIDTH, BASE_HEIGHT, speed);
+			bullet = new Bullet(positionX, positionY, width, height, speed);
 			bullet.setPositionX(positionX - width / 2);
 			bullet.setSize(width, height);
 			bullet.setTeam(team); //Team setting
