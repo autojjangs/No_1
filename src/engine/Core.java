@@ -8,11 +8,8 @@ import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import screen.GameScreen;
-import screen.HighScoreScreen;
-import screen.ScoreScreen;
-import screen.Screen;
-import screen.TitleScreen;
+import entity.Ship;
+import screen.*;
 
 /**
  * Implements core game logic.
@@ -87,6 +84,8 @@ public final class Core {
         boolean coopSelected = false; // false = 1P, true = 2P
 
         int returnCode = 1;
+        Ship.ShipType shipTypeP1 = Ship.ShipType.NORMAL; // P1 Ship Type
+        Ship.ShipType shipTypeP2 = Ship.ShipType.NORMAL; // P2 Ship Type
         do {
 
 			switch (returnCode) {
@@ -99,6 +98,7 @@ public final class Core {
                     // 2P mode: reading the mode which user chose from TitleScreen
                     if (returnCode == 2 || returnCode == 3) {
                         coopSelected = ((TitleScreen) currentScreen).isCoopSelected();
+                        returnCode = 4;
                     }
 
 					break;
@@ -116,7 +116,7 @@ public final class Core {
 						currentScreen = new GameScreen(
 								gameState,
 								gameSettings.get(gameState.getLevel() - 1),
-								bonusLife, width, height, FPS);
+								bonusLife, width, height, FPS, shipTypeP1, shipTypeP2);
 
 						LOGGER.info("Starting " + WIDTH + "x" + HEIGHT + " game screen at " + FPS + " fps.");
 						frame.setScreen(currentScreen);
@@ -148,7 +148,28 @@ public final class Core {
 					returnCode = frame.setScreen(currentScreen);
 					LOGGER.info("Closing high score screen.");
 					break;
-          
+
+                case 4:
+                    // Ship selection for Player 1.
+                    currentScreen = new ShipSelectionScreen(width, height, FPS, 1);
+                    frame.setScreen(currentScreen);
+                    shipTypeP1 = ((ShipSelectionScreen) currentScreen).getSelectedShipType();
+
+                    if (coopSelected) {
+                        returnCode = 5; // Go to Player 2 selection.
+                    } else {
+                        returnCode = 2; // Start game.
+                    }
+                    break;
+
+                case 5:
+                    // Ship selection for Player 2.
+                    currentScreen = new ShipSelectionScreen(width, height, FPS, 2);
+                    frame.setScreen(currentScreen);
+                    shipTypeP2 = ((ShipSelectionScreen) currentScreen).getSelectedShipType();
+                    returnCode = 2; // Start game.
+                    break;
+
 				default:
 					break;
 			}
