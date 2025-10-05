@@ -22,6 +22,15 @@ public class Ship extends Entity {
 	/** Movement of the ship for each unit of time. */
 	private static final int SPEED = 2;
 
+	/** Types of ships. */
+	public enum ShipType {
+		NORMAL,
+		DOUBLE_SHOT
+	}
+
+	/** Current ship type. */
+	private ShipType type;
+
 	/** Minimum time between shots. */
 	private Cooldown shootingCooldown;
 	/** Time spent inactive between hits. */
@@ -39,8 +48,9 @@ public class Ship extends Entity {
 	 * @param positionY
 	 *                  Initial position of the ship in the Y axis.
 	 */
-	public Ship(final int positionX, final int positionY) {
+	public Ship(final int positionX, final int positionY, final ShipType type) {
 		super(positionX, positionY, 13 * 2, 8 * 2, Color.GREEN);
+		this.type = type; // Assigning values gto type variables
 
 		this.spriteType = SpriteType.Ship;
 		this.shootingCooldown = Core.getCooldown(SHOOTING_INTERVAL);
@@ -48,11 +58,17 @@ public class Ship extends Entity {
 	}
 
 	// 2P mode: create and tag with a team in one shot
-	public Ship(final int positionX, final int positionY, final Team team) {
-		this(positionX, positionY);
-		this.setTeam(team); // uses Entity.setTeam
+	public Ship(final int positionX, final int positionY, final Team team, final ShipType type) {
+		super(positionX, positionY, 13 * 2, 8 * 2, Color.GREEN);
+
+		this.spriteType = SpriteType.Ship;
+		this.shootingCooldown = Core.getCooldown(750);
+		this.destructionCooldown = Core.getCooldown(1000);
+		this.setTeam(team);
 		this.playerId = (team == Team.PLAYER1 ? 1 : team == Team.PLAYER2 ? 2 : 0);
+		this.type = type;
 	}
+
 
 	/**
 	 * Moves the ship speed uni ts right, or until the right screen border is
@@ -80,15 +96,29 @@ public class Ship extends Entity {
 	public final boolean shoot(final Set<Bullet> bullets) {
 		if (this.shootingCooldown.checkFinished()) {
 			this.shootingCooldown.reset();
-			int bulletWidth = 3*2;
-			int bulletHeight = 5*2;
-			int spawnY = this.positionY - bulletHeight;	//아군의 총알이 아군 함선과 겹치지 않게 하기위한 조정
-			Bullet b = (BulletPool.getBullet(this.positionX + this.width / 2,
-					spawnY, BULLET_SPEED, bulletWidth, bulletHeight)); // shoots bullet and tags with shooter's team
 
-			b.setOwnerPlayerId(this.getPlayerId()); // 2P mode:owner tag for bullet
-			b.setTeam(this.getTeam()); // bullet inherits shooter's team
-			bullets.add(b);
+			// Different firing depending on ship type
+			if (this.type == ShipType.DOUBLE_SHOT) {
+				int offset = 6;
+				// left bullet fire
+				Bullet b1 = BulletPool.getBullet(positionX + this.width / 2 - offset, positionY, BULLET_SPEED);
+				b1.setOwnerPlayerId(this.getPlayerId());
+				b1.setTeam(this.getTeam());
+				bullets.add(b1);
+
+				// right bullet fire
+				Bullet b2 = BulletPool.getBullet(positionX + this.width / 2 + offset, positionY, BULLET_SPEED);
+				b2.setOwnerPlayerId(this.getPlayerId());
+				b2.setTeam(this.getTeam());
+				bullets.add(b2);
+			} else {
+				// nomal type
+				Bullet b = BulletPool.getBullet(positionX + this.width / 2, positionY, BULLET_SPEED);
+				b.setOwnerPlayerId(this.getPlayerId());
+				b.setTeam(this.getTeam());
+				bullets.add(b);
+			}
+
 			return true;
 		}
 		return false;
