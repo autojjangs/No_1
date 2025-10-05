@@ -354,32 +354,16 @@ public final class DrawManager {
 	 *               Option selected.
 	 */
 	public void drawMenu(final Screen screen, final int option, final Integer hoverOption, final int selectedIndex) {
+        // Return Code List
+        // 1. Play, 2. In-game, 3. High Scores, 4. Settings, 5. mode selection, 0. exit
         String[] items = {"Play", "High scores", "Settings", "Exit"};
+        final int[] returnCodes = {1, 3, 4, 0};
 
         int baseY = screen.getHeight() / 3 * 2; // same option choice, different formatting
         for (int i = 0; i < items.length; i++) {
-            backBufferGraphics.setColor(i == selectedIndex ? Color.GREEN : Color.WHITE);
+            boolean highlight = (hoverOption != null) ? (i == hoverOption) : (i == selectedIndex);
+            backBufferGraphics.setColor(highlight ? Color.GREEN : Color.WHITE);
             drawCenteredRegularString(screen, items[i], (int) (baseY + fontRegularMetrics.getHeight() * 1.5 * i));
-
-            //Added hoverOption to change menu color by mouse position
-            if (option == 2 || (hoverOption != null && hoverOption == 2))
-                backBufferGraphics.setColor(Color.GREEN);
-            else
-                backBufferGraphics.setColor(Color.WHITE);
-            drawCenteredRegularString(screen, playString,
-                    screen.getHeight() / 3 * 2);
-            if (option == 3 || (hoverOption != null && hoverOption == 3))
-                backBufferGraphics.setColor(Color.GREEN);
-            else
-                backBufferGraphics.setColor(Color.WHITE);
-            drawCenteredRegularString(screen, highScoresString, screen.getHeight()
-                    / 3 * 2 + fontRegularMetrics.getHeight() * 2);
-            if (option == 0 || (hoverOption != null && hoverOption == 0))
-                backBufferGraphics.setColor(Color.GREEN);
-            else
-                backBufferGraphics.setColor(Color.WHITE);
-            drawCenteredRegularString(screen, exitString, screen.getHeight() / 3
-                    * 2 + fontRegularMetrics.getHeight() * 4);
         }
     }
 
@@ -657,7 +641,7 @@ public final class DrawManager {
     public void drawPlayMenu(final Screen screen, final int selectedIndex) {
         String[] items = {"1 Player", "2 Players", "Back"};
 
-        int baseY = screen.getHeight() / 3 * 1;
+        int baseY = screen.getHeight() / 3; // Modify: * 1 is unnecessary
         for (int i = 0; i < items.length; i++) {
             backBufferGraphics.setColor(i == selectedIndex ? Color.GREEN : Color.WHITE);
             drawCenteredRegularString(screen, items[i],
@@ -677,17 +661,20 @@ public final class DrawManager {
 
         String playString = "Play";
         String highScoreString = "High scores";
+        String SettingsString = "Settings";
         String exitString = "exit";
 
         int baselinePlay = screen.getHeight() / 3 * 2;
         int baselineHighscore = screen.getHeight() / 3 * 2 + fontRegularMetrics.getHeight() * 2;
-        int baselineExit = screen.getHeight() / 3 * 2 + fontRegularMetrics.getHeight() * 4;
+        int baselineSettings = screen.getHeight() / 3 * 2 + fontRegularMetrics.getHeight() * 3 + 5;
+        int baselineExit = screen.getHeight() / 3 * 2 + fontRegularMetrics.getHeight() * 4 + 10;
 
         Rectangle hitbox_play = centeredStringBounds(screen, playString, baselinePlay);
         Rectangle hitbox_score = centeredStringBounds(screen, highScoreString, baselineHighscore);
+        Rectangle hitbox_settings = centeredStringBounds(screen, SettingsString,  baselineSettings);
         Rectangle hitbox_exit = centeredStringBounds(screen, exitString, baselineExit);
 
-        return new Rectangle[] {hitbox_play, hitbox_score, hitbox_exit};
+        return new Rectangle[] {hitbox_play, hitbox_score, hitbox_settings, hitbox_exit};
     }
 
     /*
