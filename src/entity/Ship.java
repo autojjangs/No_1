@@ -80,11 +80,8 @@ public class Ship extends Entity {
 	public final boolean shoot(final Set<Bullet> bullets) {
 		if (this.shootingCooldown.checkFinished()) {
 			this.shootingCooldown.reset();
-			int bulletWidth = 3*2;
-			int bulletHeight = 5*2;
-			int spawnY = this.positionY - bulletHeight;	//아군의 총알이 아군 함선과 겹치지 않게 하기위한 조정
-			Bullet b = (BulletPool.getBullet(this.positionX + this.width / 2,
-					spawnY, BULLET_SPEED, bulletWidth, bulletHeight)); // shoots bullet and tags with shooter's team
+			Bullet b = (BulletPool.getBullet(positionX + this.width / 2,
+					positionY, BULLET_SPEED)); // shoots bullet and tags with shooter's team
 
 			b.setOwnerPlayerId(this.getPlayerId()); // 2P mode:owner tag for bullet
 			b.setTeam(this.getTeam()); // bullet inherits shooter's team
