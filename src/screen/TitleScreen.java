@@ -13,11 +13,18 @@ import engine.Core;
  */
 public class TitleScreen extends Screen {
 
+    // 2P mode: user picks mode, where false = 1P, true = 2P
+    private boolean coopSelected = false;
+    public boolean isCoopSelected() { return coopSelected; }
+
 	/** Milliseconds between changes in user selection. */
 	private static final int SELECTION_TIME = 200;
 
 	/** Time between changes in user selection. */
 	private Cooldown selectionCooldown;
+
+    // menu index added for user mode selection
+    private int menuIndex = 0;
 
 
 	/** Added variable to store which menu option is currently hovered */
@@ -37,7 +44,7 @@ public class TitleScreen extends Screen {
 		super(width, height, fps);
 
 		// Defaults to play.
-		this.returnCode = 2;
+		this.returnCode = 1; // 2P mode: changed to default selection as 1P
 		this.selectionCooldown = Core.getCooldown(SELECTION_TIME);
 		this.selectionCooldown.reset();
 	}
@@ -49,7 +56,6 @@ public class TitleScreen extends Screen {
 	 */
 	public final int run() {
 		super.run();
-
 		return this.returnCode;
 	}
 
@@ -57,70 +63,76 @@ public class TitleScreen extends Screen {
 	 * Updates the elements on screen and checks for events.
 	 */
 	protected final void update() {
-		super.update();
+        super.update();
 
+        draw();
+        if (this.selectionCooldown.checkFinished() && this.inputDelay.checkFinished()) {
+            if (inputManager.isKeyDown(KeyEvent.VK_UP) || inputManager.isKeyDown(KeyEvent.VK_W)) {
+                previousMenuItem();
+                this.selectionCooldown.reset();
+            }
+            if (inputManager.isKeyDown(KeyEvent.VK_DOWN) || inputManager.isKeyDown(KeyEvent.VK_S)) {
+                nextMenuItem();
+                this.selectionCooldown.reset();
+            }
 
-
-		draw();
-		if (this.selectionCooldown.checkFinished()
-				&& this.inputDelay.checkFinished()) {
-			if (inputManager.isKeyDown(KeyEvent.VK_UP)
-					|| inputManager.isKeyDown(KeyEvent.VK_W)) {
-				previousMenuItem();
-				this.selectionCooldown.reset();
-			}
-			if (inputManager.isKeyDown(KeyEvent.VK_DOWN)
-					|| inputManager.isKeyDown(KeyEvent.VK_S)) {
-				nextMenuItem();
-				this.selectionCooldown.reset();
-			}
-			if (inputManager.isKeyDown(KeyEvent.VK_SPACE))
-				this.isRunning = false;
-
-            // add code 76 - 90
-            // When mouse click input comes in, return code accordingly
-            if (inputManager.isMouseClicked()) {
-                int temp_x = inputManager.getMouseX();
-                int temp_y = inputManager.getMouseY();
-
-                java.awt.Rectangle[] boxes = drawManager.getMenuHitboxes(this);
-                int[] pos = {2, 3, 0};
-
-                for (int i = 0; i < boxes.length; i++) {
-                    if (boxes[i].contains(temp_x, temp_y)) {
-                        this.returnCode = pos[i];
+            // Play : Adjust the case so that 1p and 2p can be determined within the play.
+            if (inputManager.isKeyDown(KeyEvent.VK_SPACE)) {
+                switch (this.menuIndex) {
+                    case 0: // "Play"
+                        this.returnCode = 5; // go to PlayScreen
                         this.isRunning = false;
                         break;
+
+                    case 1: // "High scores"
+                        this.returnCode = 3;
+                        this.isRunning = false;
+                        break;
+                    case 2: // "Settings"
+                        this.returnCode = 4;
+                        this.isRunning = false;
+                        break;
+
+                    case 4: // "Quit"
+                        this.returnCode = 0;
+                        this.isRunning = false;
+                        break;
+
+                    default:
+                        break;
+                }
+                if (inputManager.isMouseClicked()) {
+                    int temp_x = inputManager.getMouseX();
+                    int temp_y = inputManager.getMouseY();
+
+                    java.awt.Rectangle[] boxes = drawManager.getMenuHitboxes(this);
+                    int[] pos = {2, 3, 0};
+
+                    for (int i = 0; i < boxes.length; i++) {
+                        if (boxes[i].contains(temp_x, temp_y)) {
+                            this.returnCode = pos[i];
+                            this.isRunning = false;
+                            break;
+                        }
                     }
                 }
             }
-		}
-	}
+        }
+    }
 
 	/**
-	 * Shifts the focus to the next menu item.
+	 * Shifts the focus to the next menu item. - modified for 2P mode selection
 	 */
 	private void nextMenuItem() {
-		if (this.returnCode == 3)
-			this.returnCode = 0;
-		else if (this.returnCode == 0)
-			this.returnCode = 2;
-		else
-			this.returnCode++;
+        this.menuIndex = (this.menuIndex + 1) % 5;
 	}
 
 	/**
 	 * Shifts the focus to the previous menu item.
 	 */
 	private void previousMenuItem() {
-		if (this.returnCode == 0)
-			this.returnCode = 3;
-		else if (this.returnCode == 2)
-			this.returnCode = 0;
-		else
-			this.returnCode--;
-	}
-
+        this.menuIndex = (this.menuIndex + 4) % 5; // wrap upwards
+    }
 	/**
 	 * Draws the elements associated with the screen.
 	 */
@@ -147,7 +159,7 @@ public class TitleScreen extends Screen {
 
 		//pass hoverOption for menu highlights respond to mouse hover
 		drawManager.drawTitle(this);
-		drawManager.drawMenu(this, this.returnCode, hoverOption);
+		drawManager.drawMenu(this, this.menuIndex, hoverOption); // 2P mode: using menu index for highlighting
 
 		drawManager.completeDrawing(this);
 	}

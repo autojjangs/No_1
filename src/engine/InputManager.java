@@ -21,7 +21,7 @@ public final class InputManager implements KeyListener, MouseListener, MouseMoti
 
 	/** Number of recognised keys. */
 	private static final int NUM_KEYS = 256;
-	/** Array with the jeys marked as pressed or not. */
+	/** Array with the keys marked as pressed or not. */
 	private static boolean[] keys;
 
     /** Mouse pressed state. */
@@ -65,6 +65,73 @@ public final class InputManager implements KeyListener, MouseListener, MouseMoti
 	public boolean isKeyDown(final int keyCode) {
 		return keys[keyCode];
 	}
+
+    // === PLAYER 1 CONTROLS (Existing functionality) ===
+    // Player 1 uses WASD + Spacebar configuration
+
+    /**
+     * Checks if Player 1's move left key (A) is pressed.
+     *
+     * @return True if Player 1 is moving left
+     */
+
+    public boolean isP1LeftPressed() {
+        return isKeyDown(KeyEvent.VK_A);
+    }
+
+    /**
+     * Checks if Player 1's move right key (D) is pressed.
+     *
+     * @return True if Player 1 is moving right
+     */
+
+    public boolean isP1RightPressed() {
+        return isKeyDown(KeyEvent.VK_D);
+    }
+
+    /**
+     * Checks if Player 1's shoot key (Spacebar) is pressed.
+     *
+     * @return True if Player 1 is shooting
+     */
+
+    public boolean isP1ShootPressed() {
+        return isKeyDown(KeyEvent.VK_SPACE);
+    }
+
+
+    // ==================== PLAYER 2 CONTROLS ====================
+    // Player 2 uses Arrow Keys + Enter configuration
+    // Added for two-player mode implementation
+
+    /**
+     * Checks if Player 2's move left key (Left Arrow) is pressed.
+     *
+     * @return True if Player 2 is moving left
+     */
+
+    public boolean isP2LeftPressed() {
+        return isKeyDown(KeyEvent.VK_LEFT);
+    }
+
+    /**
+     * Checks if Player 2's move right key (Right Arrow) is pressed.
+     *
+     * @return True if Player 2 is moving right
+     */
+
+    public boolean isP2RightPressed() {
+        return isKeyDown(KeyEvent.VK_RIGHT);
+    }
+
+    /**
+     * Checks if Player 2's shoot key (Enter) is pressed.
+     *
+     * @return True if Player 2 is shooting
+     */
+    public boolean isP2ShootPressed() {
+        return isKeyDown(KeyEvent.VK_ENTER);
+    }
 
 	/**
 	 * Changes the state of the key to pressed.
