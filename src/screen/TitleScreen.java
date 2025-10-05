@@ -70,10 +70,12 @@ public class TitleScreen extends Screen {
             if (inputManager.isKeyDown(KeyEvent.VK_UP) || inputManager.isKeyDown(KeyEvent.VK_W)) {
                 previousMenuItem();
                 this.selectionCooldown.reset();
+                this.hoverOption = null;
             }
             if (inputManager.isKeyDown(KeyEvent.VK_DOWN) || inputManager.isKeyDown(KeyEvent.VK_S)) {
                 nextMenuItem();
                 this.selectionCooldown.reset();
+                this.hoverOption = null;
             }
 
             // Play : Adjust the case so that 1p and 2p can be determined within the play.
@@ -93,7 +95,7 @@ public class TitleScreen extends Screen {
                         this.isRunning = false;
                         break;
 
-                    case 4: // "Quit"
+                    case 3: // "Quit"
                         this.returnCode = 0;
                         this.isRunning = false;
                         break;
@@ -101,19 +103,19 @@ public class TitleScreen extends Screen {
                     default:
                         break;
                 }
-                if (inputManager.isMouseClicked()) {
-                    int temp_x = inputManager.getMouseX();
-                    int temp_y = inputManager.getMouseY();
+            }
+            if (inputManager.isMouseClicked()) {
+                int temp_x = inputManager.getMouseX();
+                int temp_y = inputManager.getMouseY();
 
-                    java.awt.Rectangle[] boxes = drawManager.getMenuHitboxes(this);
-                    int[] pos = {2, 3, 0};
+                java.awt.Rectangle[] boxes = drawManager.getMenuHitboxes(this);
+                int[] pos = {5, 3, 4, 0};
 
-                    for (int i = 0; i < boxes.length; i++) {
-                        if (boxes[i].contains(temp_x, temp_y)) {
-                            this.returnCode = pos[i];
-                            this.isRunning = false;
-                            break;
-                        }
+                for (int i = 0; i < boxes.length; i++) {
+                    if (boxes[i].contains(temp_x, temp_y)) {
+                        this.returnCode = pos[i];
+                        this.isRunning = false;
+                        break;
                     }
                 }
             }
@@ -124,14 +126,14 @@ public class TitleScreen extends Screen {
 	 * Shifts the focus to the next menu item. - modified for 2P mode selection
 	 */
 	private void nextMenuItem() {
-        this.menuIndex = (this.menuIndex + 1) % 5;
+        this.menuIndex = (this.menuIndex + 1) % 4;
 	}
 
 	/**
 	 * Shifts the focus to the previous menu item.
 	 */
 	private void previousMenuItem() {
-        this.menuIndex = (this.menuIndex + 4) % 5; // wrap upwards
+        this.menuIndex = (this.menuIndex + 3) % 4; // wrap upwards
     }
 	/**
 	 * Draws the elements associated with the screen.
@@ -147,19 +149,30 @@ public class TitleScreen extends Screen {
 
 		Integer newHover = null;
 		if(boxesForHover[0].contains(mx, my))
-			newHover = 2;
-		if(boxesForHover[1].contains(mx, my))
-			newHover = 3;
-		if(boxesForHover[2].contains(mx, my))
 			newHover = 0;
+		if(boxesForHover[1].contains(mx, my))
+			newHover = 1;
+		if(boxesForHover[2].contains(mx, my))
+			newHover = 2;
+        if(boxesForHover[3].contains(mx, my))
+            newHover = 3;
 
-		if (newHover != null && !newHover.equals(this.returnCode)){
-			this.returnCode = newHover;
-		}
+        // Modify : Update after hover calculation
+        if (newHover != null) {
+            // Hover Update + Promote to Select Index when mouse is raised (to keep mouse away)
+            if (!newHover.equals(this.hoverOption)) { this.hoverOption = newHover; }
+        } else {
+            // If we had a hover and the mouse left, promote last hover to selection for persistance
+            if (this.hoverOption != null) {
+                this.menuIndex = this.hoverOption; // persist last hovered as selection
+                this.hoverOption = null; // clear hover state
+            }
+
+        }
 
 		//pass hoverOption for menu highlights respond to mouse hover
 		drawManager.drawTitle(this);
-		drawManager.drawMenu(this, this.menuIndex, hoverOption); // 2P mode: using menu index for highlighting
+		drawManager.drawMenu(this, this.menuIndex, hoverOption, this.menuIndex); // 2P mode: using menu index for highlighting
 
 		drawManager.completeDrawing(this);
 	}
