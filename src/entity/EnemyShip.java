@@ -39,6 +39,8 @@ public class EnemyShip extends Entity {
 
     private int health;
 
+    private int shootingInterval;
+
     /**
      * Constructor, establishes the ship's properties.
      *
@@ -63,23 +65,27 @@ public class EnemyShip extends Entity {
                 this.pointValue = A_TYPE_POINTS;
                 this.coinValue = A_TYPE_COINS;
                 this.health = 2;
+                this.shootingInterval = 1000;
                 break;
             case EnemyShipB1:
             case EnemyShipB2:
                 this.pointValue = B_TYPE_POINTS;
                 this.coinValue = B_TYPE_COINS;
                 this.health = 1;
+                this.shootingInterval = 500;
                 break;
             case EnemyShipC1:
             case EnemyShipC2:
                 this.pointValue = C_TYPE_POINTS;
                 this.coinValue = C_TYPE_COINS;
                 this.health = 1;
+                this.shootingInterval = 1000;
                 break;
             default:
                 this.pointValue = 0;
                 this.coinValue = 0;
                 this.health = 1;
+                this.shootingInterval = 1000;
                 break;
         }
     }
@@ -152,6 +158,10 @@ public class EnemyShip extends Entity {
         }
     }
 
+
+    public int getShootingInterval() {
+        return this.shootingInterval;
+    }
 
     public int getHealth() {
         return this.health;
