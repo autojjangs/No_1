@@ -96,9 +96,11 @@ public final class Core {
                     LOGGER.info("Closing title screen.");
 
                     // 2P mode: reading the mode which user chose from TitleScreen
-                    if (returnCode == 2 || returnCode == 3) {
+                    if (returnCode == 2) {
                         coopSelected = ((TitleScreen) currentScreen).isCoopSelected();
                         returnCode = 4;
+                    } else if (returnCode == 3) {
+                        coopSelected = ((TitleScreen) currentScreen).isCoopSelected();
                     }
 
                     break;
