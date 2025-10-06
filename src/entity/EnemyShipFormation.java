@@ -326,6 +326,8 @@ public class EnemyShipFormation implements Iterable<EnemyShip> {
 
     /**
      * Shoots a bullet downwards.
+     * Fires bullets from C-type and B-type enemies in the formation.
+     * C-type fires double bullets, B-type fires faster bullets.
      *
      * @param bullets
      *            Bullets set to add the bullet being shot.

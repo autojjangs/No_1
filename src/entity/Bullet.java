@@ -38,13 +38,13 @@ public class Bullet extends Entity {
      *                  Speed of the bullet, positive or negative depending on
      *                  direction - positive is down.
      */
-    //생성자에서 width와 height를 받도록 변경
+    // change the constructor to receive width and height
     public Bullet(final int positionX, final int positionY, final int width, final int height, final int speed) {
         super(positionX, positionY,0,0 , Color.WHITE);
         this.speed = speed;
     }
 
-    //재활용 시 크기 재설정
+    // reset the size when recycling bullets
     public final void setSize(final int width, final int height) {
         this.width = width;
         this.height = height;

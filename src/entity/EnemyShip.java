@@ -7,7 +7,7 @@ import engine.Core;
 import engine.DrawManager.SpriteType;
 
 /**
- * Implements a enemy ship, to be destroyed by the player.
+ * Implements an enemy ship, to be destroyed by the player.
  *
  * @author <a href="mailto:RobertoIA1987@gmail.com">Roberto Izquierdo Amo</a>
  *
@@ -37,6 +37,7 @@ public class EnemyShip extends Entity {
 
     private int coinValue;
 
+    /** Current health of the enemy ship */
     private int health;
 
     /**
@@ -152,9 +153,12 @@ public class EnemyShip extends Entity {
         }
     }
 
+    /** Returns the current health of the enemy ship */
     public int getHealth() {
         return this.health;
     }
+
+    /** Reduces enemy health by 1 and handles destruction or damage animation if health drops to 0 */
 
     public final void hit() {
         this.health--;
@@ -162,7 +166,7 @@ public class EnemyShip extends Entity {
             this.isDestroyed = true;
             this.spriteType = SpriteType.Explosion;
         }
-        // 체력이 남아있다면 데미지 스프라이트로 고정
+
         else {
             switch (this.spriteType) {
                 case EnemyShipA1:

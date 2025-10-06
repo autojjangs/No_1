@@ -16,7 +16,7 @@ import engine.DrawManager.SpriteType;
 public class Ship extends Entity {
 
     /** Time between shots. */
-    private int shootingInterval = 750;
+    private int shootingInterval = 750; // 750 is base shooting interval.
     /** Speed of the bullets shot by the ship. */
     private static final int BULLET_SPEED = -6;
     /** Movement of the ship for each unit of time. */
@@ -24,10 +24,10 @@ public class Ship extends Entity {
 
     /** Types of ships. */
     public enum ShipType {
-        NORMAL,
-        BIG_SHOT, // Bullet size is big, but moving speed is slow
-        DOUBLE_SHOT, // Double shot, but moving speed is slow
-        MOVE_FAST // moving speed is fast, but fire rate is slow
+        NORMAL, // Bullet size is normal, and moving speed is normal.
+        BIG_SHOT, // Bullet size is big, but moving speed is slow.
+        DOUBLE_SHOT, // Double shot, but moving speed is slow.
+        MOVE_FAST // Moving speed is fast, but fire rate is slow.
     }
 
     /** Current ship type. */
@@ -40,8 +40,8 @@ public class Ship extends Entity {
     // 2P mode: id number to specifying which player this ship belongs to - 0 =
     // unknown, 1 = P1, 2 = P2
     private int playerId = 0; // 0 = unknown, 1 = P1, 2 = P2
-    private int bulletWidth = 3 * 2;
-    private int bulletHeight = 5 * 2;
+    private int bulletWidth = 3 * 2; // 3 * 2 is base bullet width.
+    private int bulletHeight = 5 * 2; // 5 * 2 is base bullet height.
 
     /**
      * Constructor, establishes the ship's properties.
@@ -60,6 +60,18 @@ public class Ship extends Entity {
     }
 
     // 2P mode: create and tag with a team in one shot
+    /**
+     * Constructor, establishes the ship's properties.
+     *
+     * @param positionX
+     *                  Initial position of the ship in the X axis.
+     * @param positionY
+     *                  Initial position of the ship in the Y axis.
+     * @param team
+     *                  Team of player ID(Player1 or Player2)
+     * @param type
+     *                  Player ship type(NORMAL, BIG_SHOT, DOUBLE_SHOT, MOVE_FAST)
+     */
     public Ship(final int positionX, final int positionY, final Team team, final ShipType type) {
         super(positionX, positionY, 13 * 2, 8 * 2, Color.GREEN);
 
@@ -69,28 +81,28 @@ public class Ship extends Entity {
         switch (this.type) {
             case BIG_SHOT: // Big bullet type
                 this.speed = 1; // Move slowly
-                this.shootingInterval = 750; // Fire rate is normal
-                this.bulletWidth = 3 * 3;
-                this.bulletHeight = 5 * 3;
+                this.shootingInterval = 750; // Fire rate is normal.
+                this.bulletWidth = 3 * 3; // Bullet size is big.
+                this.bulletHeight = 5 * 3; // Bullet size is big.
                 break;
             case DOUBLE_SHOT: // Double shot type
                 this.speed = 1; // Move slowly
-                this.shootingInterval = 750; // Fire rate is normal
-                this.bulletWidth = 3 * 2;
-                this.bulletHeight = 5 * 2;
+                this.shootingInterval = 750; // Fire rate is normal.
+                this.bulletWidth = 3 * 2; // Bullet size is normal.
+                this.bulletHeight = 5 * 2; // Bullet size is normal.
                 break;
             case MOVE_FAST: // Move fast type
                 this.speed = 3; // Move Fast
-                this.shootingInterval = 900; // Fire rate is slow
-                this.bulletWidth = 3 * 2;
-                this.bulletHeight = 5 * 2;
+                this.shootingInterval = 900; // Fire rate is slow.
+                this.bulletWidth = 3 * 2; // Bullet size is normal.
+                this.bulletHeight = 5 * 2; // Bullet size is normal.
                 break;
             case NORMAL: // Normal type
             default:
                 this.speed = 2; // Move Normally
-                this.shootingInterval = 750; // Fire rate is normal
-                this.bulletWidth = 3 * 2;
-                this.bulletHeight = 5 * 2;
+                this.shootingInterval = 750; // Fire rate is normal.
+                this.bulletWidth = 3 * 2; // Bullet size is normal.
+                this.bulletHeight = 5 * 2; // Bullet size is normal.
                 break;
         }
 

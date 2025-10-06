@@ -14,9 +14,6 @@ public final class BulletPool {
 
     /** Set of already created bullets. */
     private static Set<Bullet> pool = new HashSet<Bullet>();
-    //기본 총알 크기
-//	private static final int BASE_WIDTH = 3*2;
-//	private static final int BASE_HEIGHT = 5*2;
 
     /**
      * Constructor, not called.
@@ -53,13 +50,13 @@ public final class BulletPool {
             bullet.setPositionX(positionX - width / 2);
             bullet.setPositionY(positionY);
             bullet.setSpeed(speed);
-            bullet.setSize(width, height);
-            bullet.setTeam(team);	//Team setting
+            bullet.setSize(width, height);  // bullet size
+            bullet.setTeam(team);	// team setting
         } else {
             bullet = new Bullet(positionX, positionY, width, height, speed);
             bullet.setPositionX(positionX - width / 2);
-            bullet.setSize(width, height);
-            bullet.setTeam(team); //Team setting
+            bullet.setSize(width, height); // bullet size
+            bullet.setTeam(team); // team setting
         }
         bullet.setSprite();
         return bullet;
