@@ -212,6 +212,11 @@ public final class DrawManager {
             // enemy bullets will keep their default color from the entity
         }
 
+        /**
+         * Makes A-type enemies semi-transparent when their health is 1.
+         * Checks if the entity is an EnemyShip of type A (EnemyShipA1 or A2),
+         * and sets its color alpha to 32 to indicate critical damage.
+         */
         if (entity instanceof entity.EnemyShip) {
             entity.EnemyShip enemy = (entity.EnemyShip) entity;
             if ((enemy.getSpriteType() == SpriteType.EnemyShipA1
@@ -221,38 +226,42 @@ public final class DrawManager {
             }
         }
 
+        // Set the drawing color for the entity
         backBufferGraphics.setColor(color);
+
+        // Draw the original sprite pixels (pre-scaling)
         for (int i = 0; i < image.length; i++)
             for (int j = 0; j < image[i].length; j++)
                 if (image[i][j])
                     backBufferGraphics.drawRect(positionX + i * 2, positionY
                             + j * 2, 1, 1);
 
-        // --- 스케일링 로직 추가 ---
-        // 원본 스프라이트의 너비와 높이
+        // --- Scaling logic ---
+        // Original sprite dimensions
         int spriteWidth = image.length;
         int spriteHeight = image[0].length;
 
-        // 엔티티에 설정된 너비와 높이 (Bullet 생성자에서 변경한 값)
+        // Entity dimensions (modified via Bullet constructor or other entities)
         int entityWidth = entity.getWidth();
         int entityHeight = entity.getHeight();
 
-        // 원본 스프라이트 대비 엔티티 크기의 비율 계산
+        // Calculate scaling ratios compared to original sprite
         float widthRatio = (float) entityWidth / (spriteWidth * 2);
         float heightRatio = (float) entityHeight / (spriteHeight * 2);
-        // --- 스케일링 로직 종료 ---
+        // --- End of scaling logic ---
 
-
+        // Set drawing color again
         backBufferGraphics.setColor(color);
+        // Draw the sprite with scaling applied
         for (int i = 0; i < spriteWidth; i++) {
             for (int j = 0; j < spriteHeight; j++) {
                 if (image[i][j]) {
-                    //계산된 비율을 적용하여 점의 위치와 크기를 조절
+                    // Apply calculated scaling ratio to pixel positions and size
                     backBufferGraphics.fillRect(
                             positionX + (int)(i * 2 * widthRatio),
                             positionY + (int)(j * 2 * heightRatio),
-                            (int)Math.ceil(widthRatio * 2), // 점 하나의 크기도 비율에 맞게 조절
-                            (int)Math.ceil(heightRatio * 2)
+                            (int)Math.ceil(widthRatio * 2), // Adjust the width of the pixel
+                            (int)Math.ceil(heightRatio * 2) // Adjust the height of the pixel
                     );
                 }
             }
