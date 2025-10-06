@@ -336,7 +336,11 @@ public class EnemyShipFormation implements Iterable<EnemyShip> {
         int index = (int) (Math.random() * this.shooters.size());
         EnemyShip shooter = this.shooters.get(index);
 
-        if (this.shootingCooldown.checkFinished()) {
+        if (this.shootingCooldown == null || this.shootingCooldown.checkFinished()) {
+            this.shootingCooldown = Core.getVariableCooldown(
+                    shooter.getShootingInterval(),
+                    (int)(shooter.getShootingInterval() * SHOOTING_VARIANCE)
+            );
             this.shootingCooldown.reset();
 
             int bulletWidth = 3 * 2;
