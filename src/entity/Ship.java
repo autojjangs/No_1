@@ -68,20 +68,28 @@ public class Ship extends Entity {
 
         switch (this.type) {
             case BIG_SHOT: // Big bullet type
-            case DOUBLE_SHOT: // Double shot type
-                this.speed = 1; // 이동 속도 느림
-                this.shootingInterval = 750; // 연사 속도 보통
+                this.speed = 1; // Move slowly
+                this.shootingInterval = 750; // Fire rate is normal
                 this.bulletWidth = 3 * 3;
                 this.bulletHeight = 5 * 3;
                 break;
+            case DOUBLE_SHOT: // Double shot type
+                this.speed = 1; // Move slowly
+                this.shootingInterval = 750; // Fire rate is normal
+                this.bulletWidth = 3 * 2;
+                this.bulletHeight = 5 * 2;
             case MOVE_FAST: // Move fast type
-                this.speed = 3; // 이동 속도 빠름
-                this.shootingInterval = 900; // 연사 속도 느림
+                this.speed = 3; // Move Fast
+                this.shootingInterval = 900; // Fire rate is slow
+                this.bulletWidth = 3 * 2;
+                this.bulletHeight = 5 * 2;
                 break;
             case NORMAL: // Normal type
             default:
-                this.speed = 2; // 이동 속도 보통
-                this.shootingInterval = 750; // 연사 속도 보통
+                this.speed = 2; // Move Normally
+                this.shootingInterval = 750; // Fire rate is normal
+                this.bulletWidth = 3 * 2;
+                this.bulletHeight = 5 * 2;
                 break;
         }
 
@@ -137,7 +145,9 @@ public class Ship extends Entity {
 					b2.setOwnerPlayerId(this.getPlayerId());
 					bullets.add(b2);
 					break;
-				case NORMAL:
+                case BIG_SHOT:
+                case MOVE_FAST:
+                case NORMAL:
 				default:
 					// nomal type
 					Bullet b = BulletPool.getBullet(positionX + this.width / 2, spawnY, BULLET_SPEED, bulletWidth, bulletHeight, this.getTeam());
