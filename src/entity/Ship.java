@@ -78,6 +78,7 @@ public class Ship extends Entity {
                 this.shootingInterval = 750; // Fire rate is normal
                 this.bulletWidth = 3 * 2;
                 this.bulletHeight = 5 * 2;
+                break;
             case MOVE_FAST: // Move fast type
                 this.speed = 3; // Move Fast
                 this.shootingInterval = 900; // Fire rate is slow
