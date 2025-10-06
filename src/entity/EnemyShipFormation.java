@@ -336,16 +336,19 @@ public class EnemyShipFormation implements Iterable<EnemyShip> {
         int index = (int) (Math.random() * this.shooters.size());
         EnemyShip shooter = this.shooters.get(index);
 
-        if (this.shootingCooldown == null || this.shootingCooldown.checkFinished()) {
-            this.shootingCooldown = Core.getVariableCooldown(
-                    shooter.getShootingInterval(),
-                    (int)(shooter.getShootingInterval() * SHOOTING_VARIANCE)
-            );
+        if (this.shootingCooldown.checkFinished()) {
             this.shootingCooldown.reset();
 
             int bulletWidth = 3 * 2;
             int bulletHeight = 5 * 2;
             int spawnY = shooter.getPositionY() + shooter.getHeight();
+
+            int bulletSpeed = BULLET_SPEED;
+
+            if (shooter.getSpriteType() == SpriteType.EnemyShipB1
+                    || shooter.getSpriteType() == SpriteType.EnemyShipB2) {
+                bulletSpeed = BULLET_SPEED * 2;
+            }
 
             if (shooter.getSpriteType() == SpriteType.EnemyShipC1
                     || shooter.getSpriteType() == SpriteType.EnemyShipC2) {
@@ -353,18 +356,18 @@ public class EnemyShipFormation implements Iterable<EnemyShip> {
 
                 Bullet b1 = BulletPool.getBullet(
                         shooter.getPositionX() + shooter.getWidth() / 2 - offset,
-                        spawnY, BULLET_SPEED, bulletWidth, bulletHeight, Entity.Team.ENEMY);
+                        spawnY, bulletSpeed, bulletWidth, bulletHeight, Entity.Team.ENEMY);
                 bullets.add(b1);
 
                 Bullet b2 = BulletPool.getBullet(
                         shooter.getPositionX() + shooter.getWidth() / 2 + offset,
-                        spawnY, BULLET_SPEED, bulletWidth, bulletHeight, Entity.Team.ENEMY);
+                        spawnY, bulletSpeed, bulletWidth, bulletHeight, Entity.Team.ENEMY);
                 bullets.add(b2);
 
             } else {
                 Bullet b = BulletPool.getBullet(
                         shooter.getPositionX() + shooter.getWidth() / 2,
-                        spawnY, BULLET_SPEED, bulletWidth, bulletHeight, Entity.Team.ENEMY);
+                        spawnY, bulletSpeed, bulletWidth, bulletHeight, Entity.Team.ENEMY);
                 bullets.add(b);
             }
         }
