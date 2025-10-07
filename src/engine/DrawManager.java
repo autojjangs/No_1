@@ -3,12 +3,14 @@ package engine;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
 import Animations.BasicGameSpace;
+import Animations.InGameAnimations;
 import Animations.MenuSpace;
 import com.sun.tools.javac.Main;
 import screen.Screen;
@@ -56,6 +58,8 @@ public final class DrawManager {
      * */
     BasicGameSpace basicGameSpace = new BasicGameSpace(100);
     MenuSpace menuSpace = new MenuSpace(50);
+
+    InGameAnimations explosion = new InGameAnimations(5);
 
 	/** Sprite types. */
 	public static enum SpriteType {
@@ -286,6 +290,58 @@ public final class DrawManager {
     public void menuHover(final int state){
         menuSpace.setColor(state);
         menuSpace.setSpeed(state == 3);
+    }
+
+    public void explosion(final int x, final int y){
+        explosion.updateGrid();
+
+        Graphics2D g2d = (Graphics2D) backBufferGraphics;
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+        backBufferGraphics.setColor(Color.WHITE);
+        int[][] grid = explosion.getGrid();
+
+        logger.info(Arrays.deepToString(grid));
+
+        for(int i = 0; i < grid.length; i++){
+            for(int j = 0; j < grid.length; j++){
+
+                Color color;
+                switch(grid[i][j]){
+                    case 1:
+                        color = new Color(255,0,0,100);
+                        break;
+                    case 2:
+                        color = new Color(255,255,0,100);
+                        break;
+                    default:
+                        color = new Color(255,0,0,100);
+                        //color = new Color(255,255,255,0);
+                        break;
+                }
+
+                int size = 1;
+                int radius = size * 2;
+
+                float[] dist = {0.0f, 1.0f};
+                Color[] colors = {
+                        color,
+                        new Color(255, 255, 200, 0)
+                };
+
+                RadialGradientPaint paint = new RadialGradientPaint(
+                        new Point(x-explosion.getWidth()+i, y+explosion.getWidth()+j),
+                        radius,
+                        dist,
+                        colors
+                );
+                g2d.setPaint(paint);
+                g2d.fillOval(x-explosion.getWidth()+i - radius / 2, y+explosion.getWidth()+j - radius / 2, radius, radius);
+
+
+                backBufferGraphics.fillOval(x-explosion.getWidth()+i, y+explosion.getWidth()+j, size, size);
+            }
+        }
     }
 
     /**

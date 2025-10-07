@@ -290,6 +290,7 @@ public class GameScreen extends Screen {
 
 						ship.destroy(); // explosion/respawn handled by Ship.update()
                         state.decLife(p); // decrement shared/team lives by 1
+                        drawManager.explosion(ship.getPositionX(), ship.getPositionY());
 
 						this.logger.info("Hit on player " + (p + 1) + ", team lives now: " + state.getLivesRemaining());
 						break;
