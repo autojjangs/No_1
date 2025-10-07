@@ -666,28 +666,24 @@ public final class DrawManager {
 
     // add this line
     // hitbox coordinate function
+    // [Refactor] unified hitbox logic to match drawMenu() for consistency
     public Rectangle[] getMenuHitboxes (final Screen screen) {
         if (fontRegularMetrics == null) {
             backBufferGraphics.setFont(fontRegular);
             fontRegularMetrics = backBufferGraphics.getFontMetrics(fontRegular);
         }
 
-        String playString = "Play";
-        String highScoreString = "High scores";
-        String SettingsString = "Settings";
-        String exitString = "exit";
+        final String[] buttons = {"Play", "Achievement", "Settings", "Exit"};
 
-        int baselinePlay = screen.getHeight() / 3 * 2;
-        int baselineHighscore = screen.getHeight() / 3 * 2 + fontRegularMetrics.getHeight() * 2;
-        int baselineSettings = screen.getHeight() / 3 * 2 + fontRegularMetrics.getHeight() * 3 + 5;
-        int baselineExit = screen.getHeight() / 3 * 2 + fontRegularMetrics.getHeight() * 4 + 10;
+        int baseY = screen.getHeight() / 3 * 2;
+        Rectangle[] boxes= new Rectangle[buttons.length];
 
-        Rectangle hitbox_play = centeredStringBounds(screen, playString, baselinePlay);
-        Rectangle hitbox_score = centeredStringBounds(screen, highScoreString, baselineHighscore);
-        Rectangle hitbox_settings = centeredStringBounds(screen, SettingsString,  baselineSettings);
-        Rectangle hitbox_exit = centeredStringBounds(screen, exitString, baselineExit);
+        for (int i = 0; i < buttons.length; i++) {
+            int baseline = (int) (baseY + fontRegularMetrics.getHeight() * 1.5 * i);
+            boxes[i] = centeredStringBounds(screen, buttons[i], baseline);
+        }
 
-        return new Rectangle[] {hitbox_play, hitbox_score, hitbox_settings, hitbox_exit};
+        return boxes;
     }
 
     /*
