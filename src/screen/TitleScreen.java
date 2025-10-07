@@ -112,7 +112,7 @@ public class TitleScreen extends Screen {
 	 * Shifts the focus to the previous menu item.
 	 */
 	private void previousMenuItem() {
-        this.menuIndex = (this.menuIndex + 4) % 4; // wrap upwards
+        this.menuIndex = (this.menuIndex + 3) % 4; // Fix : an issue where only the down arrow keys on the keyboard are entered and not up
     }
 	/**
 	 * Draws the elements associated with the screen.
