@@ -86,7 +86,7 @@ public class TitleScreen extends Screen {
                         this.isRunning = false;
                         break;
 
-                    case 1: // "High scores"
+                    case 1: // "Achievements" | High Scores -> Achievements
                         this.returnCode = 3;
                         this.isRunning = false;
                         break;
@@ -133,7 +133,7 @@ public class TitleScreen extends Screen {
 	 * Shifts the focus to the previous menu item.
 	 */
 	private void previousMenuItem() {
-        this.menuIndex = (this.menuIndex + 3) % 4; // wrap upwards
+        this.menuIndex = (this.menuIndex + 3) % 4; // Fix : an issue where only the down arrow keys on the keyboard are entered and not up
     }
 	/**
 	 * Draws the elements associated with the screen.

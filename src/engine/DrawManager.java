@@ -356,7 +356,7 @@ public final class DrawManager {
 	public void drawMenu(final Screen screen, final int option, final Integer hoverOption, final int selectedIndex) {
         // Return Code List
         // 1. Play, 2. In-game, 3. High Scores, 4. Settings, 5. mode selection, 0. exit
-        String[] items = {"Play", "High scores", "Settings", "Exit"};
+        String[] items = {"Play", "Achievements", "Settings", "Exit"};
         final int[] returnCodes = {1, 3, 4, 0};
 
         int baseY = screen.getHeight() / 3 * 2; // same option choice, different formatting
@@ -555,6 +555,19 @@ public final class DrawManager {
         drawCenteredRegularString(screen, instructionsString,
                 screen.getHeight() / 5);
     }
+
+    // Made it to check if the Achievement button works temporarily.
+    public void drawAchievementMenu(final Screen screen) {
+		String AchievementsString = "Achievements";
+		String instructionsString = "Press Space to return";
+
+		backBufferGraphics.setColor(Color.GREEN);
+		drawCenteredBigString(screen, AchievementsString, screen.getHeight() / 8);
+
+		backBufferGraphics.setColor(Color.GRAY);
+		drawCenteredRegularString(screen, instructionsString,
+				screen.getHeight() / 5);
+	}
 
 	/**
 	 * Draws a centered string on regular font.
