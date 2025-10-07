@@ -55,6 +55,9 @@ public final class DrawManager {
     // Variables for hitbox fine-tuning
     private int menuHitboxOffset = 20; // add this line
 
+    // Label for back button
+    private static final String BACK_LABEL = "< Back";
+
 	/** Sprite types. */
 	public static enum SpriteType {
 		/** Player ship. */
@@ -554,6 +557,9 @@ public final class DrawManager {
         backBufferGraphics.setColor(Color.GRAY);
         drawCenteredRegularString(screen, instructionsString,
                 screen.getHeight() / 5);
+
+        // draw back button at top-left
+        drawBackButton(screen, false);
     }
 
     // Made it to check if the Achievement button works temporarily.
@@ -654,14 +660,25 @@ public final class DrawManager {
     public void drawPlayMenu(final Screen screen, final int selectedIndex) {
         String[] items = {"1 Player", "2 Players", "Back"};
 
+        // draw back button at top-left corner
+        drawBackButton(screen, false);
+
         int baseY = screen.getHeight() / 3; // Modify: * 1 is unnecessary
         for (int i = 0; i < items.length; i++) {
             backBufferGraphics.setColor(i == selectedIndex ? Color.GREEN : Color.WHITE);
             drawCenteredRegularString(screen, items[i],
                     baseY + fontRegularMetrics.getHeight() * 3 * i);
         }
+    }
 
+    // Draw a "BACK_LABEL" button at the top-left corner.
+    public void drawBackButton(final Screen screen, final boolean highlighted) {
+        backBufferGraphics.setFont(fontRegular);
+        backBufferGraphics.setColor(highlighted ? Color.GREEN : Color.WHITE);
 
+        int margin = 12;
+        int ascent = fontRegularMetrics.getAscent();
+        backBufferGraphics.drawString(BACK_LABEL, margin, margin + ascent);
     }
 
     // add this line
@@ -684,6 +701,25 @@ public final class DrawManager {
         }
 
         return boxes;
+    }
+
+    // hitbox for Back button
+    public Rectangle getBackButtonHitbox (final Screen screen) {
+        if  (fontRegularMetrics == null) {
+            backBufferGraphics.setFont(fontRegular);
+            fontRegularMetrics = backBufferGraphics.getFontMetrics(fontRegular);
+        }
+
+        int margin = 12;
+        int ascent = fontRegularMetrics.getAscent();
+        int descent = fontRegularMetrics.getDescent();
+        int padTop = 2;
+
+        int y = margin - padTop;
+        int w = fontRegularMetrics.stringWidth(BACK_LABEL);
+        int h = ascent + descent + 25;
+
+        return new Rectangle(margin, y, w, h);
     }
 
     /*

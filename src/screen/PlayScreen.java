@@ -3,6 +3,7 @@ package screen;
 import java.awt.event.KeyEvent;
 import engine.Cooldown;
 import engine.Core;
+import engine.InputManager;
 
 /**
  *
@@ -71,11 +72,33 @@ public class PlayScreen extends Screen {
 
             }
         }
+
+        // back button click event
+        if (inputManager.isMouseClicked()) {
+            int mx = inputManager.getMouseX();
+            int my = inputManager.getMouseY();
+            java.awt.Rectangle backBox = drawManager.getBackButtonHitbox(this);
+
+            if (backBox.contains(mx, my)) {
+                this.returnCode = 1;
+                this.isRunning = false;
+            }
+        }
     }
 
     private void draw() {
         drawManager.initDrawing(this);
         drawManager.drawPlayMenu(this, this.menuIndex);
+
+        // hover highlight
+        int mx = inputManager.getMouseX();
+        int my = inputManager.getMouseY();
+        java.awt.Rectangle backBox = drawManager.getBackButtonHitbox(this);
+
+        if (backBox.contains(mx, my)) {
+            drawManager.drawBackButton(this, true);
+        }
+
         drawManager.completeDrawing(this);
     }
 }
