@@ -16,6 +16,7 @@ public class Coin extends Item {
      * @param playerId
      *            the ID of the player receiving the effect.
      */
+    @Override
     public void applyEffect(final GameState gameState, final int playerId) {
         if (gameState == null) return;
         gameState.addCoins(playerId, this.effectValue);
