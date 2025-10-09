@@ -6,7 +6,7 @@ import engine.DrawManager.SpriteType;
 import engine.GameState;
 
 /**
- * Implements a Item that moves vertically up or down.
+ * Implements an Item that moves vertically up or down.
  */
 public class Item extends Entity {
 
@@ -53,36 +53,14 @@ public class Item extends Entity {
                 SpriteType spriteType, ItemType itemType, int effectValue, int effectDuration, double dropChance) {
         super(positionX, positionY, 3 * 2, 5 * 2, Color.WHITE);
         this.itemSpeed = speed;
-        this.type = ItemType.ITEM_1;
+        this.type = itemType;
         this.spriteType = spriteType;
         this.effectValue = effectValue;
         this.effectDuration = effectDuration;
         this.dropChance = dropChance;
         setSprite();
     }
-//    public Item() {
-//        super(0, 0, 3 * 2, 5 * 2, Color.WHITE);
-//        this.itemSpeed = 0;
-//        this.itemId = 0;
-//        this.type = ItemType.ITEM_1;
-//        this.spriteType = SpriteType.Ship;
-//        this.effectValue = 0;
-//        this.effectDuration = 0;
-//        this.dropChance = 0;
-//        setSprite();
-//    }
 
-//    /**
-//     * Sets correct sprite for the Item, based on speed.
-//     */
-//    public final void init(final int x, final int y, final ItemType type,
-//                           final int speed, final SpriteType sprite) {
-//        this.positionX = x;
-//        this.positionY = y;
-//        this.type = type;
-//        this.itemSpeed = speed;
-//        this.spriteType = sprite;
-//    }
 
     public final void setSprite() {
         // keep the same sprite for now; choose based on speed if you want
@@ -115,8 +93,8 @@ public class Item extends Entity {
         return this.itemSpeed;
     }
 
-    public final void reset() {
-        this.type = ItemType.ITEM_1;
+    public final void reset(ItemType itemType) {
+        this.type = itemType;
         this.itemSpeed = 0;
         this.spriteType = SpriteType.ItemDefault; // change to your enum if different
     }
