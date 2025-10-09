@@ -1,5 +1,6 @@
 package engine;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.ConsoleHandler;
@@ -49,7 +50,7 @@ public final class Core {
 	 * @param args
 	 *             Program args, ignored.
 	 */
-	public static void main(final String[] args) {
+	public static void main(final String[] args) throws IOException {
 		try {
 			LOGGER.setUseParentHandlers(false);
 			fileHandler = new FileHandler("log");
@@ -103,42 +104,48 @@ public final class Core {
 
 					break;
 
-				case 2:
-                    // 2P mode: building gameState now using user choice
-                    gameState = new GameState(1, MAX_LIVES, coopSelected);
+            case 2:
+              // Game & score.
+              AchievementManager achievementManager = new AchievementManager();
 
-					do {
-						// Extra life this level? Give it if team pool is below cap.
-						int teamCap = gameState.isCoop() ? (MAX_LIVES * GameState.NUM_PLAYERS) : MAX_LIVES;
-						boolean bonusLife = gameState.getLevel() % EXTRA_LIFE_FRECUENCY == 0
-								&& gameState.getLivesRemaining() < teamCap;
+                // 2P mode: building gameState now using user choice
+                gameState = new GameState(1, MAX_LIVES, coopSelected);
 
-						currentScreen = new GameScreen(
-								gameState,
-								gameSettings.get(gameState.getLevel() - 1),
-								bonusLife, width, height, FPS);
+              do {
+                // Extra life this level? Give it if team pool is below cap.
+                int teamCap = gameState.isCoop() ? (MAX_LIVES * GameState.NUM_PLAYERS) : MAX_LIVES;
+                boolean bonusLife = gameState.getLevel() % EXTRA_LIFE_FRECUENCY == 0
+                    && (gameState.getLivesRemaining() < teamCap || gameState.getLivesRemaining() < MAX_LIVES);
 
-						LOGGER.info("Starting " + WIDTH + "x" + HEIGHT + " game screen at " + FPS + " fps.");
-						frame.setScreen(currentScreen);
-						LOGGER.info("Closing game screen.");
+                currentScreen = new GameScreen(gameState, gameSettings.get(gameState.getLevel() - 1), bonusLife, width, height, FPS, achievementManager);
 
-						gameState = ((GameScreen) currentScreen).getGameState();
+                LOGGER.info("Starting " + WIDTH + "x" + HEIGHT + " game screen at " + FPS + " fps.");
+                frame.setScreen(currentScreen);
+                LOGGER.info("Closing game screen.");
 
-						if (gameState.teamAlive()) {
-							gameState.nextLevel();
-						}
+                gameState = ((GameScreen) currentScreen).getGameState();
 
-					} while (gameState.teamAlive() && gameState.getLevel() <= NUM_LEVELS);
+                gameState = new GameState(gameState.getLevel() + 1,
+                    gameState.getScore(),
+                    gameState.getLivesRemaining(),
+                    gameState.getBulletsShot(),
+                    gameState.getShipsDestroyed(), getFileManager().loadCoins());
 
-					LOGGER.info("Starting " + WIDTH + "x" + HEIGHT + " score screen at " + FPS + " fps, with a score of "
-							+ gameState.getScore() + ", "
-							+ gameState.getLivesRemaining() + " lives remaining, "
-							+ gameState.getBulletsShot() + " bullets shot and "
-							+ gameState.getShipsDestroyed() + " ships destroyed.");
-					currentScreen = new ScoreScreen(width, height, FPS, gameState);
-					returnCode = frame.setScreen(currentScreen);
-					LOGGER.info("Closing score screen.");
-					break;
+                if (gameState.teamAlive()) {
+                  gameState.nextLevel();
+                }
+
+              } while ((gameState.getLivesRemaining() > 0 || gameState.teamAlive()) && gameState.getLevel() <= NUM_LEVELS);
+
+              LOGGER.info("Starting " + WIDTH + "x" + HEIGHT + " score screen at " + FPS + " fps, with a score of "
+                  + gameState.getScore() + ", "
+                  + gameState.getLivesRemaining() + " lives remaining, "
+                  + gameState.getBulletsShot() + " bullets shot and "
+                  + gameState.getShipsDestroyed() + " ships destroyed.");
+              currentScreen = new ScoreScreen(width, height, FPS, gameState, achievementManager);
+              returnCode = frame.setScreen(currentScreen);
+              LOGGER.info("Closing score screen.");
+              break;
 
 				case 3:
 					// Achievements.
@@ -246,4 +253,15 @@ public final class Core {
 			final int variance) {
 		return new Cooldown(milliseconds, variance);
 	}
+
+	/**
+	 * For Check Achievement release
+	 *
+	 * @return Total Number of level
+	 * 2025-10-02 add method
+	 */
+	public static int getNumLevels(){
+		return NUM_LEVELS;
+	}
+
 }
