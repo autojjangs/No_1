@@ -25,7 +25,7 @@ import engine.ItemManager;
  * shared team lives)
  *
  * @author <a href="mailto:RobertoIA1987@gmail.com">Roberto Izquierdo Amo</a>
- * 
+ *
  */
 public class GameScreen extends Screen {
 
@@ -70,7 +70,7 @@ public class GameScreen extends Screen {
 
 	/**
 	 * Constructor, establishes the properties of the screen.
-	 * 
+	 *
 	 * @param gameState
 	 *            Current game state.
 	 * @param gameSettings
@@ -145,7 +145,7 @@ public class GameScreen extends Screen {
 
 	/**
 	 * Starts the action.
-	 * 
+	 *
 	 * @return Next screen code.
 	 */
 	public final int run() {
@@ -351,7 +351,7 @@ public class GameScreen extends Screen {
 				if (checkCollision(item, ship) && !collected.contains(item)) {
 					collected.add(item);
 					item.applyEffect(getGameState(), ship.getPlayerId());
-					this.logger.info("Item picked up by ship " + ship.getPlayerId());
+					this.logger.info(item.getType() +" Item picked up by ship " + ship.getPlayerId());
 				}
 			}
 
@@ -433,7 +433,7 @@ public class GameScreen extends Screen {
 
     /**
      * Checks if two entities are colliding.
-	 * 
+	 *
 	 * @param a
 	 *            First entity, the bullet.
 	 * @param b
@@ -454,7 +454,7 @@ public class GameScreen extends Screen {
 
 	/**
 	 * Returns a GameState object representing the status of the game.
-	 * 
+	 *
 	 * @return Current game state.
 	 */
 	public final GameState getGameState() {
