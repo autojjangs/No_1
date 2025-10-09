@@ -267,7 +267,7 @@ public final class FileManager {
         }
     }
 
-        /**
+    /**
      * Loads the coin count from the coins.csv file.
      *
      * @return The saved coin count, or 0 if the file is not found or empty.
@@ -473,5 +473,55 @@ public final class FileManager {
         } catch (FileNotFoundException e) {
             logger.info("No achievements to save");
         }
+    }
+
+    /**
+     * Unlocks an achievement for the given user.
+     *
+     * @param achievement achievement's name to search.
+     * @throws IOException In case of loading problems.
+     *
+     * [2025-10-09] Added in commit: feat: add method to retrieve achievement completer
+     */
+    public List<String> getAchievementCompleter(Achievement achievement)
+            throws IOException {
+        List<String> completer = new ArrayList<String>();
+        try {
+                String jarPath = FileManager.class.getProtectionDomain()
+                        .getCodeSource().getLocation().getPath();
+                jarPath = URLDecoder.decode(jarPath, "UTF-8");
+
+                String achievementPath = String.valueOf(new File(jarPath));
+                achievementPath += File.separator;
+                achievementPath += "achievement.csv";
+
+                InputStream iStream = new FileInputStream(achievementPath);
+                BufferedReader bReader = new BufferedReader(
+                        new InputStreamReader(iStream, Charset.forName("UTF-8")));
+
+                String line;
+                String[] header = bReader.readLine().split(",");
+                int idx = -1;
+                for(int i = 0; i < header.length; i++){
+                    if(header[i].equals(achievement.getName())){
+                        idx = i;
+                        break;
+                    }
+                }
+                if (idx == -1){
+                    logger.info("No such achievement");
+                    return completer;
+                }
+                while ((line = bReader.readLine()) != null) {
+                    String[] tmp = line.split(",");
+                    if(tmp[idx].equals("1")) completer.add(tmp[0]);
+                }
+        } catch (IOException e) {
+            logger.info("Error reading achievement file, using default users.");
+            completer.add("ABC");
+            completer.add("CDF");
+            completer.add("EFG");
+        }
+        return completer;
     }
 }

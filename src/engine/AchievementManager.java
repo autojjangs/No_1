@@ -3,6 +3,7 @@ package engine;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * Manages the list of achievements for a player,
@@ -11,9 +12,11 @@ import java.util.List;
 public class AchievementManager {
 
     private List<Achievement> achievements;
+    private static Logger logger;
 
     public AchievementManager() {
         this.achievements = createDefaultAchievements();
+        logger = Core.getLogger();
     }
 
     /** Defines the default achievements available in the game. */
@@ -61,7 +64,7 @@ public class AchievementManager {
         for (Achievement a : achievements) {
             if (a.getName().equals(name) && !a.isUnlocked()) {
                 a.unlock();
-                System.out.println("Achievement unlocked: " + a);
+                logger.info("Achievement unlocked: " + a);
             }
         }
     }
