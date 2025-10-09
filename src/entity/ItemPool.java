@@ -38,6 +38,11 @@ public final class ItemPool {
 	 */
     public static Item getItem(final int positionX,
                                final int positionY, final int speed) {
+        if (pool.isEmpty()) {
+            pool.add(new Coin(0, 0));
+            pool.add(new HealthUp(0, 0));
+        }
+
         Item item;
         if (!pool.isEmpty()) {
             item = pool.iterator().next();
