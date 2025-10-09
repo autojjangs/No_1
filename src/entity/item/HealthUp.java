@@ -7,7 +7,7 @@ import engine.DrawManager.SpriteType;
 
 public class HealthUp extends Item{
     public HealthUp(final int positionX, final int positionY) {
-        super(positionX, positionY, 2, SpriteType.ItemDefault, ItemType.ITEM_1, 10, 0, 0.5);
+        super(positionX, positionY, 2, SpriteType.ItemDefault, ItemType.HealthUp, 10, 0, 0.5);
     }
 
     /**

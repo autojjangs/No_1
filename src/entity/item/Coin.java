@@ -7,7 +7,7 @@ import engine.DrawManager.SpriteType;
 
 public class Coin extends Item {
     public Coin(final int positionX, final int positionY) {
-        super(positionX, positionY, 2, SpriteType.ItemDefault, ItemType.COIN, 10, 0, 0.5);
+        super(positionX, positionY, 2, SpriteType.ItemDefault, ItemType.Coin, 10, 0, 0.5);
     }
 
     /**

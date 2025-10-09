@@ -12,8 +12,8 @@ public class Item extends Entity {
 
 
     public enum ItemType {
-        ITEM_1,
-        COIN
+        Coin,
+        HealthUp
     }
 
 
