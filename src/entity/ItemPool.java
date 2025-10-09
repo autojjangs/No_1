@@ -5,6 +5,8 @@ import engine.DrawManager;
 import java.util.HashSet;
 import java.util.Set;
 
+import entity.item.Coin;
+import entity.item.HealthUp;
 /**
  * Implements a pool of recyclable items.
  */
@@ -45,7 +47,7 @@ public final class ItemPool {
             item.setItemSpeed(speed);
             item.setSprite();
         } else {
-            item = new Item(positionX, positionY, 2, DrawManager.SpriteType.Ship, Item.ItemType.ITEM_1, 1, 1, 0.5);
+            item = new Coin(positionX, positionY);
             item.setPositionX(positionX - item.getWidth() / 2);
         }
         return item;
