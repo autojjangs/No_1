@@ -5,10 +5,7 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
-import engine.Cooldown;
-import engine.Core;
-import engine.GameState;
-import engine.Score;
+import engine.*;
 
 /**
  * Implements the score screen.
@@ -48,6 +45,8 @@ public class ScoreScreen extends Screen {
 	private int nameCharSelected;
 	/** Time between changes in user selection. */
 	private Cooldown selectionCooldown;
+	/** manages achievements.*/
+	private AchievementManager achievementManager;
 	/** Total coins earned in the game. */ // ADD THIS LINE
 	private int totalCoins; // ADD THIS LINE
 
@@ -62,9 +61,12 @@ public class ScoreScreen extends Screen {
 	 *                  Frames per second, frame rate at which the game is run.
 	 * @param gameState
 	 *                  Current game state.
+	 * @param achievementManager
+	 * 			            Achievement manager instance used to track and save player achievements.
+	 * 			  2025-10-03  add generator parameter and comment
 	 */
 	public ScoreScreen(final int width, final int height, final int fps,
-			final GameState gameState) {
+			final GameState gameState, final AchievementManager achievementManager) {
 		super(width, height, fps);
 		this.gameState = gameState; // Added
 
@@ -78,6 +80,7 @@ public class ScoreScreen extends Screen {
 		this.nameCharSelected = 0;
 		this.selectionCooldown = Core.getCooldown(SELECTION_TIME);
 		this.selectionCooldown.reset();
+		this.achievementManager = achievementManager;
 
 		try {
 			this.highScores = Core.getFileManager().loadHighScores();
@@ -113,14 +116,18 @@ public class ScoreScreen extends Screen {
 				// Return to main menu.
 				this.returnCode = 1;
 				this.isRunning = false;
-				if (this.isNewRecord)
+				if (this.isNewRecord) {
 					saveScore();
+					saveAchievement(); //2025-10-03 call method for save achievement released
+				}
 			} else if (inputManager.isKeyDown(KeyEvent.VK_SPACE)) {
 				// Play again.
 				this.returnCode = 2;
 				this.isRunning = false;
-				if (this.isNewRecord)
+				if (this.isNewRecord) {
 					saveScore();
+					saveAchievement(); // 2025-10-03 call method for save achievement released
+				}
 			}
 
 			if (this.isNewRecord && this.selectionCooldown.checkFinished()) {
@@ -164,6 +171,19 @@ public class ScoreScreen extends Screen {
 			Core.getFileManager().saveHighScores(highScores);
 		} catch (IOException e) {
 			logger.warning("Couldn't load high scores!");
+		}
+	}
+
+	/**
+	 * Save the achievement released.
+	 * 2025-10-03
+	 * add new method
+	 */
+	private void saveAchievement() {
+		try {
+			this.achievementManager.saveToFile(new String(this.name));
+		} catch (IOException e) {
+			logger.warning("Couldn't save achievements!");
 		}
 	}
 
