@@ -1,5 +1,6 @@
 package engine;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.ConsoleHandler;
@@ -105,6 +106,9 @@ public final class Core {
                     break;
 
                 case 2:
+                    // Game & score.
+                    AchievementManager achievementManager = new AchievementManager();
+                    
                     // 2P mode: building gameState now using user choice
                     gameState = new GameState(1, MAX_LIVES, coopSelected);
 
@@ -117,7 +121,7 @@ public final class Core {
                         currentScreen = new GameScreen(
                                 gameState,
                                 gameSettings.get(gameState.getLevel() - 1),
-                                bonusLife, width, height, FPS, shipTypeP1, shipTypeP2);
+                                bonusLife, width, height, FPS, shipTypeP1, shipTypeP2, achievementManager);
 
                         LOGGER.info("Starting " + WIDTH + "x" + HEIGHT + " game screen at " + FPS + " fps.");
                         frame.setScreen(currentScreen);
@@ -136,7 +140,7 @@ public final class Core {
                             + gameState.getLivesRemaining() + " lives remaining, "
                             + gameState.getBulletsShot() + " bullets shot and "
                             + gameState.getShipsDestroyed() + " ships destroyed.");
-                    currentScreen = new ScoreScreen(width, height, FPS, gameState);
+                    currentScreen = new ScoreScreen(width, height, FPS, gameState, achievementManager);
                     returnCode = frame.setScreen(currentScreen);
                     LOGGER.info("Closing score screen.");
                     break;
@@ -250,4 +254,14 @@ public final class Core {
                                                final int variance) {
         return new Cooldown(milliseconds, variance);
     }
+  
+    /**
+	  * For Check Achievement release
+	  *
+	  * @return Total Number of level
+	  * 2025-10-02 add method
+	  */
+	  public static int getNumLevels(){
+		  return NUM_LEVELS;
+	  }
 }
