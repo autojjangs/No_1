@@ -78,7 +78,7 @@ public final class DrawManager {
 		/** Destroyed enemy ship. */
 		Explosion,
         /** Heart for lives display. */
-        Heart
+        Heart //추가
 	};
 
 	/**
@@ -282,7 +282,7 @@ public final class DrawManager {
 		backBufferGraphics.setFont(fontRegular);
 		backBufferGraphics.setColor(Color.WHITE);
 		backBufferGraphics.drawString(Integer.toString(lives), 20, 25);
-		Entity heart = new Entity(0,0,5*2, 4*2,Color.RED) {
+		Entity heart = new Entity(0,0,7*2, 6*2,Color.RED) {
             {this.spriteType = SpriteType.Heart;}
         };
 		for (int i = 0; i < lives; i++)

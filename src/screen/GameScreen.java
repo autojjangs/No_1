@@ -28,7 +28,7 @@ public class GameScreen extends Screen {
 	private static final int BONUS_SHIP_VARIANCE = 10000;
 	private static final int BONUS_SHIP_EXPLOSION = 500;
 	private static final int SCREEN_CHANGE_INTERVAL = 1500;
-	private static final int SEPARATION_LINE_HEIGHT = 40;
+	private static final int SEPARATION_LINE_HEIGHT = 70;
 	/** For Check Achievement
 	 * 2015-10-02 add new */
 	private AchievementManager achievementManager;
