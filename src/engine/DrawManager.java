@@ -78,8 +78,10 @@ public final class DrawManager {
 		/** Destroyed enemy ship. */
 		Explosion,
 
-        /** Default Item. */
-        ItemDefault
+        /** Item Graphics Temp */
+        ItemScore,
+        ItemCoin,
+        ItemHeal
 	};
 
 	/**
@@ -107,7 +109,9 @@ public final class DrawManager {
 			spriteMap.put(SpriteType.Explosion, new boolean[13][7]);
 
             // Item sprite placeholder
-            spriteMap.put(SpriteType.ItemDefault, new boolean[5][5]);
+            spriteMap.put(SpriteType.ItemScore, new boolean[5][5]);
+            spriteMap.put(SpriteType.ItemCoin, new boolean[5][5]);
+            spriteMap.put(SpriteType.ItemHeal, new boolean[5][5]);
 
 			fileManager.loadSprite(spriteMap);
 			logger.info("Finished loading the sprites.");
