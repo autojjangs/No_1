@@ -351,6 +351,11 @@ public final class DrawManager {
         backBufferGraphics.drawString(levelString, screen.getWidth()-250, 25);
     }
 
+    public void drawShipCount (final Screen screen, final int shipCount) {
+        backBufferGraphics.setColor(Color.GREEN);
+        String shipString = "Enemy : " + shipCount;
+        backBufferGraphics.drawString(shipString, screen.getWidth()-250, 40);
+    }
 
 	/**
 	 * Draws game title.

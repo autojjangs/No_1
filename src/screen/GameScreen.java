@@ -296,6 +296,7 @@ public class GameScreen extends Screen {
         }
         drawManager.drawLevel(this, this.state.getLevel());
 		drawManager.drawHorizontalLine(this, SEPARATION_LINE_HEIGHT - 1);
+        drawManager.drawShipCount(this, enemyShipFormation.getShipCount());
 
 		if (!this.inputDelay.checkFinished()) {
 			int countdown = (int) ((INPUT_DELAY - (System.currentTimeMillis() - this.gameStartTime)) / 1000);
