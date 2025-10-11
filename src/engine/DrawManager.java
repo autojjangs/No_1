@@ -318,7 +318,7 @@ public final class DrawManager {
 		backBufferGraphics.setFont(fontRegular); // ADD THIS METHOD
 		backBufferGraphics.setColor(Color.YELLOW); // ADD THIS METHOD
 		String coinString = String.format("Coins: %04d", coins); // ADD THIS METHOD
-		backBufferGraphics.drawString(coinString, screen.getWidth() - 180, 25); // ADD THIS METHOD
+		backBufferGraphics.drawString(coinString, screen.getWidth() - 119, 40); // ADD THIS METHOD
 	} // ADD THIS METHOD
 
     // 2P mode: drawCoins method but for both players, but separate coin counts
