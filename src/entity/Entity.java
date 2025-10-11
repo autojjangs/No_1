@@ -65,6 +65,8 @@ public class Entity {
 		return color;
 	}
 
+    public final void changeColor(Color color) { this.color = color; }
+
 	/**
 	 * Getter for the X axis position of the entity.
 	 *
