@@ -38,6 +38,7 @@ public final class Core {
 	private static final Logger LOGGER = Logger.getLogger(Core.class.getSimpleName());
 	private static Handler fileHandler;
 	private static ConsoleHandler consoleHandler;
+	private static int NUM_LEVELS; // Total number of levels
 
 	/**
 	 * Test implementation.
@@ -65,11 +66,14 @@ public final class Core {
 		int height = frame.getHeight();
 
 		gameSettings = GameSettings.getGameSettings();
+		NUM_LEVELS = gameSettings.size(); // Initialize total number of levels
 
 
         // 2P mode: modified to null to allow for switch between 2 modes
         GameState gameState = null;
         boolean coopSelected = false; // false = 1P, true = 2P
+
+		AchievementManager achievementManager = new AchievementManager();
 
         int returnCode = 1;
         do {
@@ -101,7 +105,7 @@ public final class Core {
 						currentScreen = new GameScreen(
 								gameState,
 								gameSettings.get(gameState.getLevel() - 1),
-								bonusLife, width, height, FPS);
+								bonusLife, width, height, FPS, achievementManager);
 
 						LOGGER.info("Starting " + WIDTH + "x" + HEIGHT + " game screen at " + FPS + " fps.");
 						frame.setScreen(currentScreen);
@@ -120,7 +124,7 @@ public final class Core {
 							+ gameState.getLivesRemaining() + " lives remaining, "
 							+ gameState.getBulletsShot() + " bullets shot and "
 							+ gameState.getShipsDestroyed() + " ships destroyed.");
-					currentScreen = new ScoreScreen(width, height, FPS, gameState);
+					currentScreen = new ScoreScreen(width, height, FPS, gameState, achievementManager);
 					returnCode = frame.setScreen(currentScreen);
 					LOGGER.info("Closing score screen.");
 					break;
