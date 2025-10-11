@@ -288,22 +288,22 @@ public final class DrawManager {
 
         if (isCoop) {
             // 2P mode
-            backBufferGraphics.setColor(Color.CYAN); //1p
-            backBufferGraphics.drawString("P1: " + p1Lives, 20, 20);
+            backBufferGraphics.setColor(Color.CYAN); //Player 1
+            backBufferGraphics.drawString("P1: " + p1Lives, 20, 25);
             for (int i = 0; i < p1Lives; i++)
-                drawEntity(heart, 70 + 30 * i, 5);
+                drawEntity(heart, 70 + 30 * i, 10);
 
-            backBufferGraphics.setColor(Color.MAGENTA); //2p
-            backBufferGraphics.drawString("P2: " + p2Lives, 20, 45);
+            backBufferGraphics.setColor(Color.MAGENTA); //Player 2
+            backBufferGraphics.drawString("P2: " + p2Lives, 20, 52);
             for (int i = 0; i < p2Lives; i++)
-                drawEntity(heart, 70 + 30 * i, 30);
+                drawEntity(heart, 70 + 30 * i, 37);
 
         } else {
             // 1P mode
             backBufferGraphics.setColor(Color.WHITE);
-            backBufferGraphics.drawString(Integer.toString(p1Lives), 20, 25);
+            backBufferGraphics.drawString(Integer.toString(p1Lives), 20, 40);
             for (int i = 0; i < p1Lives; i++)
-                drawEntity(heart, 40 + 30 * i, 9);
+                drawEntity(heart, 40 + 30 * i, 23);
         }
     }
 	/**
@@ -317,8 +317,8 @@ public final class DrawManager {
 	public void drawCoins(final Screen screen, final int coins) { // ADD THIS METHOD
 		backBufferGraphics.setFont(fontRegular); // ADD THIS METHOD
 		backBufferGraphics.setColor(Color.YELLOW); // ADD THIS METHOD
-		String coinString = String.format("Coins: %04d", coins); // ADD THIS METHOD
-		backBufferGraphics.drawString(coinString, screen.getWidth() - 119, 40); // ADD THIS METHOD
+		String coinString = String.format("Coin: %04d", coins); // ADD THIS METHOD
+		backBufferGraphics.drawString(coinString, screen.getWidth() - 108, 52); // ADD THIS METHOD
 	} // ADD THIS METHOD
 
     // 2P mode: drawCoins method but for both players, but separate coin counts
@@ -348,13 +348,19 @@ public final class DrawManager {
     public void drawLevel (final Screen screen, final int level) {
         backBufferGraphics.setColor(Color.WHITE);
         String levelString = "Level " + level;
-        backBufferGraphics.drawString(levelString, screen.getWidth()-250, 25);
+        backBufferGraphics.drawString(levelString, screen.getWidth()-240, 25);
     }
 
     public void drawShipCount (final Screen screen, final int shipCount) {
         backBufferGraphics.setColor(Color.GREEN);
-        String shipString = "Enemy : " + shipCount;
-        backBufferGraphics.drawString(shipString, screen.getWidth()-250, 40);
+        Entity enemyIcon = new Entity(0, 0, 12*2, 8*2, Color.GREEN) {
+            { this.spriteType = SpriteType.EnemyShipB2; }
+        };
+        int iconX = screen.getWidth() - 242;
+        int iconY = 37;
+        drawEntity(enemyIcon, iconX, iconY);
+        String shipString = ": " + shipCount;
+        backBufferGraphics.drawString(shipString, iconX + 30, 52);
     }
 
 	/**
