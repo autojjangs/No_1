@@ -36,16 +36,17 @@ public class GameState {
 		this.level = level;
 		this.coop = coop;
 
+        //2P mode : show Each Lives
+        this.sharedLives = false;
+        this.teamLives = 0;
+        this.teamLivesCap = 0;
+
 		if (coop) {
-			this.sharedLives = true;
-			this.teamLives = Math.max(0, livesEach * NUM_PLAYERS);
-			this.teamLivesCap = this.teamLives;
+			lives[0] = livesEach;
+            lives[1] = livesEach;
 		} else {
-			this.sharedLives = false;
-			this.teamLives = 0;
-			this.teamLivesCap = 0;
-			// legacy: put all lives on P1
-			lives[0] = Math.max(0, livesEach);
+			lives[0] = livesEach;
+            lives[1] = 0;
 		}
 	}
 
@@ -103,6 +104,10 @@ public class GameState {
 	public int getLivesRemaining() {
 		return sharedLives ? teamLives : (lives[0] + lives[1]);
 	}
+
+    public int getLives(final int p) {
+        return (p >= 0 && p < NUM_PLAYERS) ? lives[p]  : 0;
+    }
 
 	public int getBulletsShot() {
 		int t = 0;
@@ -170,6 +175,7 @@ public class GameState {
 		return sharedLives;
 	}
 
+    //unused
 	public int getTeamLives() {
 		return teamLives;
 	}

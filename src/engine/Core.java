@@ -29,6 +29,8 @@ public final class Core {
 
 	/** Lives per player (used to compute team pool in shared mode). */
 	private static final int MAX_LIVES = 3;
+
+
 	private static final int EXTRA_LIFE_FRECUENCY = 3;
 	private static final int NUM_LEVELS = 7;
 
@@ -112,9 +114,9 @@ public final class Core {
 
               do {
                 // Extra life this level? Give it if team pool is below cap.
-                int teamCap = gameState.isCoop() ? (MAX_LIVES * GameState.NUM_PLAYERS) : MAX_LIVES;
-                boolean bonusLife = gameState.getLevel() % EXTRA_LIFE_FRECUENCY == 0
-                    && (gameState.getLivesRemaining() < teamCap || gameState.getLivesRemaining() < MAX_LIVES);
+                  int maxLivesCap = MAX_LIVES;
+                  boolean bonusLife = gameState.getLevel() % EXTRA_LIFE_FRECUENCY == 0
+                          && gameState.getLivesRemaining() < maxLivesCap;
 
                 currentScreen = new GameScreen(gameState, gameSettings.get(gameState.getLevel() - 1), bonusLife, width, height, FPS, achievementManager);
 

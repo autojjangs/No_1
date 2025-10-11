@@ -79,7 +79,7 @@ public final class DrawManager {
 		Explosion,
         /** Heart for lives display. */
         Heart //추가
-	};
+	}
 
 	/**
 	 * Private constructor.
@@ -273,22 +273,39 @@ public final class DrawManager {
 	/**
 	 * Draws number of remaining lives on screen.
 	 *
-	 * @param screen
-	 *               Screen to draw on.
-	 * @param lives
-	 *               Current lives.
+	 * @param screen    Screen to draw on.
+     * @param p1Lives   Player 1's remaining lives.
+     * @param p2Lives   Player 2's remaining lives.
+     * @param isCoop    Whether the game is in co-op mode.
 	 */
-	public void drawLives(final Screen screen, final int lives) {
-		backBufferGraphics.setFont(fontRegular);
-		backBufferGraphics.setColor(Color.WHITE);
-		backBufferGraphics.drawString(Integer.toString(lives), 20, 25);
-		Entity heart = new Entity(0,0,7*2, 6*2,Color.RED) {
+
+    public void drawLives(final Screen screen, final int p1Lives, final int p2Lives, final boolean isCoop) {
+        backBufferGraphics.setFont(fontRegular);
+
+        Entity heart = new Entity(0, 0, 5*2, 4*2, Color.RED) {
             {this.spriteType = SpriteType.Heart;}
         };
-		for (int i = 0; i < lives; i++)
-			drawEntity(heart, 40 + 35 * i, 9);
-	}
 
+        if (isCoop) {
+            // 2P mode
+            backBufferGraphics.setColor(Color.CYAN); //1p
+            backBufferGraphics.drawString("P1: " + p1Lives, 20, 20);
+            for (int i = 0; i < p1Lives; i++)
+                drawEntity(heart, 70 + 30 * i, 5);
+
+            backBufferGraphics.setColor(Color.MAGENTA); //2p
+            backBufferGraphics.drawString("P2: " + p2Lives, 20, 45);
+            for (int i = 0; i < p2Lives; i++)
+                drawEntity(heart, 70 + 30 * i, 30);
+
+        } else {
+            // 1P mode
+            backBufferGraphics.setColor(Color.WHITE);
+            backBufferGraphics.drawString(Integer.toString(p1Lives), 20, 25);
+            for (int i = 0; i < p1Lives; i++)
+                drawEntity(heart, 40 + 30 * i, 9);
+        }
+    }
 	/**
 	 * Draws current coin count on screen.
 	 *
