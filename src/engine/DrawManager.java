@@ -549,7 +549,7 @@ public final class DrawManager {
     public void drawLives(final Screen screen, final int lives, final boolean isCoop) {
         backBufferGraphics.setFont(fontRegular);
         backBufferGraphics.setColor(Color.WHITE);
-
+        backBufferGraphics.drawString(Integer.toString(lives), 20, 25);
 
         Entity heart = new Entity(0, 0, 11*2, 10*2, Color.RED) {
             { this.spriteType = SpriteType.Heart; }
