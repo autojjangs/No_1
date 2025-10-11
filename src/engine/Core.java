@@ -1,5 +1,6 @@
 package engine;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.ConsoleHandler;
@@ -44,7 +45,7 @@ public final class Core {
 	 * @param args
 	 *             Program args, ignored.
 	 */
-	public static void main(final String[] args) {
+	public static void main(final String[] args) throws IOException {
 		try {
 			LOGGER.setUseParentHandlers(false);
 			fileHandler = new FileHandler("log");
@@ -212,4 +213,15 @@ public final class Core {
 			final int variance) {
 		return new Cooldown(milliseconds, variance);
 	}
+
+	/**
+	 * For Check Achievement release
+	 *
+	 * @return Total Number of level
+	 * 2025-10-02 add method
+	 */
+	public static int getNumLevels(){
+		return NUM_LEVELS;
+	}
+
 }
