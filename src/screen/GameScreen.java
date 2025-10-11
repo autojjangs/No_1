@@ -294,7 +294,7 @@ public class GameScreen extends Screen {
 
 			// remove the unnecessary "P1 S: K: B: C:" and "P2 S: K: B: C:" lines from the game screen
         }
-
+        drawManager.drawLevel(this, this.state.getLevel());
 		drawManager.drawHorizontalLine(this, SEPARATION_LINE_HEIGHT - 1);
 
 		if (!this.inputDelay.checkFinished()) {

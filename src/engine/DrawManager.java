@@ -345,6 +345,13 @@ public final class DrawManager {
 				positionY + 1);
 	}
 
+    public void drawLevel (final Screen screen, final int level) {
+        backBufferGraphics.setColor(Color.WHITE);
+        String levelString = "Level " + level;
+        backBufferGraphics.drawString(levelString, screen.getWidth()-250, 25);
+    }
+
+
 	/**
 	 * Draws game title.
 	 *
