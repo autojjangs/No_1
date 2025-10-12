@@ -104,7 +104,7 @@ public final class DrawManager {
 			spriteMap.put(SpriteType.EnemyShipC2, new boolean[12][8]);
 			spriteMap.put(SpriteType.EnemyShipSpecial, new boolean[16][7]);
 			spriteMap.put(SpriteType.Explosion, new boolean[13][7]);
-            spriteMap.put(SpriteType.Heart, new boolean[13][12]); //추가
+            spriteMap.put(SpriteType.Heart, new boolean[11][10]); //추가
 
 			fileManager.loadSprite(spriteMap);
 			logger.info("Finished loading the sprites.");
@@ -282,19 +282,22 @@ public final class DrawManager {
     public void drawLives(final Screen screen, final int p1Lives, final int p2Lives, final boolean isCoop) {
         backBufferGraphics.setFont(fontRegular);
 
-        Entity heart = new Entity(0, 0, 5*2, 4*2, Color.RED) {
+        Entity heart = new Entity(0, 0, 6*2, 5*2, Color.RED) {
             {this.spriteType = SpriteType.Heart;}
         };
 
         if (isCoop) {
             // 2P mode
             backBufferGraphics.setColor(Color.CYAN); //Player 1
-            backBufferGraphics.drawString("P1: " + p1Lives, 20, 25);
+            backBufferGraphics.drawString("P1: ", 20, 25);
+            backBufferGraphics.drawString(String.valueOf(p1Lives), 50, 25);
             for (int i = 0; i < p1Lives; i++)
-                drawEntity(heart, 70 + 30 * i, 10);
+                drawEntity(heart, 70 + 30 * i, 11);
 
             backBufferGraphics.setColor(Color.MAGENTA); //Player 2
-            backBufferGraphics.drawString("P2: " + p2Lives, 20, 52);
+            backBufferGraphics.drawString("P2: ", 20, 52);
+            backBufferGraphics.drawString(String.valueOf(p2Lives), 50, 52);
+
             for (int i = 0; i < p2Lives; i++)
                 drawEntity(heart, 70 + 30 * i, 37);
 
@@ -317,8 +320,9 @@ public final class DrawManager {
 	public void drawCoins(final Screen screen, final int coins) { // ADD THIS METHOD
 		backBufferGraphics.setFont(fontRegular); // ADD THIS METHOD
 		backBufferGraphics.setColor(Color.YELLOW); // ADD THIS METHOD
-		String coinString = String.format("Coin: %04d", coins); // ADD THIS METHOD
-		backBufferGraphics.drawString(coinString, screen.getWidth() - 108, 52); // ADD THIS METHOD
+		String coinString = String.format("%04d", coins); // ADD THIS METHOD
+		backBufferGraphics.drawString(coinString, screen.getWidth() - 60, 52); // ADD THIS METHOD
+        backBufferGraphics.drawString("COIN : ", screen.getWidth()-115, 52);
 	} // ADD THIS METHOD
 
     // 2P mode: drawCoins method but for both players, but separate coin counts
@@ -348,7 +352,7 @@ public final class DrawManager {
     public void drawLevel (final Screen screen, final int level) {
         backBufferGraphics.setColor(Color.WHITE);
         String levelString = "Level " + level;
-        backBufferGraphics.drawString(levelString, screen.getWidth()-240, 25);
+        backBufferGraphics.drawString(levelString, screen.getWidth()-250, 25);
     }
 
     public void drawShipCount (final Screen screen, final int shipCount) {
@@ -356,7 +360,7 @@ public final class DrawManager {
         Entity enemyIcon = new Entity(0, 0, 12*2, 8*2, Color.GREEN) {
             { this.spriteType = SpriteType.EnemyShipB2; }
         };
-        int iconX = screen.getWidth() - 242;
+        int iconX = screen.getWidth() - 252;
         int iconY = 37;
         drawEntity(enemyIcon, iconX, iconY);
         String shipString = ": " + shipCount;
