@@ -4,36 +4,28 @@ import java.awt.Color;
 
 import engine.DrawManager.SpriteType;
 
+import engine.ItemManager.ItemType;
+
+
 /**
- * Implements a Item that moves vertically up or down.
+ * Implements Item that moves vertically down.
  */
 public class Item extends Entity {
 
-    // TODO: Move to ItemManager.
-    public enum ItemType {
-        ITEM_1,
-        ITEM_2,
-        ITEM_3
-    }
-
-    /** Item variables.
-     * Some variables may not be implemented yet.
-     **/
-    private int itemSpeed;
-
-    private int itemId;
-
+    // Type of Item
     private ItemType type;
 
-    private int effectValue;
-
-    private int effectDuration;
-
-    // TODO. Apply to each item
-    private static double dropChance = 0.5;
+    // Item Movement Speed
+    private int itemSpeed;
 
     /**
      * Constructor, establishes the Item's properties.
+     *
+     * @param itemType
+     *            Type of Item being spawned
+     *
+     * @param spriteType
+     *            Sprite of itemType
      *
      * @param positionX
      *            Initial position of the Item in the X axis.
@@ -44,28 +36,27 @@ public class Item extends Entity {
      *            direction - positive is down.
      */
 
-    public Item(final int positionX, final int positionY, final int speed,
-                int itemId, SpriteType spriteType, ItemType itemType, int effectValue,
-                int effectDuration, double dropChance) {
+    public Item(ItemType itemType, SpriteType spriteType,
+                final int positionX, final int positionY, final int speed) {
 
         super(positionX, positionY, 3 * 2, 5 * 2, Color.WHITE);
-        this.itemSpeed = speed;
-        this.itemId = itemId;
-        this.type = ItemType.ITEM_1;
+
+        this.type = itemType;
         this.spriteType = spriteType;
-        this.effectValue = effectValue;
-        this.effectDuration = effectDuration;
-        this.dropChance = dropChance;
+        this.itemSpeed = speed;
 
         setSprite();
+
     }
 
-    public final void setSprite() {
-        // keep the same sprite for now; choose based on speed if you want
-        this.spriteType = SpriteType.ItemDefault;
-    }
+     public final void setSprite() {
+     this.spriteType = type.spriteType;
+     }
 
-    /** Updates the Item's position. */
+
+    /**
+     * Updates the Item's position.
+     */
     public final void update() {
         this.positionY += this.itemSpeed;
     }
@@ -87,10 +78,10 @@ public class Item extends Entity {
         return this.itemSpeed;
     }
 
-    public final void reset() {
-        this.type = ItemType.ITEM_1;
+    public final void reset(ItemType newType) {
+        this.type = newType;
         this.itemSpeed = 0;
-        this.spriteType = SpriteType.ItemDefault; // change to your enum if different
+        setSprite(); // change to your enum if different
     }
 
     /**
@@ -101,6 +92,4 @@ public class Item extends Entity {
     public final ItemType getType() {
         return this.type;
     }
-
-    public static double getDropChance() { return dropChance; }
 }

@@ -352,10 +352,9 @@ public class GameScreen extends Screen {
 				if (checkCollision(item, ship) && !collected.contains(item)) {
 					collected.add(item);
 					item.applyEffect();
-					this.logger.info("Item picked up by ship " + ship.getPlayerId());
+					this.logger.info("Player " + ship.getPlayerId() + " picked up item: " + item.getType());
 				}
 			}
-
         }
         this.items.removeAll(collected);
         ItemPool.recycle(collected);
@@ -401,7 +400,7 @@ public class GameScreen extends Screen {
 						Item drop = engine.ItemManager.getInstance().obtainDrop(enemyShip);
 						if (drop != null) {
 							this.items.add(drop);
-							this.logger.info("Spawned item at " + drop.getPositionX() + "," + drop.getPositionY());
+							this.logger.info("Spawned " + drop.getType() + " at " + drop.getPositionX() + "," + drop.getPositionY());
 						}
 
 						this.enemyShipFormation.destroy(enemyShip);
