@@ -39,8 +39,8 @@ public class EnemyShip extends Entity {
 
 	private int coinValue;
 
-    /** Hits to death */
-    private int hp;
+	/** Hits to death */
+	private int hp;
 	/**
 	 * Constructor, establishes the ship's properties.
 	 *
@@ -55,7 +55,7 @@ public class EnemyShip extends Entity {
 					 final SpriteType spriteType) {
 		super(positionX, positionY, 12 * 2, 8 * 2, Color.WHITE);
 
-        this.hp = 1;
+		this.hp = 1;
 
 		this.spriteType = spriteType;
 		this.animationCooldown = Core.getCooldown(500);
@@ -84,14 +84,14 @@ public class EnemyShip extends Entity {
 		}
 	}
 
-    public void changeShip(GameSettings.ChangeData changeData){
-        this.hp = changeData.hp;
+	public void changeShip(GameSettings.ChangeData changeData){
+		this.hp = changeData.hp;
 
-        this.changeColor(changeData.color);
+		this.changeColor(changeData.color);
 
-        this.pointValue *= changeData.multiplier;
-        this.coinValue *= changeData.multiplier;
-    }
+		this.pointValue *= changeData.multiplier;
+		this.coinValue *= changeData.multiplier;
+	}
 
 	/**
 	 * Constructor, establishes the ship's properties for a special ship, with
@@ -100,7 +100,7 @@ public class EnemyShip extends Entity {
 	public EnemyShip() {
 		super(-32, 60, 16 * 2, 7 * 2, Color.RED);
 
-        hp = 1;
+		hp = 1;
 
 		this.spriteType = SpriteType.EnemyShipSpecial;
 		this.isDestroyed = false;
@@ -166,14 +166,14 @@ public class EnemyShip extends Entity {
 	 * Destroys the ship, causing an explosion.
 	 */
 	public final void destroy() {
-        this.isDestroyed = true;
-        this.spriteType = SpriteType.Explosion;
+		this.isDestroyed = true;
+		this.spriteType = SpriteType.Explosion;
 	}
 
-    public final int getDamage(int dmg){
-        this.hp -= dmg;
-        return this.hp;
-    }
+	public final int getDamage(int dmg){
+		this.hp -= dmg;
+		return this.hp;
+	}
 
 	/**
 	 * Checks if the ship has been destroyed.

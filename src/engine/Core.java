@@ -38,6 +38,7 @@ public final class Core {
 	private static final Logger LOGGER = Logger.getLogger(Core.class.getSimpleName());
 	private static Handler fileHandler;
 	private static ConsoleHandler consoleHandler;
+	private static int NUM_LEVELS; // Total number of levels
 
 	/**
 	 * Test implementation.
@@ -65,32 +66,35 @@ public final class Core {
 		int height = frame.getHeight();
 
 		gameSettings = GameSettings.getGameSettings();
+		NUM_LEVELS = gameSettings.size(); // Initialize total number of levels
 
 
-        // 2P mode: modified to null to allow for switch between 2 modes
-        GameState gameState = null;
-        boolean coopSelected = false; // false = 1P, true = 2P
+		// 2P mode: modified to null to allow for switch between 2 modes
+		GameState gameState = null;
+		boolean coopSelected = false; // false = 1P, true = 2P
 
-        int returnCode = 1;
-        do {
+		AchievementManager achievementManager = new AchievementManager(); // add 1P/2P achievement manager
+
+		int returnCode = 1;
+		do {
 
 			switch (returnCode) {
 				case 1:
 					currentScreen = new TitleScreen(width, height, FPS);
 					LOGGER.info("Starting " + WIDTH + "x" + HEIGHT + " title screen at " + FPS + " fps.");
 					returnCode = frame.setScreen(currentScreen);
-                    LOGGER.info("Closing title screen.");
+					LOGGER.info("Closing title screen.");
 
-                    // 2P mode: reading the mode which user chose from TitleScreen
-                    if (returnCode == 2 || returnCode == 3) {
-                        coopSelected = ((TitleScreen) currentScreen).isCoopSelected();
-                    }
+					// 2P mode: reading the mode which user chose from TitleScreen
+					if (returnCode == 2 || returnCode == 3) {
+						coopSelected = ((TitleScreen) currentScreen).isCoopSelected();
+					}
 
 					break;
 
 				case 2:
-                    // 2P mode: building gameState now using user choice
-                    gameState = new GameState(1, MAX_LIVES, coopSelected);
+					// 2P mode: building gameState now using user choice
+					gameState = new GameState(1, MAX_LIVES, coopSelected);
 
 					do {
 						// Extra life this level? Give it if team pool is below cap.
@@ -101,7 +105,7 @@ public final class Core {
 						currentScreen = new GameScreen(
 								gameState,
 								gameSettings.get(gameState.getLevel() - 1),
-								bonusLife, width, height, FPS);
+								bonusLife, width, height, FPS, achievementManager);
 
 						LOGGER.info("Starting " + WIDTH + "x" + HEIGHT + " game screen at " + FPS + " fps.");
 						frame.setScreen(currentScreen);
@@ -120,7 +124,7 @@ public final class Core {
 							+ gameState.getLivesRemaining() + " lives remaining, "
 							+ gameState.getBulletsShot() + " bullets shot and "
 							+ gameState.getShipsDestroyed() + " ships destroyed.");
-					currentScreen = new ScoreScreen(width, height, FPS, gameState);
+					currentScreen = new ScoreScreen(width, height, FPS, gameState, achievementManager);
 					returnCode = frame.setScreen(currentScreen);
 					LOGGER.info("Closing score screen.");
 					break;
@@ -133,7 +137,7 @@ public final class Core {
 					returnCode = frame.setScreen(currentScreen);
 					LOGGER.info("Closing high score screen.");
 					break;
-          
+
 				default:
 					break;
 			}
@@ -155,7 +159,7 @@ public final class Core {
 	/**
 	 * Controls access to the logger.
 	 * sh
-	 * 
+	 *
 	 * @return Application logger.
 	 */
 	public static Logger getLogger() {
@@ -210,7 +214,7 @@ public final class Core {
 	 * @return A new cooldown with variance.
 	 */
 	public static Cooldown getVariableCooldown(final int milliseconds,
-			final int variance) {
+											   final int variance) {
 		return new Cooldown(milliseconds, variance);
 	}
 

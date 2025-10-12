@@ -15,63 +15,72 @@ import engine.Score;
  */
 public class HighScoreScreen extends Screen {
 
-	/** List of past high scores. */
-	private List<Score> highScores;
+    /** List of past high scores. */
+    private List<Score> highScores;
 
-	/**
-	 * Constructor, establishes the properties of the screen.
-	 *
-	 * @param width
-	 *            Screen width.
-	 * @param height
-	 *            Screen height.
-	 * @param fps
-	 *            Frames per second, frame rate at which the game is run.
-	 */
-	public HighScoreScreen(final int width, final int height, final int fps) {
-		super(width, height, fps);
+    /**
+     * Constructor, establishes the properties of the screen.
+     *
+     * @param width
+     *            Screen width.
+     * @param height
+     *            Screen height.
+     * @param fps
+     *            Frames per second, frame rate at which the game is run.
+     */
+    public HighScoreScreen(final int width, final int height, final int fps) {
+        super(width, height, fps);
 
-		this.returnCode = 1;
+        this.returnCode = 1;
 
-		try {
-			this.highScores = Core.getFileManager().loadHighScores();
-		} catch (NumberFormatException | IOException e) {
-			logger.warning("Couldn't load high scores!");
-		}
-	}
+        try {
+            this.highScores = Core.getFileManager().loadHighScores();
+        } catch (NumberFormatException | IOException e) {
+            logger.warning("Couldn't load high scores!");
+        }
+    }
 
-	/**
-	 * Starts the action.
-	 *
-	 * @return Next screen code.
-	 */
-	public final int run() {
-		super.run();
+    /**
+     * Starts the action.
+     *
+     * @return Next screen code.
+     */
+    public final int run() {
+        super.run();
 
-		return this.returnCode;
-	}
+        return this.returnCode;
+    }
 
-	/**
-	 * Updates the elements on screen and checks for events.
-	 */
-	protected final void update() {
-		super.update();
+    /**
+     * Updates the elements on screen and checks for events.
+     */
+    protected final void update() {
+        super.update();
 
-		draw();
-		if (inputManager.isKeyDown(KeyEvent.VK_SPACE)
-				&& this.inputDelay.checkFinished())
-			this.isRunning = false;
-	}
+        draw();
+        if (inputManager.isKeyDown(KeyEvent.VK_SPACE)
+                && this.inputDelay.checkFinished())
+            this.isRunning = false;
+    }
 
-	/**
-	 * Draws the elements associated with the screen.
-	 */
-	private void draw() {
-		drawManager.initDrawing(this);
+    /**
+     * Draws the elements associated with the screen.
+     */
+    private void draw() {
+        drawManager.initDrawing(this);
 
-		drawManager.drawHighScoreMenu(this);
-		drawManager.drawHighScores(this, this.highScores);
+            // Separate scores into 1P and 2P lists
+        List<Score> onePlayerScores = highScores.stream()
+                .filter(s -> "1P".equals(s.getMode()))
+                .collect(java.util.stream.Collectors.toList());
+        List<Score> twoPlayerScores = highScores.stream()
+                .filter(s -> "2P".equals(s.getMode()))
+                .collect(java.util.stream.Collectors.toList());
 
-		drawManager.completeDrawing(this);
-	}
+        drawManager.drawHighScoreMenu(this);
+        drawManager.drawHighScores(this, onePlayerScores, "1P"); // Left column
+        drawManager.drawHighScores(this, twoPlayerScores, "2P"); // Right column
+
+        drawManager.completeDrawing(this);
+    }
 }

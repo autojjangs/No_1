@@ -48,7 +48,7 @@ public class Entity {
 	 *                  Color of the entity.
 	 */
 	public Entity(final int positionX, final int positionY, final int width,
-			final int height, final Color color) {
+				  final int height, final Color color) {
 		this.positionX = positionX;
 		this.positionY = positionY;
 		this.width = width;
@@ -65,7 +65,7 @@ public class Entity {
 		return color;
 	}
 
-    public final void changeColor(Color color) { this.color = color; }
+	public final void changeColor(Color color) { this.color = color; }
 
 	/**
 	 * Getter for the X axis position of the entity.
