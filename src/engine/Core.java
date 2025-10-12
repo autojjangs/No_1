@@ -124,7 +124,7 @@ public final class Core {
 
                 gameState = ((GameScreen) currentScreen).getGameState();
 
-                gameState = new GameState(gameState.getLevel() + 1,
+                gameState = new GameState(gameState.getLevel(),
                     gameState.getScore(),
                     gameState.getLivesRemaining(),
                     gameState.getBulletsShot(),

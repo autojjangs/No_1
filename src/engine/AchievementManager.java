@@ -62,7 +62,58 @@ public class AchievementManager {
             if (a.getName().equals(name) && !a.isUnlocked()) {
                 a.unlock();
                 System.out.println("Achievement unlocked: " + a);
+                // --- added (calls helper defined at the bottom) ---
+                addToast("Achievement Unlocked: " + a.getName());
             }
+        }
+    }
+
+    // =====================================================================
+    //                           ADDED BELOW
+    //            Achievement Popup (Toast) support – all in one place
+    // =====================================================================
+
+    /** Toast message bag (active popups). */
+    private final List<Toast> toasts = new ArrayList<>();
+
+    /** Popup visible duration (milliseconds). */
+    private static final int TOAST_DURATION_MS = 2500;
+
+    /** Add a new popup. Kept as a helper so unlock() change is 1 line. */
+    private void addToast(String text) {
+        toasts.add(new Toast(text, TOAST_DURATION_MS));
+    }
+
+    /**
+     * Call this every frame to maintain toast lifetime.
+     * Keeps only still-alive toasts; no import changes needed (removeIf).
+     */
+    public void update(GameState gameState) {
+        toasts.removeIf(t -> !t.alive());
+    }
+
+    /** Return the current visible popup texts for DrawManager. */
+    public List<String> getActiveToasts() {
+        List<String> texts = new ArrayList<>();
+        for (Toast t : toasts) {
+            if (t.alive()) texts.add(t.text);
+        }
+        return texts;
+    }
+
+    /** Lightweight toast model (text + cooldown timer). */
+    private static final class Toast {
+        final String text;
+        final Cooldown ttl;
+
+        Toast(String text, int ms) {
+            this.text = text;
+            this.ttl = Core.getCooldown(ms);
+            this.ttl.reset();
+        }
+
+        boolean alive() {
+            return !ttl.checkFinished();
         }
     }
 }
