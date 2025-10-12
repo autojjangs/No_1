@@ -2,7 +2,10 @@ package engine;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
+import java.util.stream.Collectors;
 
 /**
  * Manages the list of achievements for a player,
@@ -22,13 +25,10 @@ public class AchievementManager {
         list.add(new Achievement("First Blood", "Defeat your first enemy."));
         list.add(new Achievement("Survivor", "Clear a round without losing a life."));
         list.add(new Achievement("Clear", "Clear 5 levels."));
+        list.add(new Achievement("Perfect Shooter", "Destroy all enemies with perfect accuracy."));
         return list;
     }
 
-    /**
-     * Loads the achievements from FileManager using a boolean list
-     * and converts them into Achievement objects.
-     */
     public void loadFromBooleans(String userName) throws IOException {
         List<Boolean> flags = FileManager.getInstance().searchAchievementsByName(userName);
         this.achievements = createDefaultAchievements();
@@ -39,10 +39,6 @@ public class AchievementManager {
         }
     }
 
-    /**
-     * Converts the achievements into a boolean list and
-     * saves them using FileManager.
-     */
     public void saveToFile(String userName) throws IOException {
         List<Boolean> flags = new ArrayList<>();
         for (Achievement a : achievements) {
@@ -51,65 +47,56 @@ public class AchievementManager {
         FileManager.getInstance().unlockAchievement(userName, flags);
     }
 
-    /** Returns the current achievement list. */
     public List<Achievement> getAchievements() {
         return achievements;
     }
 
-    /** Unlocks the achievement by name. */
     public void unlock(String name) {
         for (Achievement a : achievements) {
             if (a.getName().equals(name) && !a.isUnlocked()) {
                 a.unlock();
                 System.out.println("Achievement unlocked: " + a);
-                // --- added (calls helper defined at the bottom) ---
-                addToast("Achievement Unlocked: " + a.getName());
+                toastQueue.offer(new Toast(a, TOAST_DURATION_MS));
             }
         }
     }
 
-    // =====================================================================
-    //                           ADDED BELOW
-    //            Achievement Popup (Toast) support – all in one place
-    // =====================================================================
+    private final Queue<Toast> toastQueue = new LinkedList<>();
+    private Toast activeToast = null;
+    private static final int TOAST_DURATION_MS = 3000;
 
-    /** Toast message bag (active popups). */
-    private final List<Toast> toasts = new ArrayList<>();
+    public void update() {
+        if (activeToast == null || !activeToast.alive()) {
+            activeToast = toastQueue.poll();
+            if (activeToast != null) {
+                activeToast.ttl.reset();
+            }
+        }
+    }
 
-    /** Popup visible duration (milliseconds). */
-    private static final int TOAST_DURATION_MS = 2500;
-
-    /** Add a new popup. Kept as a helper so unlock() change is 1 line. */
-    private void addToast(String text) {
-        toasts.add(new Toast(text, TOAST_DURATION_MS));
+    public List<Achievement> getActiveToasts() {
+        List<Achievement> activeList = new ArrayList<>();
+        if (activeToast != null && activeToast.alive()) {
+            activeList.add(activeToast.achievement);
+        }
+        return activeList;
     }
 
     /**
-     * Call this every frame to maintain toast lifetime.
-     * Keeps only still-alive toasts; no import changes needed (removeIf).
+     * Make sure you have a pop-up on the screen, or you have a pop-up left in the queue.
+     * @return If there is at least one pop-up left, true, or false
      */
-    public void update(GameState gameState) {
-        toasts.removeIf(t -> !t.alive());
+    public boolean hasPendingToasts() {
+        return (activeToast != null && activeToast.alive()) || !toastQueue.isEmpty();
     }
 
-    /** Return the current visible popup texts for DrawManager. */
-    public List<String> getActiveToasts() {
-        List<String> texts = new ArrayList<>();
-        for (Toast t : toasts) {
-            if (t.alive()) texts.add(t.text);
-        }
-        return texts;
-    }
-
-    /** Lightweight toast model (text + cooldown timer). */
     private static final class Toast {
-        final String text;
+        final Achievement achievement;
         final Cooldown ttl;
 
-        Toast(String text, int ms) {
-            this.text = text;
+        Toast(Achievement achievement, int ms) {
+            this.achievement = achievement;
             this.ttl = Core.getCooldown(ms);
-            this.ttl.reset();
         }
 
         boolean alive() {

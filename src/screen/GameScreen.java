@@ -232,29 +232,24 @@ public class GameScreen extends Screen {
 			this.levelFinished = true;
 			this.screenFinishedCooldown.reset();
 
-			/*
-			  check of achievement release
-			  2025-10-02 add three 'if'statements
-			 */
-			// Survivor
-			if(!this.tookDamageThisLevel && this.level == Core.getNumLevels()){
+			if(state.getBulletsShot() > 0 && state.getBulletsShot() == state.getShipsDestroyed()){
+				achievementManager.unlock("Perfect Shooter");
+			}
+			if(!this.tookDamageThisLevel){
 				achievementManager.unlock("Survivor");
 			}
-			// Clear
-			if(this.level == Core.getNumLevels()){
+			if(state.getLevel() == 5){
 				achievementManager.unlock("Clear");
-			}
-			//Perfect Shooter
-			if(this.bulletsShot > 0 && this.bulletsShot == this.shipsDestroyed){
-				achievementManager.unlock("Perfect Shooter");
 			}
 		}
 
-		if (this.levelFinished && this.screenFinishedCooldown.checkFinished())
-			this.isRunning = false;
+		if (this.levelFinished && this.screenFinishedCooldown.checkFinished()) {
+			if (!achievementManager.hasPendingToasts()) {
+				this.isRunning = false;
+			}
+		}
 
-		// [ADD] update toast timers each frame
-		if (this.achievementManager != null) this.achievementManager.update(this.state);
+		if (this.achievementManager != null) this.achievementManager.update();
 	}
 
 	private void draw() {

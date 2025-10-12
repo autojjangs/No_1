@@ -1,10 +1,6 @@
 package engine;
 
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.FontFormatException;
-import java.awt.FontMetrics;
-import java.awt.Graphics;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.LinkedHashMap;
@@ -645,136 +641,62 @@ public final class DrawManager {
 					+ fontBigMetrics.getHeight() / 3);
 	}
 
-	// =============== Achievement Popup (UI) ===============
-// 화면 하단 중앙에 하나 또는 여러 개의 업적 팝업을 쌓아 표시합니다.
-// toasts: 하단 라인의 서브타이틀(예: "첫 외계인 격파!")로 사용됩니다.
-	public void drawAchievementToasts(final Screen screen, final java.util.List<String> toasts) {
-		if (toasts == null || toasts.isEmpty()) return;
-
-		// Graphics -> Graphics2D 전환 (고급 렌더 옵션, Stroke 사용)
-		final java.awt.Graphics2D g2 = (java.awt.Graphics2D) backBufferGraphics;
-
-		final int margin = 18;
-		final int boxW = Math.min(600, screen.getWidth() - margin * 2);
-		final int boxH = 88;
-		final int spacing = 10; // 팝업 여러 개일 때 간격
-		final int corner = 12;
-
-		// 타이틀/본문 폰트 설정 (프로젝트 폰트 자산에 맞춰 조정)
-		g2.setFont(fontRegular);
-
-		// 여러 개일 때 아래에서 위로 쌓이도록 배치
-		int totalH = toasts.size() * boxH + (toasts.size() - 1) * spacing;
-		int baseY = screen.getHeight() - margin - totalH;
-		int x = (screen.getWidth() - boxW) / 2;
-
-		// 안티앨리어싱 (테두리 품질)
-		Object oldAA = g2.getRenderingHint(java.awt.RenderingHints.KEY_ANTIALIASING);
-		g2.setRenderingHint(java.awt.RenderingHints.KEY_ANTIALIASING,
-				java.awt.RenderingHints.VALUE_ANTIALIAS_ON);
-
-		for (int i = 0; i < toasts.size(); i++) {
-			int y = baseY + i * (boxH + spacing);
-
-			// 그림자 (살짝 바깥쪽)
-			drawShadowRoundRect(g2, x + 3, y + 5, boxW, boxH, corner, 80);
-
-			// 본체 배경 (반투명 검정)
-			g2.setColor(new java.awt.Color(0, 0, 0, 190));
-			g2.fillRoundRect(x, y, boxW, boxH, corner, corner);
-
-			// 초록 테두리 + 은은한 광택
-			java.awt.Stroke old = g2.getStroke();
-			g2.setStroke(new java.awt.BasicStroke(3f));
-			g2.setColor(new java.awt.Color(0, 220, 80));
-			g2.drawRoundRect(x, y, boxW, boxH, corner, corner);
-			g2.setColor(new java.awt.Color(0, 220, 80, 70));
-			g2.setStroke(new java.awt.BasicStroke(7f));
-			g2.drawRoundRect(x, y, boxW, boxH, corner, corner);
-			g2.setStroke(old);
-
-			// 왼쪽 아이콘(픽셀 외계인) — 56px 정사각형
-			int iconSize = 56;
-			int iconX = x + 16;
-			int iconY = y + (boxH - iconSize) / 2;
-			drawAlienIcon(g2, iconX, iconY, iconSize);
-
-			// 텍스트: 타이틀 + 서브타이틀(=toasts.get(i))
-			int textX = iconX + iconSize + 14;
-			int titleY = y + 34;           // 첫 줄
-			int subY   = y + 34 + 24;      // 둘째 줄
-
-			// 타이틀
-			g2.setFont(fontRegular.deriveFont(java.awt.Font.BOLD, 18f));
-			g2.setColor(java.awt.Color.WHITE);
-			g2.drawString("ACHIEVEMENT UNLOCKED!", textX, titleY);
-
-			// 서브타이틀(한국어/영문 업적 설명)
-			g2.setFont(fontRegular.deriveFont(16f));
-			java.awt.FontMetrics subFM = g2.getFontMetrics(); // 현재 폰트 기준 메트릭스
-			g2.setColor(new java.awt.Color(220, 220, 220));
-			String sub = toasts.get(i); // 예: "첫 외계인 격파!"
-			// 너무 길면 말줄임
-			sub = ellipsize(sub, subFM, boxW - (textX - x) - 16);
-			g2.drawString(sub, textX, subY);
+	/**
+	 * Draws achievement toasts.
+	 *
+	 * @param screen
+	 * Screen to draw on.
+	 * @param toasts
+	 * List of toasts to draw.
+	 */
+	public void drawAchievementToasts(final Screen screen, final List<Achievement> toasts) {
+		if (toasts == null || toasts.isEmpty()) {
+			return;
 		}
 
-		// AA 복원
-		g2.setRenderingHint(java.awt.RenderingHints.KEY_ANTIALIASING, oldAA);
-	}
+		Achievement achievement = toasts.get(toasts.size() - 1);
 
-	// 말줄임 처리
-	private String ellipsize(String s, java.awt.FontMetrics fm, int maxWidth) {
-		if (fm.stringWidth(s) <= maxWidth) return s;
-		String dots = "...";
-		int w = fm.stringWidth(dots);
-		StringBuilder sb = new StringBuilder();
-		for (int i = 0; i < s.length(); i++) {
-			char c = s.charAt(i);
-			int next = fm.stringWidth(sb.toString() + c);
-			if (next + w > maxWidth) break;
-			sb.append(c);
+		Graphics2D g2d = (Graphics2D) backBufferGraphics.create();
+
+		try {
+			int boxWidth = 350;
+			int boxHeight = 100;
+			int cornerRadius = 15;
+
+			int x = (screen.getWidth() - boxWidth) / 2;
+			int y = (screen.getHeight() - boxHeight) / 2;
+
+			g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+			g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.3f));
+			g2d.setColor(Color.BLACK);
+			g2d.fillRoundRect(x, y, boxWidth, boxHeight, cornerRadius, cornerRadius);
+
+			g2d.setColor(Color.GREEN);
+			g2d.setStroke(new BasicStroke(2));
+			g2d.drawRoundRect(x, y, boxWidth, boxHeight, cornerRadius, cornerRadius);
+
+			g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.7f));
+
+			g2d.setFont(fontBig);
+			g2d.setColor(Color.YELLOW);
+			FontMetrics bigMetrics = g2d.getFontMetrics(fontBig);
+			int titleWidth = bigMetrics.stringWidth("Achievement Clear!");
+			g2d.drawString("Achievement Clear!", (screen.getWidth() - titleWidth) / 2, y + 35);
+
+			g2d.setFont(fontRegular);
+			g2d.setColor(Color.WHITE);
+			FontMetrics regularMetrics = g2d.getFontMetrics(fontRegular);
+			int nameWidth = regularMetrics.stringWidth(achievement.getName());
+			g2d.drawString(achievement.getName(), (screen.getWidth() - nameWidth) / 2, y + 60);
+
+			g2d.setColor(Color.LIGHT_GRAY);
+			int descWidth = regularMetrics.stringWidth(achievement.getDescription());
+			g2d.drawString(achievement.getDescription(), (screen.getWidth() - descWidth) / 2, y + 80);
+
+		} finally {
+			g2d.dispose();
 		}
-		return sb.append(dots).toString();
 	}
-
-	// 라운드 사각형 그림자
-	private void drawShadowRoundRect(java.awt.Graphics2D g2, int x, int y, int w, int h, int r, int alpha) {
-		g2.setColor(new java.awt.Color(0, 0, 0, alpha));
-		g2.fillRoundRect(x, y, w, h, r, r);
-	}
-
-	// 간단한 픽셀 외계인 아이콘 (8x8 패턴을 scale)
-	private void drawAlienIcon(java.awt.Graphics2D g2, int x, int y, int size) {
-		// 8x8 비트맵 (1=채움, 0=비움) — 심플한 스페이스 인베이더 모양
-		int[][] M = {
-				{0,0,1,1,1,1,0,0},
-				{0,1,1,1,1,1,1,0},
-				{1,1,0,1,1,0,1,1},
-				{1,1,1,1,1,1,1,1},
-				{1,1,1,1,1,1,1,1},
-				{0,1,0,1,1,0,1,0},
-				{0,1,0,0,0,0,1,0},
-				{1,0,1,0,0,1,0,1}
-		};
-		int cell = Math.max(1, size / 8);
-		// 아이콘 배경 살짝 어둡게(패널 톤과 구분)
-		g2.setColor(new java.awt.Color(30, 30, 30));
-		g2.fillRoundRect(x, y, cell*8, cell*8, 6, 6);
-		// 도트 찍기
-		g2.setColor(java.awt.Color.LIGHT_GRAY);
-		for (int r = 0; r < 8; r++) {
-			for (int c = 0; c < 8; c++) {
-				if (M[r][c] == 1) {
-					g2.fillRect(x + c * cell + 1, y + r * cell + 1, Math.max(1, cell - 2), Math.max(1, cell - 2));
-				}
-			}
-		}
-		// 테두리
-		g2.setColor(new java.awt.Color(0, 220, 80));
-		g2.drawRoundRect(x, y, cell*8, cell*8, 6, 6);
-	}
-// ======================================================
-
 }
 
