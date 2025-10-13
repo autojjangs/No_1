@@ -342,6 +342,12 @@ public class GameScreen extends Screen {
 
 				for (EnemyShip enemyShip : this.enemyShipFormation)
 					if (!enemyShip.isDestroyed() && checkCollision(bullet, enemyShip)) {
+                        recyclable.add(bullet);
+
+                        if(enemyShip.getDamage(1) > 0){
+                            continue;
+                        }
+
 						int points = enemyShip.getPointValue();
                         state.addCoins(pIdx, enemyShip.getCoinValue()); // 2P mode: modified to per-player coins
 
@@ -349,18 +355,6 @@ public class GameScreen extends Screen {
 						state.incShipsDestroyed(pIdx);
 
 						this.enemyShipFormation.destroy(enemyShip);
-
-						/*
-						  check of 'First Blood' achievement release
-						  2025.10.02 add
-						  */
-						if(this.shipsDestroyed ==1){
-							//achievementManager.unlockFirstBlood();
-							achievementManager.unlock("First Blood");
-						}
-
-
-						recyclable.add(bullet);
 						break;
 					}
 
