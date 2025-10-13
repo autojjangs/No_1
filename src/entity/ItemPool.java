@@ -2,6 +2,9 @@ package entity;
 
 import engine.DrawManager;
 import engine.ItemManager.ItemType;
+import engine.ItemDB;
+import engine.ItemData;
+
 
 import java.util.HashSet;
 import java.util.Set;
@@ -52,7 +55,21 @@ public final class ItemPool {
             item.setItemSpeed(speed);
 
         } else {
-            item = new Item(type, type.spriteType, positionX-3, positionY, 2);
+            // get spriteType from ItemDB
+            ItemDB itemDB = new ItemDB();
+            ItemData data = itemDB.getItemData(type.name());
+
+            DrawManager.SpriteType sprite = DrawManager.SpriteType.ItemScore; // default sprite
+            if (data != null) {
+                try {
+                    sprite = DrawManager.SpriteType.valueOf(data.getSpriteType());
+                } catch (IllegalArgumentException e) {
+                    // keep default sprite
+                }
+            }
+
+            // create new item with loaded spriteType
+            item = new Item(type, sprite, positionX - 3, positionY, speed);
         }
 
         return item;

@@ -5,6 +5,8 @@ import java.awt.Color;
 import engine.DrawManager.SpriteType;
 
 import engine.GameState;
+import engine.ItemDB;
+import engine.ItemData;
 import engine.ItemManager.ItemType;
 
 
@@ -51,7 +53,19 @@ public class Item extends Entity {
     }
 
      public final void setSprite() {
-     this.spriteType = type.spriteType;
+         // Load sprite info from CSV instead of enum
+         ItemDB itemDB = new ItemDB();
+         ItemData data = itemDB.getItemData(type.name());
+
+         if (data != null) {
+             try {
+                 this.spriteType = SpriteType.valueOf(data.getSpriteType());
+             } catch (IllegalArgumentException e) {
+                 this.spriteType = SpriteType.ItemScore; // fallback
+             }
+         } else {
+             this.spriteType = SpriteType.ItemScore;
+         }
      }
 
 

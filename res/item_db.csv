@@ -1,3 +1,4 @@
-name,spriteType,Type,effectValue,effectDuration,dropChance
-HealthUp,ItemDefault,Heal,1,0,0.3
-Coin,ItemDefault,Score,10,0,0.3
+type,spriteType,dropTier,effectValue,effectDuration
+SCORE,ItemScore,COMMON,10,0
+COIN,ItemCoin,UNCOMMON,0,0
+HEAL,ItemHeal,RARE,50,3

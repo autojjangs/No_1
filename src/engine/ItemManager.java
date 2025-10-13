@@ -32,6 +32,9 @@ public final class ItemManager {
     // Pity Counter
     private int pityCounter = 0;
 
+    // Item Database
+    private final ItemDB itemDB = new ItemDB();
+
     /** -------------------------- ITEM DATA -------------------------- **/
 
     /** ITEM WEIGHT **/
@@ -45,22 +48,12 @@ public final class ItemManager {
         DropTier(double tierWeight) { this.tierWeight = Math.max(0.0, tierWeight); }
     }
 
-    /** ITEM DATA **/
+    /** ITEM TYPE (name only, data is loaded from CSV) **/
     public static enum ItemType {
-        // itemType(dropTier, spriteType, itemEffectId)
-        SCORE(DropTier.COMMON,   DrawManager.SpriteType.ItemScore,   "heal_small_effect"),
-        COIN (DropTier.UNCOMMON, DrawManager.SpriteType.ItemCoin,  "score_small_effect"),
-        HEAL (DropTier.RARE,     DrawManager.SpriteType.ItemHeal,"special_power_effect");
 
-        public final DropTier dropTier;
-        public final DrawManager.SpriteType spriteType;
-        public final String itemEffectId;
-
-        ItemType(DropTier dropTier, DrawManager.SpriteType spriteType, String itemEffectId) {
-            this.dropTier   = dropTier;
-            this.spriteType = spriteType;
-            this.itemEffectId = itemEffectId;
-        }
+        SCORE,
+        COIN,
+        HEAL
     }
 
     /** -------------------------- INIT -------------------------- **/
@@ -115,12 +108,11 @@ public final class ItemManager {
 
         pityCounter = 0;
 
-        // 2. find item from tier - return SCORE/COIN/POINT
-
-        java.util.List<ItemType> candidates = new java.util.ArrayList<>();
-        for (ItemType it : ItemType.values()) {
-            if (it.dropTier == chosenTier)
-                candidates.add(it);
+        // Load item list from CSV by DropTier
+        java.util.List<ItemData> candidates = new java.util.ArrayList<>();
+        for (ItemData data : itemDB.getAllItems()) {
+            if (data.getDropTier().equalsIgnoreCase(chosenTier.name()))
+                candidates.add(data);
         }
 
         if (candidates.isEmpty()) {
@@ -128,9 +120,16 @@ public final class ItemManager {
             return null;
         }
 
-        ItemType chosenItem = candidates.get(itemRoll.nextInt(candidates.size()));
+        ItemData chosenData = candidates.get(itemRoll.nextInt(candidates.size()));
 
-        // 3. return item
+        // Convert String from CSV to enum ItemType
+        ItemType chosenItem;
+        try {
+            chosenItem = ItemType.valueOf(chosenData.getType().toUpperCase());
+        } catch (IllegalArgumentException e) {
+            logger.warning("[ItemManager]: Unknown item type in CSV: " + chosenData.getType());
+            return null;
+        }
 
         // get spawn position / enemy death position
         int centerX = enemy.getPositionX() + enemy.getWidth() / 2;
