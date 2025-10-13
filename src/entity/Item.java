@@ -1,7 +1,9 @@
 package entity;
 
 import java.awt.Color;
+import java.util.logging.Logger;
 
+import engine.Core;
 import engine.DrawManager.SpriteType;
 
 import engine.GameState;
@@ -14,6 +16,8 @@ import engine.ItemManager.ItemType;
  * Implements Item that moves vertically down.
  */
 public class Item extends Entity {
+
+    private Logger logger;
 
     // Type of Item
     private ItemType type;
@@ -44,6 +48,8 @@ public class Item extends Entity {
 
         super(positionX, positionY, 3 * 2, 5 * 2, Color.WHITE);
 
+        logger = Core.getLogger();
+
         this.type = itemType;
         this.spriteType = spriteType;
         this.itemSpeed = speed;
@@ -62,6 +68,7 @@ public class Item extends Entity {
                 this.spriteType = SpriteType.valueOf(data.getSpriteType());
             } catch (IllegalArgumentException e) {
                 this.spriteType = SpriteType.ItemScore; // fallback
+                this.logger.warning("[Item]: Unknown sprite type in ItemDB: " + data.getSpriteType() + ", using default.");
             }
         } else {
             this.spriteType = SpriteType.ItemScore;

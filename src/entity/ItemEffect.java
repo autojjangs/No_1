@@ -7,20 +7,34 @@ import engine.GameState;
 public class ItemEffect {
     public static void applyCoinItem(final GameState gameState, final int playerId, int coinAmount) {
         if (gameState == null) return;
+        Logger logger = Core.getLogger();
+        final int playerIndex = getPlayerIndex(playerId);
+        final int beforeCoin = gameState.getCoins(playerIndex);
 
-        gameState.addCoins(getPlayerIndex(playerId), coinAmount);
+        gameState.addCoins(playerIndex, coinAmount);
+
+        logger.info("Player " + playerId + " added " + coinAmount + " coins. before : " + beforeCoin + ", after : " + gameState.getCoins(playerIndex));
     }
 
     public static void applyHealItem(final GameState gameState, final int playerId, int lifeAmount) {
         if (gameState == null) return;
+        Logger logger = Core.getLogger();
+        final int beforeLife = gameState.getLivesRemaining();
 
         gameState.addLife(getPlayerIndex(playerId), lifeAmount);
+        logger.info("Player added " + lifeAmount + " lives. before : " + beforeLife + ", after : " + gameState.getLivesRemaining());
     }
 
     public static void applyScoreItem(final GameState gameState, final int playerId, int scoreAmount) {
         if (gameState == null) return;
+        Logger logger = Core.getLogger();
+        final int playerIndex = getPlayerIndex(playerId);
+        final int beforeScore = gameState.getScore(playerIndex);
 
         gameState.addScore(getPlayerIndex(playerId), scoreAmount);
+
+        logger.info("Player " + playerId + " added " + scoreAmount + " score. before : " + beforeScore + ", after : " + gameState.getScore(playerIndex));
+
     }
 
     /**
