@@ -658,12 +658,13 @@ public final class DrawManager {
      */
 
     public void drawPlayMenu(final Screen screen, final int selectedIndex) {
-        String[] items = {"1 Player", "2 Players", "Back"};
+        String[] items = {"1 Player", "2 Players"};
+        // Removed center back button
 
-        // draw back button at top-left corner
-        drawBackButton(screen, false);
+        // draw back button at top-left corner\, Set the selectedIndex to Highlight the Back Button
+        drawBackButton(screen, selectedIndex == 2);
 
-        int baseY = screen.getHeight() / 3; // Modify: * 1 is unnecessary
+        int baseY = screen.getHeight() / 2 - 20; // Modified the position with the choice reduced to two
         for (int i = 0; i < items.length; i++) {
             backBufferGraphics.setColor(i == selectedIndex ? Color.GREEN : Color.WHITE);
             drawCenteredRegularString(screen, items[i],
