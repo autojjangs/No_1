@@ -16,8 +16,7 @@ public final class ItemManager {
 
     private static ItemManager instance;
 
-    // Debug logger init
-
+    /** Debug logger init */
     private Logger logger;
     private ItemManager() { logger = Core.getLogger(); }
 
@@ -27,12 +26,12 @@ public final class ItemManager {
         return instance;
     }
 
-    // Random Roll for item
+    /** Random Roll for item */
     private final Random itemRoll = new Random();
-    // Pity Counter
+    /** Counter for pity system, increases when no item is dropped. */
     private int pityCounter = 0;
 
-    // Item Database
+    /** Item database loaded from CSV. */
     private final ItemDB itemDB = new ItemDB();
 
     /** -------------------------- ITEM DATA -------------------------- **/
@@ -58,6 +57,7 @@ public final class ItemManager {
 
     /** -------------------------- INIT -------------------------- **/
 
+    /** Total weight of all item tiers except NONE. */
     private static final double ITEM_WEIGHT;
 
     static {
@@ -70,6 +70,13 @@ public final class ItemManager {
 
     /** -------------------------- MAIN -------------------------- **/
 
+    /**
+     * Determines and returns the item dropped by the given enemy.
+     *
+     * @param enemy
+     *            enemy ship that was defeated.
+     * @return dropped Item, or null if no item is dropped.
+     */
     public Item obtainDrop(final EnemyShip enemy) {
         if (enemy == null) return null;
 
@@ -145,6 +152,11 @@ public final class ItemManager {
      * Apply the item effect.
      * ItemManager performs the effect by calling back to
      * the provided gameScreen.
+     *
+     * @param items
+     *            set of items picked up.
+     * @param gameScreen
+     *            game screen to apply effects to.
      */
     public void handlePickup(final Set<Item> items, final screen.GameScreen gameScreen) {
 

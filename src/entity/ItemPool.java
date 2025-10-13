@@ -31,7 +31,6 @@ public final class ItemPool {
      *
      * @param type
      *          type of item created
-     *
      * @param positionX
      *            Requested position of the item in the X axis.
      * @param positionY

@@ -17,12 +17,13 @@ import engine.ItemManager.ItemType;
  */
 public class Item extends Entity {
 
+    /** Logger instance for logging purposes. */
     private Logger logger;
 
-    // Type of Item
+    /** Type of Item. */
     private ItemType type;
 
-    // Item Movement Speed
+    /** Item Movement Speed. */
     private int itemSpeed;
 
     /**
@@ -54,8 +55,10 @@ public class Item extends Entity {
 
     }
 
+    /**
+     * Setter for the sprite of the Item using data from ItemDB.
+     */
     public final void setSprite() {
-        // Load sprite info from CSV instead of enum
         ItemDB itemDB = new ItemDB();
         ItemData data = itemDB.getItemData(type.name());
 
@@ -71,7 +74,6 @@ public class Item extends Entity {
         }
     }
 
-
     /**
      * Updates the Item's position.
      */
@@ -79,7 +81,14 @@ public class Item extends Entity {
         this.positionY += this.itemSpeed;
     }
 
-    /** Apply the Item's effect. */
+    /**
+     * Applies the effect of the Item to the player.
+     *
+     * @param gameState
+     *            current game state instance.
+     * @param playerId
+     *            ID of the player to apply the effect to.
+     */
     public void applyEffect(final GameState gameState, final int playerId) {
         ItemDB itemDB = new ItemDB();
         ItemData data = itemDB.getItemData(type.name());
@@ -113,10 +122,22 @@ public class Item extends Entity {
         this.itemSpeed = itemSpeed;
     }
 
+    /**
+     * Getter for Item Movement Speed.
+     *
+     * @return speed of the Item.
+     */
     public final int getItemSpeed() {
         return this.itemSpeed;
     }
 
+    /**
+     * Reset the Item.
+     * Set the item type and sprite to newType, and the speed to 0.
+     *
+     * @param newType
+     *            new type of the Item.
+     */
     public final void reset(ItemType newType) {
         this.type = newType;
         this.itemSpeed = 0;
@@ -126,7 +147,7 @@ public class Item extends Entity {
     /**
      * Getter for the speed of the Item.
      *
-     * @return Speed of the Item.
+     * @return type of the Item.
      */
     public final ItemType getType() {
         return this.type;
