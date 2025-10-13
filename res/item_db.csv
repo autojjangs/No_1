@@ -1,0 +1,3 @@
+name,spriteType,Type,effectValue,effectDuration,dropChance
+HealthUp,ItemDefault,Heal,1,0,0.3
+Coin,ItemDefault,Score,10,0,0.3
