@@ -96,6 +96,8 @@ public class Item extends Entity {
             case "SCORE":
                 ItemEffect.applyScoreItem(gameState, playerId, value);
                 break;
+            case SCORE:
+                ItemEffect.applyScoreItem(gameState, playerId, 10);
             default:
 
                 break;
