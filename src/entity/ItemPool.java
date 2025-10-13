@@ -1,12 +1,11 @@
 package entity;
 
 import engine.DrawManager;
+import engine.ItemManager.ItemType;
 
 import java.util.HashSet;
 import java.util.Set;
 
-import entity.item.Coin;
-import entity.item.HealthUp;
 /**
  * Implements a pool of recyclable items.
  */
@@ -27,6 +26,9 @@ public final class ItemPool {
 	 * isn't.
      * Caller should call item.init(...) to set position/type/sprite after obtaining.
 	 *
+     * @param type
+     *          type of item created
+     *
 	 * @param positionX
 	 *            Requested position of the item in the X axis.
 	 * @param positionY
@@ -36,25 +38,23 @@ public final class ItemPool {
 	 *            on direction - positive is down.
 	 * @return Requested item.
 	 */
-    public static Item getItem(final int positionX,
+    public static Item getItem( final ItemType type, final int positionX,
                                final int positionY, final int speed) {
-        if (pool.isEmpty()) {
-            pool.add(new Coin(0, 0));
-            pool.add(new HealthUp(0, 0));
-        }
-
+        // create new item
         Item item;
         if (!pool.isEmpty()) {
             item = pool.iterator().next();
             pool.remove(item);
+
+            item.reset(type);
             item.setPositionX(positionX - item.getWidth() / 2);
             item.setPositionY(positionY);
             item.setItemSpeed(speed);
-            item.setSprite();
+
         } else {
-            item = new Coin(positionX, positionY);
-            item.setPositionX(positionX - item.getWidth() / 2);
+            item = new Item(type, type.spriteType, positionX-3, positionY, 2);
         }
+
         return item;
     }
 
