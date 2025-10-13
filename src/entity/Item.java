@@ -52,21 +52,21 @@ public class Item extends Entity {
 
     }
 
-     public final void setSprite() {
-         // Load sprite info from CSV instead of enum
-         ItemDB itemDB = new ItemDB();
-         ItemData data = itemDB.getItemData(type.name());
+    public final void setSprite() {
+        // Load sprite info from CSV instead of enum
+        ItemDB itemDB = new ItemDB();
+        ItemData data = itemDB.getItemData(type.name());
 
-         if (data != null) {
-             try {
-                 this.spriteType = SpriteType.valueOf(data.getSpriteType());
-             } catch (IllegalArgumentException e) {
-                 this.spriteType = SpriteType.ItemScore; // fallback
-             }
-         } else {
-             this.spriteType = SpriteType.ItemScore;
-         }
-     }
+        if (data != null) {
+            try {
+                this.spriteType = SpriteType.valueOf(data.getSpriteType());
+            } catch (IllegalArgumentException e) {
+                this.spriteType = SpriteType.ItemScore; // fallback
+            }
+        } else {
+            this.spriteType = SpriteType.ItemScore;
+        }
+    }
 
 
     /**
@@ -78,14 +78,26 @@ public class Item extends Entity {
 
     /** Apply the Item's effect. */
     public void applyEffect(final GameState gameState, final int playerId) {
-        switch (this.type) {
-            case COIN:
-                ItemEffect.applyCoinItem(gameState, playerId, 10);
+        ItemDB itemDB = new ItemDB();
+        ItemData data = itemDB.getItemData(type.name());
+
+        if (data == null) return;
+
+        String ItemType = data.getType();
+        int value = data.getEffectValue();
+        int duration = data.getEffectDuration();
+        switch (ItemType) {
+            case "COIN":
+                ItemEffect.applyCoinItem(gameState, playerId, value);
                 break;
-            case HEAL:
-                ItemEffect.applyHealItem(gameState, playerId, 1);
+            case "HEAL":
+                ItemEffect.applyHealItem(gameState, playerId, value);
+                break;
+            case "SCORE":
+                ItemEffect.applyScoreItem(gameState, playerId, value);
                 break;
             default:
+
                 break;
         }
     };

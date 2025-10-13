@@ -5,14 +5,31 @@ import java.util.*;
 import java.util.logging.Logger;
 
 
+    /**
+     * Handles loading and managing item data from the CSV file. (item_db.csv)
+     */
 public class ItemDB {
+    // Path to the item database CSV file.
     private static final String FILE_PATH = "res/item_db.csv";
+    // Map of item type name to its corresponding ItemData.
     private final Map<String, ItemData> itemMap = new HashMap<>();
 
+
+    /**
+     * Constructor.
+     * Automatically loads the CSV file into memory.
+     */
     public ItemDB() {
         loadItemDB();
     }
 
+
+    /**
+     * Loads all item data from the CSV file into the itemMap.
+     * The CSV format is expected as:
+     * type, spriteType, dropTier, effectValue, effectDuration
+     *
+     */
     private void loadItemDB() {
         try (BufferedReader br = new BufferedReader(new FileReader(FILE_PATH))) {
             String line;
@@ -33,10 +50,11 @@ public class ItemDB {
                 itemMap.put(type, data);
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            Logger logger = Core.getLogger();
+            logger.severe("Failed to load item database from " + FILE_PATH + ": " + e.getMessage());
         }
     }
-
+    // Store as ItemData object
     public ItemData getItemData(String type) {
         return itemMap.get(type);
     }
