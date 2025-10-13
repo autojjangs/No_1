@@ -147,24 +147,4 @@ public final class ItemManager {
 
         return drop;
     }
-
-    /**
-     * Apply the item effect.
-     * ItemManager performs the effect by calling back to
-     * the provided gameScreen.
-     *
-     * @param items
-     *            set of items picked up.
-     * @param gameScreen
-     *            game screen to apply effects to.
-     */
-    public void handlePickup(final Set<Item> items, final screen.GameScreen gameScreen) {
-
-        if (items == null || gameScreen == null) return;
-
-        for (Item item : items) {
-//            item.applyEffect(gameScreen.getGameState());
-            this.logger.info(item.getType() + " picked up");
-        }
-    }
 }

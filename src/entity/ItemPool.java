@@ -1,10 +1,6 @@
 package entity;
 
-import engine.DrawManager;
 import engine.ItemManager.ItemType;
-import engine.ItemDB;
-import engine.ItemData;
-import java.util.logging.Logger;
 
 import java.util.HashSet;
 import java.util.Set;
