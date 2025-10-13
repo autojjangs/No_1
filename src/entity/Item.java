@@ -83,21 +83,19 @@ public class Item extends Entity {
 
         if (data == null) return;
 
-        String ItemType = data.getType();
         int value = data.getEffectValue();
         int duration = data.getEffectDuration();
-        switch (ItemType) {
-            case "COIN":
+        switch (this.type) {
+            case COIN:
                 ItemEffect.applyCoinItem(gameState, playerId, value);
                 break;
-            case "HEAL":
+            case HEAL:
                 ItemEffect.applyHealItem(gameState, playerId, value);
                 break;
-            case "SCORE":
+            case SCORE:
                 ItemEffect.applyScoreItem(gameState, playerId, value);
                 break;
             default:
-
                 break;
         }
     };
