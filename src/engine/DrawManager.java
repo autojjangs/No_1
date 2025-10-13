@@ -579,14 +579,30 @@ public final class DrawManager {
         drawCenteredRegularString(screen, instructionsString,
                 screen.getHeight() / 5);
     }
-	public void drawVolumeBar(final Screen screen){
+	public void drawVolumeBar(final Screen screen, final int volumlevel){
 		int bar_startWidth = screen.getWidth() / 5;
 		int bar_endWidth = screen.getWidth()-bar_startWidth;
 		int barHeight = screen.getHeight()/3;
 
+		String volumelabel = "Volume";
 		backBufferGraphics.setFont(fontRegular);
 		backBufferGraphics.setColor(Color.WHITE);
 		backBufferGraphics.drawLine(bar_startWidth, barHeight, bar_endWidth, barHeight);
+
+		backBufferGraphics.setColor(Color.WHITE);
+		backBufferGraphics.drawString(volumelabel, bar_startWidth-80, barHeight+7);
+
+		int indicatorX = bar_startWidth + (int)((bar_endWidth-bar_startWidth)*(volumlevel/100.0));
+
+		String indicator = "■";
+		backBufferGraphics.setColor(Color.WHITE);
+		int indicatorWidth = fontRegularMetrics.stringWidth(indicator);
+		int indicatorY = barHeight+7;
+		backBufferGraphics.drawString(indicator, indicatorX - (indicatorWidth/2), indicatorY);
+
+		backBufferGraphics.setColor(Color.WHITE);
+		String volumeText = Integer.toString(volumlevel);
+		backBufferGraphics.drawString(volumeText, bar_endWidth+10, indicatorY);
 
 
 	}
