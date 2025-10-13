@@ -53,25 +53,8 @@ public final class ItemPool {
             item.setPositionX(positionX - item.getWidth() / 2);
             item.setPositionY(positionY);
             item.setItemSpeed(speed);
-
         } else {
-            // get spriteType from ItemDB
-            ItemDB itemDB = new ItemDB();
-            ItemData data = itemDB.getItemData(type.name());
-
-            DrawManager.SpriteType sprite = DrawManager.SpriteType.ItemScore; // default sprite
-            if (data != null) {
-                try {
-                    sprite = DrawManager.SpriteType.valueOf(data.getSpriteType());
-                } catch (IllegalArgumentException e) {
-                    // keep default sprite
-                    Logger logger = Logger.getLogger("ItemPool");
-                    logger.warning("[ItemPool]: Unknown sprite type in ItemDB: " + data.getSpriteType() + ", using default.");
-                }
-            }
-
-            // create new item with loaded spriteType
-            item = new Item(type, sprite, positionX - 3, positionY, speed);
+            item = new Item(type, positionX - 3, positionY, speed);
         }
 
         return item;

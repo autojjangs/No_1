@@ -31,9 +31,6 @@ public class Item extends Entity {
      * @param itemType
      *            Type of Item being spawned
      *
-     * @param spriteType
-     *            Sprite of itemType
-     *
      * @param positionX
      *            Initial position of the Item in the X axis.
      * @param positionY
@@ -43,7 +40,7 @@ public class Item extends Entity {
      *            direction - positive is down.
      */
 
-    public Item(ItemType itemType, SpriteType spriteType,
+    public Item(ItemType itemType,
                 final int positionX, final int positionY, final int speed) {
 
         super(positionX, positionY, 3 * 2, 5 * 2, Color.WHITE);
@@ -51,7 +48,6 @@ public class Item extends Entity {
         logger = Core.getLogger();
 
         this.type = itemType;
-        this.spriteType = spriteType;
         this.itemSpeed = speed;
 
         setSprite();
