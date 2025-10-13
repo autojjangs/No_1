@@ -351,7 +351,7 @@ public class GameScreen extends Screen {
 				if(ship == null) continue;
 				if (checkCollision(item, ship) && !collected.contains(item)) {
 					collected.add(item);
-					item.applyEffect();
+					item.applyEffect(getGameState(), ship.getPlayerId());
 					this.logger.info("Player " + ship.getPlayerId() + " picked up item: " + item.getType());
 				}
 			}

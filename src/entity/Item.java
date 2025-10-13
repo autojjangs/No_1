@@ -4,6 +4,7 @@ import java.awt.Color;
 
 import engine.DrawManager.SpriteType;
 
+import engine.GameState;
 import engine.ItemManager.ItemType;
 
 
@@ -62,7 +63,18 @@ public class Item extends Entity {
     }
 
     /** Apply the Item's effect. */
-    public void applyEffect(){};
+    public void applyEffect(final GameState gameState, final int playerId) {
+        switch (this.type) {
+            case COIN:
+                ItemEffect.applyCoinItem(gameState, playerId, 10);
+                break;
+            case HEAL:
+                ItemEffect.applyHealItem(gameState, playerId, 1);
+                break;
+            default:
+                break;
+        }
+    };
 
     /**
      * Setter of the speed of the Item.
