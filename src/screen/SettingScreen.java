@@ -1,7 +1,13 @@
 package screen;
 
-public class SettingScreen extends Screen {
+import engine.Cooldown;
+import engine.Core;
 
+import java.awt.event.KeyEvent;
+
+public class SettingScreen extends Screen {
+    private Cooldown inputCooldown;
+    private int volumelevel;
     /**
      * Constructor, establishes the properties of the screen.
      *
@@ -13,6 +19,12 @@ public class SettingScreen extends Screen {
         super(width, height, fps);
 
         this.returnCode = 1;
+    }
+    public final void initialize(){
+        super.initialize();
+        this.inputCooldown = Core.getCooldown(100);
+        this.inputCooldown.reset();
+        this.volumelevel = 50;
     }
 
     /**
@@ -31,10 +43,20 @@ public class SettingScreen extends Screen {
      */
     protected final void update() {
         super.update();
-        draw();
+        if(this.inputCooldown.checkFinished()){
+            if(inputManager.isKeyDown(KeyEvent.VK_LEFT)&&volumelevel > 0){
+                this.volumelevel--;
+                this.inputCooldown.reset();
+            }
+            if(inputManager.isKeyDown(KeyEvent.VK_RIGHT)&& volumelevel < 100){
+                this.volumelevel++;
+                this.inputCooldown.reset();
+            }
+        }
         if (inputManager.isKeyDown(java.awt.event.KeyEvent.VK_SPACE)
                 && this.inputDelay.checkFinished())
             this.isRunning = false;
+        draw();
     }
 
     /**
@@ -42,7 +64,7 @@ public class SettingScreen extends Screen {
      */
     private void draw() {
         drawManager.initDrawing(this);
-        drawManager.drawVolumeBar(this);
+        drawManager.drawVolumeBar(this,volumelevel);
         drawManager.drawSettingMenu(this);
         drawManager.completeDrawing(this);
     }
