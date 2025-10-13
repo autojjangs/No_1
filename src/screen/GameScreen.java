@@ -68,7 +68,6 @@ public class GameScreen extends Screen {
 	/** Checks if a bonus life is received. */
 	private boolean bonusLife;
 
-    private int level;
     private int score;
     private int lives;
     private int bulletsShot;
