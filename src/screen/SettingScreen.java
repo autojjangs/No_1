@@ -79,7 +79,7 @@ public class SettingScreen extends Screen {
 
         switch(this.selectMenuItem) {
             case volumeMenu:
-                drawManager.drawVolumeBar(this);
+                drawManager.drawVolumeBar(this,this.volumelevel);
                 break;
             case firstplayerMenu:
                 //function
