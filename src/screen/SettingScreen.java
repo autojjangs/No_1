@@ -1,7 +1,7 @@
 package screen;
 
+import engine.Cooldown;
 import engine.Core;
-
 import java.awt.event.KeyEvent;
 
 public class SettingScreen extends Screen {
@@ -10,7 +10,8 @@ public class SettingScreen extends Screen {
     private static final int secondplayerMenu= 2;
     private final String[] menuItem = {"Volume", "1P Keyset", "2P Keyset"};
     private int selectMenuItem;
-
+    private Cooldown inputCooldown;
+    private int volumelevel;
     /**
      * Constructor, establishes the properties of the screen.
      *
@@ -28,16 +29,12 @@ public class SettingScreen extends Screen {
      *
      * @return Next screen code.
      */
-    public final int run() {
-        super.run();
-
-        return this.returnCode;
-    }
     public final void initialize(){
         super.initialize();
-        this.inputDelay = Core.getCooldown(200);
-        this.inputDelay.reset();
+        this.inputCooldown = Core.getCooldown(100);
+        this.inputCooldown.reset();
         this.selectMenuItem = volumeMenu;
+        this.volumelevel = 50;
     }
 
     /**
@@ -54,9 +51,21 @@ public class SettingScreen extends Screen {
             this.selectMenuItem++;
             this.inputDelay.reset();
         }
-        if (inputManager.isKeyDown(KeyEvent.VK_SPACE)
-                && this.inputDelay.checkFinished())
+        if(this.selectMenuItem == volumeMenu) {
+             if(this.inputCooldown.checkFinished()){
+                 if(inputManager.isKeyDown(KeyEvent.VK_LEFT)&&volumelevel > 0){
+                    this.volumelevel--;
+                    this.inputCooldown.reset();
+                }
+                if(inputManager.isKeyDown(KeyEvent.VK_RIGHT)&& volumelevel < 100){
+                    this.volumelevel++;
+                    this.inputCooldown.reset();
+                }
+        }
+        }
+        if (inputManager.isKeyDown(java.awt.event.KeyEvent.VK_SPACE) && this.inputDelay.checkFinished()) {
             this.isRunning = false;
+        }
         draw();
     }
 
@@ -65,8 +74,9 @@ public class SettingScreen extends Screen {
      */
     private void draw() {
         drawManager.initDrawing(this);
-
+        drawManager.drawSettingMenu(this);
         drawManager.drawSettingLayout(this, menuItem,this.selectMenuItem);
+
         switch(this.selectMenuItem) {
             case volumeMenu:
                 drawManager.drawVolumeBar(this);
@@ -78,7 +88,6 @@ public class SettingScreen extends Screen {
                 //function
                 break;
         }
-        drawManager.drawSettingMenu(this);
         drawManager.completeDrawing(this);
     }
 
