@@ -1,19 +1,19 @@
 # Team 3 <MAIN>
 
 ## 👥 Team Introduction
-- **Team Leader** : Choi Yutak  
-- **Team Members** : Kim Dongwook, Um Sunghyun, Wang Jiwoon, Park Minseok, Baterdene  
+- **Team Leader** : Choi Yutak
+- **Team Members** : Kim Dongwook, Um Sunghyun, Wang Jiwoon, Park Minseok, Baterdene
 
 ---
 
 ### 🎯 Goal
 To design and implement a **Main Menu System** for the Space Invaders project.  
 Our aim is to provide a **user-friendly, intuitive, and visually appealing entry point** into the game.  
-This menu will ensure players can smoothly access all core features such as:  
-- Start Game  
-- Options  
-- Credits  
-- Exit  
+This menu will ensure players can smoothly access all core features such as:
+- Start Game
+- Options
+- Credits
+- Exit
 
 ---
 
@@ -23,19 +23,25 @@ This menu will ensure players can smoothly access all core features such as:
 ---
 
 ## Detailed Requirements
-1. Implement **Start Game** button that correctly launches gameplay. 
-2. Implement an **in-game Pause Menu** with resume and exit options.  
-3. Apply a **consistent UI/UX design** with smooth transitions and animations to deliver a polished player experience.  
+1. Implement **Start Game** button that correctly launches gameplay.
+2. Implement an **in-game Pause Menu** with resume and exit options.
+3. Apply a **consistent UI/UX design** with smooth transitions and animations to deliver a polished player experience.
 4. Create **Option Menu** including at least:
-   - Volume control button
-   - Player Key Setting
-5. Add **mouse input support** for navigation and selection.   
+    - Volume control button
+    - Player Key Setting
+5. Add **mouse input support** for navigation and selection.
 
 ---
 
 ## Dependencies on Other Teams
 - Sound Effects/BGM
+    - How to add the sound function in the setting menu.
+
+      For example, click to control volume or slide volume
 - Records & Achievements System
-- Currency System
+    - How to show record & achievement on the screen
+- Item System
+    - Create a shop button on the TitleScreen if the item team wants to
 - Two-player Mode
+    - mode selection via play button in TitleScreen
 
