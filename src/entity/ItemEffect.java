@@ -14,4 +14,9 @@ public class ItemEffect {
         if (gameState == null) return;
         gameState.addLife(playerId, lifeAmount);
     }
+
+    public static void applyScoreItem(final GameState gameState, final int playerId, int scoreAmount) {
+        if (gameState == null) return;
+        gameState.addScore(playerId, scoreAmount);
+    }
 }

@@ -85,6 +85,8 @@ public class Item extends Entity {
             case HEAL:
                 ItemEffect.applyHealItem(gameState, playerId, 1);
                 break;
+            case SCORE:
+                ItemEffect.applyScoreItem(gameState, playerId, 10);
             default:
                 break;
         }
