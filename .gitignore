@@ -172,18 +172,8 @@ pip-log.txt
 log*
 *.ttf
 .checkstyle
-
-#############
-## IntelliJ
-#############
-out/
-.idea/
-*.log
-
-# team iml files
-*.iml
 .idea/
 .vscode/
 *.iml
 *.class
-
+/out/
