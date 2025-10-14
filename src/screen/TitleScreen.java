@@ -4,6 +4,7 @@ import java.awt.event.KeyEvent;
 
 import engine.Cooldown;
 import engine.Core;
+import engine.SoundManager;
 
 /**
  * Implements the title screen.
@@ -43,6 +44,9 @@ public class TitleScreen extends Screen {
 		this.returnCode = 1; // 2P mode: changed to default selection as 1P
 		this.selectionCooldown = Core.getCooldown(SELECTION_TIME);
 		this.selectionCooldown.reset();
+
+        // Start menu music loop when the title screen is created
+        SoundManager.playLoop("sound/menu_sound.wav");
 	}
 
 	/**
@@ -52,6 +56,8 @@ public class TitleScreen extends Screen {
 	 */
 	public final int run() {
 		super.run();
+        // Stop menu music when leaving the title screen
+        SoundManager.stop();
 		return this.returnCode;
 	}
 
