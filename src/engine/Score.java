@@ -20,32 +20,34 @@ public class Score implements Comparable<Score> {
     private int[] playerBullets;
     private int[] playerKills;
 
-  
+
     /**level reached and lives left */
     private int levelReached;
     private int livesRemaining;
 
-	/**
-	 * Constructor.
-	 * 
-	 * @param name
-	 *            Player name, three letters.
-	 * @param score
-	 *            Player score.
-	 */
-	public Score(final String name, final int score) {
-		this.name = name;
-		this.score = score;
-	}
+    /** 1P/2P mode*/
+    private String mode;
+    /**
+     * Constructor.
+     *
+     * @param name  Player name, three letters.
+     * @param score Player score.
+     */
+    public Score(final String name, final int score, final String mode) {
+        this.name = name;
+        this.score = score;
+        this.mode = mode; // add 1P/2P mode
+    }
 
     /**
      * NEW Constructor: (team co-op)
      */
-    public Score(final String name, final GameState gs) {
+    public Score(final String name, final GameState gs, final String mode) {
         this.name = name;
         this.score = gs.getScore();
         this.levelReached = gs.getLevel();
         this.livesRemaining = gs.getLivesRemaining();
+        this.mode = mode; // add 1P/2P mode
 
         int n = GameState.NUM_PLAYERS;
         this.playerScores = new int[n];
@@ -78,6 +80,10 @@ public class Score implements Comparable<Score> {
         return this.score;
     }
 
+    /** Getter for mode*/
+    public String getMode() {
+        return this.mode;
+    }
     /**
      * Getter for:
      * level reached
@@ -127,4 +133,3 @@ public class Score implements Comparable<Score> {
     }
 
 }
-
