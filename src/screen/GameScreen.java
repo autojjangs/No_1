@@ -283,6 +283,9 @@ public class GameScreen extends Screen {
 			this.levelFinished = true;
 			this.screenFinishedCooldown.reset();
 
+			// Ensure any looped special-ship sound is stopped when the level ends
+			SoundManager.stop();
+
 			/*
 			  check of achievement release
 			  2025-10-02 add three 'if'statements
