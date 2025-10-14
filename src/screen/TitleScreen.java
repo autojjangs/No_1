@@ -70,16 +70,19 @@ public class TitleScreen extends Screen {
         draw();
         if (this.selectionCooldown.checkFinished() && this.inputDelay.checkFinished()) {
             if (inputManager.isKeyDown(KeyEvent.VK_UP) || inputManager.isKeyDown(KeyEvent.VK_W)) {
+                SoundManager.playOnce("sound/hover.wav");
                 previousMenuItem();
                 this.selectionCooldown.reset();
             }
             if (inputManager.isKeyDown(KeyEvent.VK_DOWN) || inputManager.isKeyDown(KeyEvent.VK_S)) {
+                SoundManager.playOnce("sound/hover.wav");
                 nextMenuItem();
                 this.selectionCooldown.reset();
             }
 
             // 2P mode: changed to switch case to accommodate input selection for users
             if (inputManager.isKeyDown(KeyEvent.VK_SPACE)) {
+                SoundManager.playOnce("sound/select.wav");
                 switch (this.menuIndex) {
                     case 0: // "1 Player"
                         this.coopSelected = false;

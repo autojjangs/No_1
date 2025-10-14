@@ -6,6 +6,7 @@ import java.util.List;
 
 import engine.Core;
 import engine.Score;
+import engine.SoundManager;
 
 /**
  * Implements the high scores screen, it shows player records.
@@ -47,6 +48,7 @@ public class HighScoreScreen extends Screen {
      */
     public final int run() {
         super.run();
+        SoundManager.playOnce("sound/select.wav");
 
         return this.returnCode;
     }
