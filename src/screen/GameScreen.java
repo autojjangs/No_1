@@ -141,7 +141,7 @@ public class GameScreen extends Screen {
 			this.isPaused = !this.isPaused;
 			this.pauseCooldown.reset();
 		}
-		if (this.isPaused && inputManager.isKeyDown(KeyEvent.VK_F1) && this.returnMenuCooldown.checkFinished()) {
+		if (this.isPaused && inputManager.isKeyDown(KeyEvent.VK_ENTER ) && this.returnMenuCooldown.checkFinished()) {
 			returnCode = 1;
 			this.isRunning = false;
 		}
