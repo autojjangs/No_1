@@ -471,7 +471,6 @@ public final class FileManager {
                     flag = true;
                     logger.info("Achievement has been updated");
                     for (int i = 1; i < playRecord.length; i++) {
-                        logger.info("HEre! " + unlockedAchievement.get(i).toString());
                         if (playRecord[i].equals("0") && unlockedAchievement.get(i))
                             playRecord[i] = "1";
                     }
