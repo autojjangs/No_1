@@ -216,4 +216,7 @@ public class GameState {
 		return sharedLives ? (teamLives > 0) : (lives[0] > 0 || lives[1] > 0);
 	}
 
+	public int getTeamLivesCap() {
+		return teamLivesCap;
+	}
 }

@@ -1,4 +1,4 @@
 type,spriteType,dropTier,effectValue,effectDuration
 SCORE,ItemScore,COMMON,10,0
-COIN,ItemCoin,UNCOMMON,10,0
+COIN,ItemCoin,UNCOMMON,20,0
 HEAL,ItemHeal,RARE,1,0

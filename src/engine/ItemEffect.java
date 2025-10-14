@@ -20,6 +20,7 @@ public class ItemEffect {
         final int beforeCoin = gameState.getCoins(playerIndex);
 
         gameState.addCoins(playerIndex, coinAmount);
+        gameState.addScore(getPlayerIndex(playerId), coinAmount);
 
         logger.info("Player " + playerId + " added " + coinAmount + " coins. before : " + beforeCoin + ", after : " + gameState.getCoins(playerIndex));
     }
@@ -39,7 +40,12 @@ public class ItemEffect {
         Logger logger = Core.getLogger();
         final int beforeLife = gameState.getLivesRemaining();
 
-        gameState.addLife(getPlayerIndex(playerId), lifeAmount);
+        if (gameState.getTeamLives() + lifeAmount > gameState.getTeamLivesCap()) {
+            gameState.addScore(getPlayerIndex(playerId), lifeAmount * 20);
+        } else {
+            gameState.addLife(getPlayerIndex(playerId), lifeAmount);
+        }
+
         logger.info("Player added " + lifeAmount + " lives. before : " + beforeLife + ", after : " + gameState.getLivesRemaining());
     }
 
