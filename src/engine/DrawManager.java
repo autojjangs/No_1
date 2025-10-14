@@ -438,47 +438,38 @@ public final class DrawManager {
 	 * @param screen
 	 *                         Screen to draw on.
 	 * @param name
-	 *                         Current name selected.
-	 * @param nameCharSelected
-	 *                         Current character selected for modification.
+	 *                         Current name inserted.
 	 */
-	public void drawNameInput(final Screen screen, final char[] name,
-			final int nameCharSelected) {
+	public void drawNameInput(final Screen screen, final StringBuilder name) {
 		String newRecordString = "New Record!";
-		String introduceNameString = "Introduce name:";
+		String introduceNameString = "Name: ";
+		String nameStr = name.toString();
 
 		backBufferGraphics.setColor(Color.GREEN);
 		drawCenteredRegularString(screen, newRecordString, screen.getHeight()
 				/ 4 + fontRegularMetrics.getHeight() * 10);
+
+		// Draw the current name with blinking cursor
+		String displayName = name.isEmpty() ? "" : nameStr;
+
+		// Cursor blinks every 500ms
+		boolean showCursor = (System.currentTimeMillis() / 500) % 2 == 0;
+		String cursor = showCursor ? "|" : " ";
+
+		String displayText = introduceNameString + displayName + cursor;
+
 		backBufferGraphics.setColor(Color.WHITE);
-		drawCenteredRegularString(screen, introduceNameString,
-				screen.getHeight() / 4 + fontRegularMetrics.getHeight() * 12);
+		drawCenteredRegularString(screen, displayText,
+				screen.getHeight() / 4 + fontRegularMetrics.getHeight() * 11);
 
-		// 3 letters name.
-		int positionX = screen.getWidth()
-				/ 2
-				- (fontRegularMetrics.getWidths()[name[0]]
-						+ fontRegularMetrics.getWidths()[name[1]]
-						+ fontRegularMetrics.getWidths()[name[2]]
-						+ fontRegularMetrics.getWidths()[' ']) / 2;
+	}
 
-		for (int i = 0; i < 3; i++) {
-			if (i == nameCharSelected)
-				backBufferGraphics.setColor(Color.GREEN);
-			else
-				backBufferGraphics.setColor(Color.WHITE);
+	public void drawNameInputError(Screen screen) {
+		String alert = "Enter at least 3 chars!" ; // "Name too short!"
 
-			positionX += fontRegularMetrics.getWidths()[name[i]] / 2;
-			positionX = i == 0 ? positionX
-					: positionX
-							+ (fontRegularMetrics.getWidths()[name[i - 1]]
-									+ fontRegularMetrics.getWidths()[' ']) / 2;
-
-			backBufferGraphics.drawString(Character.toString(name[i]),
-					positionX,
-					screen.getHeight() / 4 + fontRegularMetrics.getHeight()
-							* 14);
-		}
+		backBufferGraphics.setColor(Color.YELLOW);
+		drawCenteredRegularString(screen, alert, screen.getHeight()
+				/ 4 + fontRegularMetrics.getHeight() * 13 );
 	}
 
 	/**
