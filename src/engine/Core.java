@@ -68,7 +68,6 @@ public final class Core {
 		gameSettings = GameSettings.getGameSettings();
 		NUM_LEVELS = gameSettings.size(); // Initialize total number of levels
 
-
 		// 2P mode: modified to null to allow for switch between 2 modes
 		GameState gameState = null;
 		boolean coopSelected = false; // false = 1P, true = 2P
@@ -113,11 +112,22 @@ public final class Core {
 
 						gameState = ((GameScreen) currentScreen).getGameState();
 
+						// Persist/refresh coin progress after the level (from feature branch)
+						gameState = new GameState(
+								gameState.getLevel(),
+								gameState.getScore(),
+								gameState.getLivesRemaining(),
+								gameState.getBulletsShot(),
+								gameState.getShipsDestroyed(),
+								getFileManager().loadCoins()
+						);
+
 						if (gameState.teamAlive()) {
 							gameState.nextLevel();
 						}
 
-					} while (gameState.teamAlive() && gameState.getLevel() <= gameSettings.size());
+					} while ((gameState.getLivesRemaining() > 0 || gameState.teamAlive())
+							&& gameState.getLevel() <= NUM_LEVELS);
 
 					LOGGER.info("Starting " + WIDTH + "x" + HEIGHT + " score screen at " + FPS + " fps, with a score of "
 							+ gameState.getScore() + ", "

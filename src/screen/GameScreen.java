@@ -81,7 +81,7 @@ public class GameScreen extends Screen {
 
 	/**
 	 * Constructor, establishes the properties of the screen.
-	 * 
+	 *
 	 * @param gameState
 	 *            Current game state.
 	 * @param gameSettings
@@ -102,8 +102,8 @@ public class GameScreen extends Screen {
 	private final GameState state;
 
 	public GameScreen(final GameState gameState,
-			final GameSettings gameSettings, final boolean bonusLife,
-			final int width, final int height, final int fps, final AchievementManager achievementManager) {
+					  final GameSettings gameSettings, final boolean bonusLife,
+					  final int width, final int height, final int fps, final AchievementManager achievementManager) {
 		super(width, height, fps);
 
 		this.state = gameState;
@@ -122,14 +122,17 @@ public class GameScreen extends Screen {
 		this.tookDamageThisLevel = false;
 
 		// 2P: bonus life adds to team pool + singleplayer mode
-        if (this.bonusLife) {
-            if (state.isSharedLives()) {
-                state.addTeamLife(1); // two player
-            } else {
-                // 1P legacy: grant to P1
-                state.addLife(0, 1);  // singleplayer
-            }
-        }
+		if (this.bonusLife) {
+			if (state.isSharedLives()) {
+				state.addTeamLife(1); // two player
+			} else {
+				// 1P legacy: grant to P1
+				state.addLife(0, 1);  // singleplayer
+			}
+		}
+
+		// [ADD] ensure achievementManager is not null for popup system
+		if (this.achievementManager == null) this.achievementManager = new AchievementManager();
 	}
 
 	/**
@@ -145,13 +148,13 @@ public class GameScreen extends Screen {
 		this.ships[0] = new Ship(this.width / 2 - 60, this.height - 30, Entity.Team.PLAYER1); // P1
 		this.ships[0].setPlayerId(1);
 
-        // only allowing second ship to spawn when 2P mode is chosen
-        if (state.isCoop()) {
-            this.ships[1] = new Ship(this.width / 2 + 60, this.height - 30, Entity.Team.PLAYER2); // P2
-            this.ships[1].setPlayerId(2);
-        } else {
-            this.ships[1] = null; // ensuring there's no P2 ship in 1P mode
-        }
+		// only allowing second ship to spawn when 2P mode is chosen
+		if (state.isCoop()) {
+			this.ships[1] = new Ship(this.width / 2 + 60, this.height - 30, Entity.Team.PLAYER2); // P2
+			this.ships[1].setPlayerId(2);
+		} else {
+			this.ships[1] = null; // ensuring there's no P2 ship in 1P mode
+		}
 
 		this.enemyShipSpecialCooldown = Core.getVariableCooldown(BONUS_SHIP_INTERVAL, BONUS_SHIP_VARIANCE);
 		this.enemyShipSpecialCooldown.reset();
@@ -159,8 +162,8 @@ public class GameScreen extends Screen {
 		this.screenFinishedCooldown = Core.getCooldown(SCREEN_CHANGE_INTERVAL);
 		this.bullets = new HashSet<Bullet>();
 
-    // New Item Code
-    this.items = new HashSet<Item>();
+        // New Item Code
+        this.items = new HashSet<Item>();
 
 		// Special input delay / countdown.
 		this.gameStartTime = System.currentTimeMillis();
@@ -272,27 +275,24 @@ public class GameScreen extends Screen {
 			this.levelFinished = true;
 			this.screenFinishedCooldown.reset();
 
-			/*
-			  check of achievement release
-			  2025-10-02 add three 'if'statements
-			 */
-			// Survivor
-			if(!this.tookDamageThisLevel && this.level == Core.getNumLevels()){
+			if(state.getBulletsShot() > 0 && state.getBulletsShot() == state.getShipsDestroyed()){
+				achievementManager.unlock("Perfect Shooter");
+			}
+			if(!this.tookDamageThisLevel){
 				achievementManager.unlock("Survivor");
 			}
-			// Clear
-			if(this.level == Core.getNumLevels()){
+			if(state.getLevel() == 5){
 				achievementManager.unlock("Clear");
-			}
-			//Perfect Shooter
-			if(this.bulletsShot > 0 && this.bulletsShot == this.shipsDestroyed){
-				achievementManager.unlock("Perfect Shooter");
 			}
 		}
 
-		if (this.levelFinished && this.screenFinishedCooldown.checkFinished())
-			this.isRunning = false;
+		if (this.levelFinished && this.screenFinishedCooldown.checkFinished()) {
+			if (!achievementManager.hasPendingToasts()) {
+				this.isRunning = false;
+			}
+		}
 
+		if (this.achievementManager != null) this.achievementManager.update();
 	}
 
 	/**
@@ -330,19 +330,19 @@ public class GameScreen extends Screen {
 		drawManager.drawLives(this, state.getLivesRemaining());
 		drawManager.drawCoins(this,  state.getCoins()); // ADD THIS LINE - 2P mode: team total
 
-        // 2P mode: setting per-player coin count
-        if (state.isCoop()) {
-            // left: P1
-            String p1 = String.format("P1  S:%d  K:%d  B:%d  C:%d",
-                    state.getScore(0), state.getShipsDestroyed(0),
-                    state.getBulletsShot(0), state.getCoins(0));
-            // right: P2
-            String p2 = String.format("P2  S:%d  K:%d  B:%d  C:%d",
-                    state.getScore(1), state.getShipsDestroyed(1),
-                    state.getBulletsShot(1), state.getCoins(1));
+		// 2P mode: setting per-player coin count
+		if (state.isCoop()) {
+			// left: P1
+			String p1 = String.format("P1  S:%d  K:%d  B:%d  C:%d",
+					state.getScore(0), state.getShipsDestroyed(0),
+					state.getBulletsShot(0), state.getCoins(0));
+			// right: P2
+			String p2 = String.format("P2  S:%d  K:%d  B:%d  C:%d",
+					state.getScore(1), state.getShipsDestroyed(1),
+					state.getBulletsShot(1), state.getCoins(1));
 
 			// remove the unnecessary "P1 S: K: B: C:" and "P2 S: K: B: C:" lines from the game screen
-        }
+		}
 
 		drawManager.drawHorizontalLine(this, SEPARATION_LINE_HEIGHT - 1);
 
@@ -353,6 +353,14 @@ public class GameScreen extends Screen {
 			drawManager.drawHorizontalLine(this, this.height / 2 - this.height / 12);
 			drawManager.drawHorizontalLine(this, this.height / 2 + this.height / 12);
 		}
+
+		// [ADD] draw achievement popups right before completing the frame
+		drawManager.drawAchievementToasts(
+				this,
+				(this.achievementManager != null)
+						? this.achievementManager.getActiveToasts()
+						: java.util.Collections.emptyList()
+		);
 
 		drawManager.completeDrawing(this);
 	}
@@ -409,25 +417,28 @@ public class GameScreen extends Screen {
 	 * Enemy bullets hit players -> decrement TEAM lives; player bullets hit enemies
 	 * -> add score.
 	 */
-    private void manageCollisions() {
-        Set<Bullet> recyclable = new HashSet<Bullet>();
-        for (Bullet bullet : this.bullets) {
-            if (bullet.getSpeed() > 0) {
-                // Enemy bullet vs both players
-                for (int p = 0; p < GameState.NUM_PLAYERS; p++) {
-                    Ship ship = this.ships[p];
-                    if (ship != null && !ship.isDestroyed()
-                            && checkCollision(bullet, ship) && !this.levelFinished) {
-                        recyclable.add(bullet);
+	private void manageCollisions() {
+		Set<Bullet> recyclable = new HashSet<Bullet>();
+		for (Bullet bullet : this.bullets) {
+			if (bullet.getSpeed() > 0) {
+				// Enemy bullet vs both players
+				for (int p = 0; p < GameState.NUM_PLAYERS; p++) {
+					Ship ship = this.ships[p];
+					if (ship != null && !ship.isDestroyed()
+							&& checkCollision(bullet, ship) && !this.levelFinished) {
+						recyclable.add(bullet);
 
-                        ship.destroy(); // explosion/respawn handled by Ship.update()
-                        state.decLife(p); // decrement shared/team lives by 1
+						ship.destroy(); // explosion/respawn handled by Ship.update()
+						state.decLife(p); // decrement shared/team lives by 1
 
-                        this.logger.info("Hit on player " + (p + 1) + ", team lives now: " + state.getLivesRemaining());
-                        break;
-                    }
-                }
-            } else {
+						// [ADD] record damage for Survivor achievement check
+						this.tookDamageThisLevel = true;
+
+						this.logger.info("Hit on player " + (p + 1) + ", team lives now: " + state.getLivesRemaining());
+						break;
+					}
+				}
+			} else {
 				// Player bullet vs enemies
 				// map Bullet owner id (1 or 2) to per-player index (0 or 1)
 				final int ownerId = bullet.getOwnerPlayerId(); // 1 or 2 (0 if unset)
@@ -447,8 +458,13 @@ public class GameScreen extends Screen {
 						state.addScore(pIdx, points); // 2P mode: modified to add to P1 score for now
 						state.incShipsDestroyed(pIdx);
 
+						// [ADD] precise First Blood check using current counter
+						if (this.achievementManager != null && state.getShipsDestroyed(pIdx) == 1) {
+							this.achievementManager.unlock("First Blood");
+						}
+
 						// obtain drop from ItemManager (may return null)
-						Item drop = engine.ItemManager.getInstance().obtainDrop(enemyShip);
+						Item drop = ItemManager.getInstance().obtainDrop(enemyShip);
 						if (drop != null) {
 							this.items.add(drop);
 							this.logger.info("Spawned " + drop.getType() + " at " + drop.getPositionX() + "," + drop.getPositionY());

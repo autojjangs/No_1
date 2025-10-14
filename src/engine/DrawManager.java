@@ -695,42 +695,100 @@ public final class DrawManager {
                 - fontBigMetrics.stringWidth(string) / 2, height);
     }
 
-    /**
-     * Countdown to game start.
-     *
-     * @param screen
-     *                  Screen to draw on.
-     * @param level
-     *                  Game difficulty level.
-     * @param number
-     *                  Countdown number.
-     * @param bonusLife
-     *                  Checks if a bonus life is received.
-     */
-    public void drawCountDown(final Screen screen, final int level,
-                              final int number, final boolean bonusLife) {
-        int rectWidth = screen.getWidth();
-        int rectHeight = screen.getHeight() / 6;
-        backBufferGraphics.setColor(Color.BLACK);
-        backBufferGraphics.fillRect(0, screen.getHeight() / 2 - rectHeight / 2,
-                rectWidth, rectHeight);
-        backBufferGraphics.setColor(Color.GREEN);
-        if (number >= 4)
-            if (!bonusLife) {
-                drawCenteredBigString(screen, "Level " + level,
-                        screen.getHeight() / 2
-                                + fontBigMetrics.getHeight() / 3);
-            } else {
-                drawCenteredBigString(screen, "Level " + level
-                                + " - Bonus life!",
-                        screen.getHeight() / 2
-                                + fontBigMetrics.getHeight() / 3);
-            }
-        else if (number != 0)
-            drawCenteredBigString(screen, Integer.toString(number),
-                    screen.getHeight() / 2 + fontBigMetrics.getHeight() / 3);
-        else
-            drawCenteredBigString(screen, "GO!", screen.getHeight() / 2
-                    + fontBigMetrics.getHeight() / 3);
-    }
+	/**
+	 * Countdown to game start.
+	 *
+	 * @param screen
+	 *                  Screen to draw on.
+	 * @param level
+	 *                  Game difficulty level.
+	 * @param number
+	 *                  Countdown number.
+	 * @param bonusLife
+	 *                  Checks if a bonus life is received.
+	 */
+	public void drawCountDown(final Screen screen, final int level,
+			final int number, final boolean bonusLife) {
+		int rectWidth = screen.getWidth();
+		int rectHeight = screen.getHeight() / 6;
+		backBufferGraphics.setColor(Color.BLACK);
+		backBufferGraphics.fillRect(0, screen.getHeight() / 2 - rectHeight / 2,
+				rectWidth, rectHeight);
+		backBufferGraphics.setColor(Color.GREEN);
+		if (number >= 4)
+			if (!bonusLife) {
+				drawCenteredBigString(screen, "Level " + level,
+						screen.getHeight() / 2
+								+ fontBigMetrics.getHeight() / 3);
+			} else {
+				drawCenteredBigString(screen, "Level " + level
+						+ " - Bonus life!",
+						screen.getHeight() / 2
+								+ fontBigMetrics.getHeight() / 3);
+			}
+		else if (number != 0)
+			drawCenteredBigString(screen, Integer.toString(number),
+					screen.getHeight() / 2 + fontBigMetrics.getHeight() / 3);
+		else
+			drawCenteredBigString(screen, "GO!", screen.getHeight() / 2
+					+ fontBigMetrics.getHeight() / 3);
+	}
+
+	/**
+	 * Draws achievement toasts.
+	 *
+	 * @param screen
+	 * Screen to draw on.
+	 * @param toasts
+	 * List of toasts to draw.
+	 */
+	public void drawAchievementToasts(final Screen screen, final List<Achievement> toasts) {
+		if (toasts == null || toasts.isEmpty()) {
+			return;
+		}
+
+		Achievement achievement = toasts.get(toasts.size() - 1);
+
+		Graphics2D g2d = (Graphics2D) backBufferGraphics.create();
+
+		try {
+			int boxWidth = 350;
+			int boxHeight = 100;
+			int cornerRadius = 15;
+
+			int x = (screen.getWidth() - boxWidth) / 2;
+			int y = (screen.getHeight() - boxHeight) / 2;
+
+			g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+			g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.3f));
+			g2d.setColor(Color.BLACK);
+			g2d.fillRoundRect(x, y, boxWidth, boxHeight, cornerRadius, cornerRadius);
+
+			g2d.setColor(Color.GREEN);
+			g2d.setStroke(new BasicStroke(2));
+			g2d.drawRoundRect(x, y, boxWidth, boxHeight, cornerRadius, cornerRadius);
+
+			g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.7f));
+
+			g2d.setFont(fontBig);
+			g2d.setColor(Color.YELLOW);
+			FontMetrics bigMetrics = g2d.getFontMetrics(fontBig);
+			int titleWidth = bigMetrics.stringWidth("Achievement Clear!");
+			g2d.drawString("Achievement Clear!", (screen.getWidth() - titleWidth) / 2, y + 35);
+
+			g2d.setFont(fontRegular);
+			g2d.setColor(Color.WHITE);
+			FontMetrics regularMetrics = g2d.getFontMetrics(fontRegular);
+			int nameWidth = regularMetrics.stringWidth(achievement.getName());
+			g2d.drawString(achievement.getName(), (screen.getWidth() - nameWidth) / 2, y + 60);
+
+			g2d.setColor(Color.LIGHT_GRAY);
+			int descWidth = regularMetrics.stringWidth(achievement.getDescription());
+			g2d.drawString(achievement.getDescription(), (screen.getWidth() - descWidth) / 2, y + 80);
+
+		} finally {
+			g2d.dispose();
+		}
+	}
 }
