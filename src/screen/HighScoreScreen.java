@@ -57,10 +57,11 @@ public class HighScoreScreen extends Screen {
     protected final void update() {
         super.update();
 
-		draw();
-		if (inputManager.isKeyDown(KeyEvent.VK_SPACE) && this.inputDelay.checkFinished())
-			this.isRunning = false;
-	}
+        draw();
+        if (inputManager.isKeyDown(KeyEvent.VK_SPACE)
+                && this.inputDelay.checkFinished())
+            this.isRunning = false;
+    }
 
     /**
      * Draws the elements associated with the screen.
