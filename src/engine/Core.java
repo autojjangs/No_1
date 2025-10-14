@@ -65,83 +65,90 @@ public final class Core {
 		int width = frame.getWidth();
 		int height = frame.getHeight();
 
-		gameSettings = GameSettings.getGameSettings();
-		NUM_LEVELS = gameSettings.size(); // Initialize total number of levels
+		gameSettings = new ArrayList<GameSettings>();
+		gameSettings.add(SETTINGS_LEVEL_1);
+		gameSettings.add(SETTINGS_LEVEL_2);
+		gameSettings.add(SETTINGS_LEVEL_3);
+		gameSettings.add(SETTINGS_LEVEL_4);
+		gameSettings.add(SETTINGS_LEVEL_5);
+		gameSettings.add(SETTINGS_LEVEL_6);
+		gameSettings.add(SETTINGS_LEVEL_7);
 
 
-		// 2P mode: modified to null to allow for switch between 2 modes
-		GameState gameState = null;
-		boolean coopSelected = false; // false = 1P, true = 2P
+        // 2P mode: modified to null to allow for switch between 2 modes
+        GameState gameState = null;
+        boolean coopSelected = false; // false = 1P, true = 2P
 
-		AchievementManager achievementManager = new AchievementManager(); // add 1P/2P achievement manager
+        int returnCode = 1;
+        do {
+          switch (returnCode) {
+            case 1:
+              currentScreen = new TitleScreen(width, height, FPS);
+              LOGGER.info("Starting " + WIDTH + "x" + HEIGHT + " title screen at " + FPS + " fps.");
+              returnCode = frame.setScreen(currentScreen);
+                LOGGER.info("Closing title screen.");
 
-		int returnCode = 1;
-		do {
+                // 2P mode: reading the mode which user chose from TitleScreen
+                if (returnCode == 2 || returnCode == 3) {
+                    coopSelected = ((TitleScreen) currentScreen).isCoopSelected();
+                }
 
-			switch (returnCode) {
-				case 1:
-					currentScreen = new TitleScreen(width, height, FPS);
-					LOGGER.info("Starting " + WIDTH + "x" + HEIGHT + " title screen at " + FPS + " fps.");
-					returnCode = frame.setScreen(currentScreen);
-					LOGGER.info("Closing title screen.");
+              break;
 
-					// 2P mode: reading the mode which user chose from TitleScreen
-					if (returnCode == 2 || returnCode == 3) {
-						coopSelected = ((TitleScreen) currentScreen).isCoopSelected();
-					}
+            case 2:
+              // Game & score.
+              AchievementManager achievementManager = new AchievementManager();
 
-					break;
+                // 2P mode: building gameState now using user choice
+                gameState = new GameState(1, MAX_LIVES, coopSelected, getFileManager().loadCoins());
 
-				case 2:
-					// 2P mode: building gameState now using user choice
-					gameState = new GameState(1, MAX_LIVES, coopSelected);
+              do {
+                // Extra life this level? Give it if team pool is below cap.
+                int teamCap = gameState.isCoop() ? (MAX_LIVES * GameState.NUM_PLAYERS) : MAX_LIVES;
+                boolean bonusLife = gameState.getLevel() % EXTRA_LIFE_FRECUENCY == 0
+                    && (gameState.getLivesRemaining() < teamCap || gameState.getLivesRemaining() < MAX_LIVES);
 
-					do {
-						// Extra life this level? Give it if team pool is below cap.
-						int teamCap = gameState.isCoop() ? (MAX_LIVES * GameState.NUM_PLAYERS) : MAX_LIVES;
-						boolean bonusLife = gameState.getLevel() % EXTRA_LIFE_FRECUENCY == 0
-								&& gameState.getLivesRemaining() < teamCap;
+                currentScreen = new GameScreen(gameState, gameSettings.get(gameState.getLevel() - 1), bonusLife, width, height, FPS, achievementManager);
 
-						currentScreen = new GameScreen(
-								gameState,
-								gameSettings.get(gameState.getLevel() - 1),
-								bonusLife, width, height, FPS, achievementManager);
+                LOGGER.info("Starting " + WIDTH + "x" + HEIGHT + " game screen at " + FPS + " fps.");
+                frame.setScreen(currentScreen);
+                LOGGER.info("Closing game screen.");
 
-						LOGGER.info("Starting " + WIDTH + "x" + HEIGHT + " game screen at " + FPS + " fps.");
-						frame.setScreen(currentScreen);
-						LOGGER.info("Closing game screen.");
+                gameState = ((GameScreen) currentScreen).getGameState();
 
-						gameState = ((GameScreen) currentScreen).getGameState();
+                gameState = new GameState(gameState.getLevel() + 1,
+                    gameState.getScore(),
+                    gameState.getLivesRemaining(),
+                    gameState.getBulletsShot(),
+                    gameState.getShipsDestroyed(), gameState.getCoins());
 
-						if (gameState.teamAlive()) {
-							gameState.nextLevel();
-						}
+                if (gameState.teamAlive()) {
+                  gameState.nextLevel();
+                }
 
-					} while (gameState.teamAlive() && gameState.getLevel() <= gameSettings.size());
+              } while ((gameState.getLivesRemaining() > 0 || gameState.teamAlive()) && gameState.getLevel() <= NUM_LEVELS);
 
-					LOGGER.info("Starting " + WIDTH + "x" + HEIGHT + " score screen at " + FPS + " fps, with a score of "
-							+ gameState.getScore() + ", "
-							+ gameState.getLivesRemaining() + " lives remaining, "
-							+ gameState.getBulletsShot() + " bullets shot and "
-							+ gameState.getShipsDestroyed() + " ships destroyed.");
-					currentScreen = new ScoreScreen(width, height, FPS, gameState, achievementManager);
-					returnCode = frame.setScreen(currentScreen);
-					LOGGER.info("Closing score screen.");
-					break;
+              LOGGER.info("Starting " + WIDTH + "x" + HEIGHT + " score screen at " + FPS + " fps, with a score of "
+                  + gameState.getScore() + ", "
+                  + gameState.getLivesRemaining() + " lives remaining, "
+                  + gameState.getBulletsShot() + " bullets shot and "
+                  + gameState.getShipsDestroyed() + " ships destroyed.");
+              currentScreen = new ScoreScreen(width, height, FPS, gameState, achievementManager);
+              returnCode = frame.setScreen(currentScreen);
+              LOGGER.info("Closing score screen.");
+              break;
 
-				case 3:
-					// High scores.
-					currentScreen = new HighScoreScreen(width, height, FPS);
-					LOGGER.info("Starting " + WIDTH + "x" + HEIGHT
-							+ " high score screen at " + FPS + " fps.");
-					returnCode = frame.setScreen(currentScreen);
-					LOGGER.info("Closing high score screen.");
-					break;
+            case 3:
+              // High scores.
+              currentScreen = new HighScoreScreen(width, height, FPS);
+              LOGGER.info("Starting " + WIDTH + "x" + HEIGHT + " high score screen at " + FPS + " fps.");
+              returnCode = frame.setScreen(currentScreen);
+              LOGGER.info("Closing high score screen.");
+              break;
 
-				default:
-					break;
-			}
-
+            default:
+              break;
+          }
 		} while (returnCode != 0);
 
 		fileHandler.flush();
@@ -213,8 +220,7 @@ public final class Core {
 	 *                     Variation in the cooldown duration.
 	 * @return A new cooldown with variance.
 	 */
-	public static Cooldown getVariableCooldown(final int milliseconds,
-											   final int variance) {
+	public static Cooldown getVariableCooldown(final int milliseconds,final int variance) {
 		return new Cooldown(milliseconds, variance);
 	}
 
