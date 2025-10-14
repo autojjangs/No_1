@@ -1,9 +1,9 @@
 package screen;
 
+import java.awt.*;
 import java.awt.event.KeyEvent;
 import engine.Cooldown;
 import engine.Core;
-import engine.InputManager;
 
 /**
  *
@@ -52,6 +52,7 @@ public class PlayScreen extends Screen {
                 this.selectionCooldown.reset();
             }
 
+            // back button click event & 1P, 2P button click event
             if (inputManager.isKeyDown(KeyEvent.VK_SPACE)) {
                 switch (this.menuIndex) {
                     case 0: // "1 Player"
@@ -69,36 +70,60 @@ public class PlayScreen extends Screen {
                         break;
                 }
                 this.isRunning = false;
-
             }
-        }
+            if (inputManager.isMouseClicked()) {
+                int mx = inputManager.getMouseX();
+                int my = inputManager.getMouseY();
 
-        // back button click event
-        if (inputManager.isMouseClicked()) {
-            int mx = inputManager.getMouseX();
-            int my = inputManager.getMouseY();
-            java.awt.Rectangle backBox = drawManager.getBackButtonHitbox(this);
+                java.awt.Rectangle backBox = drawManager.getBackButtonHitbox(this);
+                java.awt.Rectangle[] modeBoxes = drawManager.getPlayMenuHitboxes(this);
+                java.awt.Rectangle[] allBoxes = {
+                        modeBoxes[0], // 1P
+                        modeBoxes[1],  // 2P
+                        backBox      // Back
+                };
 
-            if (backBox.contains(mx, my)) {
-                this.returnCode = 1;
-                this.isRunning = false;
+                for  (int i = 0; i < allBoxes.length; i++) {
+                    if (allBoxes[i].contains(mx, my)) {
+                        this.menuIndex = i;
+                        if (i == 2) this.returnCode = 1; // Back
+                        else {
+                            this.coopSelected = (i == 1); // Mode Select
+                            this.returnCode = 2;
+                        }
+                        this.isRunning = false;
+                        return;
+                    }
+                }
+
             }
         }
     }
 
     private void draw() {
         drawManager.initDrawing(this);
-        drawManager.drawPlayMenu(this, this.menuIndex);
 
         // hover highlight
         int mx = inputManager.getMouseX();
         int my = inputManager.getMouseY();
-        java.awt.Rectangle backBox = drawManager.getBackButtonHitbox(this);
 
-        if (backBox.contains(mx, my)) {
-            drawManager.drawBackButton(this, true);
+        java.awt.Rectangle[] modeBoxes = drawManager.getPlayMenuHitboxes(this);
+        java.awt.Rectangle backBox = drawManager.getBackButtonHitbox(this);
+        java.awt.Rectangle[] allBoxes = {
+                modeBoxes[0], // 1P
+                modeBoxes[1], // 2P
+                backBox       // Back
+        };
+
+        for (int i = 0; i < allBoxes.length; i++) {
+            if (allBoxes[i].contains(mx, my)) {
+                this.menuIndex = i;
+                break;
+            }
         }
 
+        drawManager.drawPlayMenu(this, this.menuIndex==2 ? -1 : this.menuIndex, this.menuIndex);
+        drawManager.drawBackButton(this, this.menuIndex==2);
         drawManager.completeDrawing(this);
     }
 }
