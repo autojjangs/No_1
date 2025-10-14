@@ -221,6 +221,9 @@ public class GameScreen extends Screen {
 
 				if (fire && ship.shoot(this.bullets)) {
 
+					// play shooting sound effect
+					SoundManager.playOnce("sound/shooting.wav");
+
 					state.incBulletsShot(p); // 2P mode: increments per-player bullet shots
 
 				}
@@ -301,9 +304,13 @@ public class GameScreen extends Screen {
 	private void draw() {
 		drawManager.initDrawing(this);
 
+
+    drawManager.updateGameSpace();
+
 		for (Ship s : this.ships)
 			if (s != null)
 				drawManager.drawEntity(s, s.getPositionX(), s.getPositionY());
+
 
 		if (this.enemyShipSpecial != null)
 			drawManager.drawEntity(this.enemyShipSpecial,
