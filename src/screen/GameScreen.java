@@ -337,7 +337,8 @@ public class GameScreen extends Screen {
                     state.getScore(1), state.getShipsDestroyed(1),
                     state.getBulletsShot(1), state.getCoins(1));
 
-			// remove the unnecessary "P1 S: K: B: C:" and "P2 S: K: B: C:" lines from the game screen
+            drawManager.drawCenteredRegularString(this, p1, 40);
+            drawManager.drawCenteredRegularString(this, p2, 60);
         }
 
 		drawManager.drawHorizontalLine(this, SEPARATION_LINE_HEIGHT - 1);
@@ -392,7 +393,7 @@ public class GameScreen extends Screen {
 				if(ship == null) continue;
 				if (checkCollision(item, ship) && !collected.contains(item)) {
 					collected.add(item);
-					item.applyEffect();
+					item.applyEffect(getGameState(), ship.getPlayerId());
 					this.logger.info("Player " + ship.getPlayerId() + " picked up item: " + item.getType());
 				}
 			}

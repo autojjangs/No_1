@@ -16,8 +16,7 @@ public final class ItemManager {
 
     private static ItemManager instance;
 
-    // Debug logger init
-
+    /** Debug logger init */
     private Logger logger;
     private ItemManager() { logger = Core.getLogger(); }
 
@@ -27,10 +26,13 @@ public final class ItemManager {
         return instance;
     }
 
-    // Random Roll for item
+    /** Random Roll for item */
     private final Random itemRoll = new Random();
-    // Pity Counter
+    /** Counter for pity system, increases when no item is dropped. */
     private int pityCounter = 0;
+
+    /** Item database loaded from CSV. */
+    private final ItemDB itemDB = new ItemDB();
 
     /** -------------------------- ITEM DATA -------------------------- **/
 
@@ -45,26 +47,17 @@ public final class ItemManager {
         DropTier(double tierWeight) { this.tierWeight = Math.max(0.0, tierWeight); }
     }
 
-    /** ITEM DATA **/
+    /** ITEM TYPE (name only, data is loaded from CSV) **/
     public static enum ItemType {
-        // itemType(dropTier, spriteType, itemEffectId)
-        SCORE(DropTier.COMMON,   DrawManager.SpriteType.ItemScore,   "heal_small_effect"),
-        COIN (DropTier.UNCOMMON, DrawManager.SpriteType.ItemCoin,  "score_small_effect"),
-        HEAL (DropTier.RARE,     DrawManager.SpriteType.ItemHeal,"special_power_effect");
 
-        public final DropTier dropTier;
-        public final DrawManager.SpriteType spriteType;
-        public final String itemEffectId;
-
-        ItemType(DropTier dropTier, DrawManager.SpriteType spriteType, String itemEffectId) {
-            this.dropTier   = dropTier;
-            this.spriteType = spriteType;
-            this.itemEffectId = itemEffectId;
-        }
+        SCORE,
+        COIN,
+        HEAL
     }
 
     /** -------------------------- INIT -------------------------- **/
 
+    /** Total weight of all item tiers except NONE. */
     private static final double ITEM_WEIGHT;
 
     static {
@@ -77,6 +70,13 @@ public final class ItemManager {
 
     /** -------------------------- MAIN -------------------------- **/
 
+    /**
+     * Determines and returns the item dropped by the given enemy.
+     *
+     * @param enemy
+     *            enemy ship that was defeated.
+     * @return dropped Item, or null if no item is dropped.
+     */
     public Item obtainDrop(final EnemyShip enemy) {
         if (enemy == null) return null;
 
@@ -115,12 +115,11 @@ public final class ItemManager {
 
         pityCounter = 0;
 
-        // 2. find item from tier - return SCORE/COIN/POINT
-
-        java.util.List<ItemType> candidates = new java.util.ArrayList<>();
-        for (ItemType it : ItemType.values()) {
-            if (it.dropTier == chosenTier)
-                candidates.add(it);
+        // Load item list from CSV by DropTier
+        java.util.List<ItemData> candidates = new java.util.ArrayList<>();
+        for (ItemData data : itemDB.getAllItems()) {
+            if (data.getDropTier().equalsIgnoreCase(chosenTier.name()))
+                candidates.add(data);
         }
 
         if (candidates.isEmpty()) {
@@ -128,9 +127,16 @@ public final class ItemManager {
             return null;
         }
 
-        ItemType chosenItem = candidates.get(itemRoll.nextInt(candidates.size()));
+        ItemData chosenData = candidates.get(itemRoll.nextInt(candidates.size()));
 
-        // 3. return item
+        // Convert String from CSV to enum ItemType
+        ItemType chosenItem;
+        try {
+            chosenItem = ItemType.valueOf(chosenData.getType().toUpperCase());
+        } catch (IllegalArgumentException e) {
+            logger.warning("[ItemManager]: Unknown item type in CSV: " + chosenData.getType());
+            return null;
+        }
 
         // get spawn position / enemy death position
         int centerX = enemy.getPositionX() + enemy.getWidth() / 2;
@@ -140,20 +146,5 @@ public final class ItemManager {
         this.logger.info("[ItemManager]: created item " + drop.getType() + " at (" + centerX + ", " + centerY + ")");
 
         return drop;
-    }
-
-    /**
-     * Apply the item effect.
-     * ItemManager performs the effect by calling back to
-     * the provided gameScreen.
-     */
-    public void handlePickup(final Set<Item> items, final screen.GameScreen gameScreen) {
-
-        if (items == null || gameScreen == null) return;
-
-        for (Item item : items) {
-            item.applyEffect();
-            this.logger.info(item.getType() + " picked up");
-        }
     }
 }

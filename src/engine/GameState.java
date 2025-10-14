@@ -7,7 +7,7 @@ package engine;
  *
  * @author <a href="mailto:RobertoIA1987@gmail.com">Roberto Izquierdo Amo</a>
  *
- *
+ * 
  */
 public class GameState {
 
@@ -28,7 +28,7 @@ public class GameState {
 	private int teamLivesCap;
 
 	/** Current coin count. */ // ADD THIS LINE
-	private final int[] coins = new int[NUM_PLAYERS]; // ADD THIS LINE - edited for 2P mode
+    private final int[] coins = new int[NUM_PLAYERS]; // ADD THIS LINE - edited for 2P mode
 
 	// 2P mode: co-op aware constructor used by the updated Core loop - livesEach
 	// applies per-player; co-op uses shared pool.
@@ -76,8 +76,8 @@ public class GameState {
 	 *                       Current coin count. // ADD THIS LINE
 	 */
 	public GameState(final int level, final int score,
-					 final int livesRemaining, final int bulletsShot,
-					 final int shipsDestroyed, final int coins) { // MODIFY THIS LINE
+			final int livesRemaining, final int bulletsShot,
+			final int shipsDestroyed, final int coins) { // MODIFY THIS LINE
 		this.level = level;
 		this.sharedLives = false;
 		this.teamLives = 0;
@@ -88,7 +88,7 @@ public class GameState {
 		this.bulletsShot[0] = bulletsShot;
 		this.shipsDestroyed[0] = shipsDestroyed;
 
-		this.coins[0] = Math.max(0, coins); // ADD THIS LINE - edited for 2P mode
+        this.coins[0] = Math.max(0, coins); // ADD THIS LINE - edited for 2P mode
 		this.coop = false; // 2P: single-player mode
 	}
 
@@ -145,21 +145,21 @@ public class GameState {
 		shipsDestroyed[p]++;
 	}
 
-	// 2P mode: per-player coin tracking
-	public int getCoins(final int p) { return (p >= 0 && p < NUM_PLAYERS) ? coins[p] : 0; }
-	public int getCoins() { return coins[0] + coins[1]; } // legacy total for ScoreScreen
+    // 2P mode: per-player coin tracking
+    public int getCoins(final int p) { return (p >= 0 && p < NUM_PLAYERS) ? coins[p] : 0; }
+    public int getCoins() { return coins[0] + coins[1]; } // legacy total for ScoreScreen
 
-	public void addCoins(final int p, final int delta) {
-		if (p >= 0 && p < NUM_PLAYERS && delta > 0)
-			coins[p] = Math.max(0, coins[p] + delta);
-	}
+    public void addCoins(final int p, final int delta) {
+        if (p >= 0 && p < NUM_PLAYERS && delta > 0)
+            coins[p] = Math.max(0, coins[p] + delta);
+    }
 
-	public boolean spendCoins(final int p, final int amount) {
-		if (p < 0 || p >= NUM_PLAYERS || amount < 0) return false;
-		if (coins[p] < amount) return false;
-		coins[p] -= amount;
-		return true;
-	}
+    public boolean spendCoins(final int p, final int amount) {
+        if (p < 0 || p >= NUM_PLAYERS || amount < 0) return false;
+        if (coins[p] < amount) return false;
+        coins[p] -= amount;
+        return true;
+    }
 
 	// ===== Mode / life-pool helpers expected elsewhere =====
 	public boolean isCoop() {
@@ -184,26 +184,26 @@ public class GameState {
 			teamLives = Math.max(0, teamLives - Math.max(0, n));
 	}
 
-	// 2P mode: decrement life (shared pool if enabled; otherwise per player). */
-	public void decLife(final int p) {
-		if (sharedLives) {
-			decTeamLife(1);
-		} else if (p >= 0 && p < NUM_PLAYERS && lives[p] > 0) {
-			lives[p]--;
-		}
-	}
+    // 2P mode: decrement life (shared pool if enabled; otherwise per player). */
+    public void decLife(final int p) {
+        if (sharedLives) {
+            decTeamLife(1);
+        } else if (p >= 0 && p < NUM_PLAYERS && lives[p] > 0) {
+            lives[p]--;
+        }
+    }
 
-	// for bonusLife, balance out decLife (+/- life)
-	public void addLife(final int p, final int n) {
-		if (sharedLives) {
-			addTeamLife(n);
-		} else if (p >= 0 && p < NUM_PLAYERS) {
-			lives[p] = Math.max(0, lives[p] + Math.max(0, n));
-		}
-	}
+    // for bonusLife, balance out decLife (+/- life)
+    public void addLife(final int p, final int n) {
+        if (sharedLives) {
+            addTeamLife(n);
+        } else if (p >= 0 && p < NUM_PLAYERS) {
+            lives[p] = Math.max(0, lives[p] + Math.max(0, n));
+        }
+    }
 
 
-	public int getLevel() {
+    public int getLevel() {
 		return level;
 	}
 
@@ -216,4 +216,14 @@ public class GameState {
 		return sharedLives ? (teamLives > 0) : (lives[0] > 0 || lives[1] > 0);
 	}
 
+	// for ItemEffect.java
+	public int getTeamLivesCap() {
+		return teamLivesCap;
+	}
+
+	// for ItemEffect.java
+	public int get1PlayerLives() {
+
+		return lives[0];
+	}
 }
