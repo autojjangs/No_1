@@ -108,7 +108,7 @@ public final class Core {
               AchievementManager achievementManager = new AchievementManager();
 
                 // 2P mode: building gameState now using user choice
-                gameState = new GameState(1, MAX_LIVES, coopSelected);
+                gameState = new GameState(1, MAX_LIVES, coopSelected, getFileManager().loadCoins());
 
               do {
                 // Extra life this level? Give it if team pool is below cap.
@@ -128,7 +128,7 @@ public final class Core {
                     gameState.getScore(),
                     gameState.getLivesRemaining(),
                     gameState.getBulletsShot(),
-                    gameState.getShipsDestroyed(), getFileManager().loadCoins());
+                    gameState.getShipsDestroyed(), gameState.getCoins());
 
                 if (gameState.teamAlive()) {
                   gameState.nextLevel();
@@ -229,8 +229,7 @@ public final class Core {
 	 *                     Variation in the cooldown duration.
 	 * @return A new cooldown with variance.
 	 */
-	public static Cooldown getVariableCooldown(final int milliseconds,
-			final int variance) {
+	public static Cooldown getVariableCooldown(final int milliseconds,final int variance) {
 		return new Cooldown(milliseconds, variance);
 	}
 

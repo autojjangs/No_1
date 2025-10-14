@@ -83,7 +83,7 @@ public class ScoreScreen extends Screen {
 		this.achievementManager = achievementManager;
 
 		try {
-			this.highScores = Core.getFileManager().loadHighScores();
+			this.highScores = Core.getFileManager().loadHighScores(true);
 			if (highScores.size() < MAX_HIGH_SCORE_NUM
 					|| highScores.get(highScores.size() - 1).getScore() < this.score)
 				this.isNewRecord = true;
@@ -168,7 +168,7 @@ public class ScoreScreen extends Screen {
 			highScores.remove(highScores.size() - 1);
 
 		try {
-			Core.getFileManager().saveHighScores(highScores);
+			Core.getFileManager().saveHighScores(highScores, true);
 		} catch (IOException e) {
 			logger.warning("Couldn't load high scores!");
 		}

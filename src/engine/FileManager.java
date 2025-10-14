@@ -146,12 +146,9 @@ public final class FileManager {
      *      In case of loading problems
      * */
     private String getFilePath(String fileName) throws IOException {
-        String jarPath = FileManager.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-        jarPath = URLDecoder.decode(jarPath, "UTF-8");
-        String scoresPath = new File(jarPath).getParent();
-        scoresPath += File.separator;
-        scoresPath += fileName;
-        return scoresPath;
+        String filePath = System.getProperty("user.dir");
+        filePath += File.separator + "res" + File.separator + fileName;
+        return filePath;
     }
 
     /**
@@ -192,22 +189,25 @@ public final class FileManager {
      * Loads high scores from file, and returns a sorted list of pairs score -
      * value.
      *
+     * @param player
+     *             case of 1p/2p; true for 1p; false for 2p;
      * @return Sorted list of scores - players.
      * @throws IOException
      *             In case of loading problems.
      */
-    public List<Score> loadHighScores() throws IOException {
-
+    public List<Score> loadHighScores(boolean player) throws IOException {
         List<Score> highScores = new ArrayList<Score>();
         InputStream inputStream = null;
         BufferedReader bufferedReader = null;
 
         try {
-            File scoresFile = new File(getFilePath("scores.csv"));
+            File scoresFile;
+            if(player)
+                scoresFile = new File(getFilePath("scores.csv"));
+            else
+                scoresFile = new File(getFilePath("2pscores.csv"));
             inputStream = new FileInputStream(scoresFile);
-            bufferedReader = new BufferedReader(new InputStreamReader(
-                    inputStream, Charset.forName("UTF-8")));
-
+            bufferedReader = new BufferedReader(new InputStreamReader(inputStream, Charset.forName("UTF-8")));
             logger.info("Loading user high scores.");
             // except first line
             bufferedReader.readLine();
@@ -236,15 +236,22 @@ public final class FileManager {
      *
      * @param highScores
      *            High scores to save.
+     *
+     * @param player
+     *            case of 1p/2p; true for 1p; false for 2p;
      * @throws IOException
      *             In case of loading problems.
      */
-    public void saveHighScores(final List<Score> highScores) throws IOException {
+    public void saveHighScores(final List<Score> highScores, boolean player) throws IOException {
         OutputStream outputStream = null;
         BufferedWriter bufferedWriter = null;
 
         try {
-            File scoresFile = new File(getFilePath("scores.csv"));
+            File scoresFile;
+            if(player)
+                scoresFile = new File(getFilePath("scores.csv"));
+            else
+                scoresFile = new File(getFilePath("2pscores.csv"));
 
             if (!scoresFile.exists())
                 scoresFile.createNewFile();
@@ -253,6 +260,8 @@ public final class FileManager {
             bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream, Charset.forName("UTF-8")));
 
             logger.info("Saving user high scores.");
+            bufferedWriter.write("player, score");
+            bufferedWriter.newLine();
 
             for (Score score : highScores) {
                 bufferedWriter.write(score.getName() + "," + score.getScore());
@@ -262,7 +271,6 @@ public final class FileManager {
         } finally {
             if (bufferedWriter != null)
                 bufferedWriter.close();
-
         }
     }
 
@@ -279,8 +287,7 @@ public final class FileManager {
         try {
             File coinsFile = new File(getFilePath(COIN_FILENAME));
             inputStream = new FileInputStream(coinsFile);
-            bufferedReader = new BufferedReader(new InputStreamReader(
-                    inputStream, Charset.forName("UTF-8")));
+            bufferedReader = new BufferedReader(new InputStreamReader(inputStream, Charset.forName("UTF-8")));
 
             logger.info("Loading coin count from " + COIN_FILENAME + ".");
 
