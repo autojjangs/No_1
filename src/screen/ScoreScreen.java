@@ -31,8 +31,8 @@ public class ScoreScreen extends Screen {
 
 	/** Current score. */
 	private int score;
-	/** Player lives left. */
-	private int livesRemaining;
+	/** Current coins. */
+	private int coins;
 	/** Total bullets shot by the player. */
 	private int bulletsShot;
 	/** Total ships destroyed by the player. */
@@ -75,7 +75,7 @@ public class ScoreScreen extends Screen {
 		this.gameState = gameState; // Added
 
 		this.score = gameState.getScore();
-		this.livesRemaining = gameState.getLivesRemaining();
+		this.coins = gameState.getCoins();
 		this.bulletsShot = gameState.getBulletsShot();
 		this.shipsDestroyed = gameState.getShipsDestroyed();
 		this.totalCoins = gameState.getCoins(); // ADD THIS LINE
@@ -219,7 +219,7 @@ public class ScoreScreen extends Screen {
             // team summary
             drawManager.drawResults(this,
                     this.gameState.getScore(), // team score
-                    this.gameState.getLivesRemaining(),
+                    this.gameState.getCoins(),
                     this.gameState.getShipsDestroyed(),
                     0f, // leaving out team accuracy
                     this.isNewRecord,
@@ -247,7 +247,7 @@ public class ScoreScreen extends Screen {
             // 1P legacy summary with accuracy
             float acc = (this.bulletsShot > 0) ? (float) this.shipsDestroyed / this.bulletsShot : 0f;
 
-            drawManager.drawResults(this, this.score, this.livesRemaining, this.shipsDestroyed, acc, this.isNewRecord, true); // Draw accuracy for 1P mode
+            drawManager.drawResults(this, this.score, this.coins, this.shipsDestroyed, acc, this.isNewRecord, true); // Draw accuracy for 1P mode
         }
 
         if (this.isNewRecord) {
