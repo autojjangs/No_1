@@ -4,6 +4,8 @@ package screen;
 import java.awt.event.KeyEvent;
 import java.util.HashSet;
 import java.util.Set;
+import java.io.IOException;
+import java.util.List;
 
 import engine.*;
 import entity.Bullet;
@@ -29,6 +31,8 @@ public class GameScreen extends Screen {
 	private static final int BONUS_SHIP_EXPLOSION = 500;
 	private static final int SCREEN_CHANGE_INTERVAL = 1500;
 	private static final int SEPARATION_LINE_HEIGHT = 68;
+    private static final int HIGH_SCORE_NOTICE_DURATION = 2000;
+    private static boolean sessionHighScoreNotified = false;
 	/** For Check Achievement
 	 * 2015-10-02 add new */
 	private AchievementManager achievementManager;
@@ -44,6 +48,9 @@ public class GameScreen extends Screen {
 	private long gameStartTime;
 	private boolean levelFinished;
 	private boolean bonusLife;
+    private int topScore;
+    private boolean highScoreNotified;
+    private long highScoreNoticeStartTime;
 
     private int level;
     private int score;
@@ -99,6 +106,16 @@ public class GameScreen extends Screen {
 		this.achievementManager = achievementManager;
 		this.tookDamageThisLevel = false;
 
+        try {
+            List<Score> highScores = Core.getFileManager().loadHighScores();
+            this.topScore = highScores.isEmpty() ? 0 : highScores.get(0).getScore();
+        } catch (IOException e) {
+            logger.warning("Couldn't load high scores for checking!");
+            this.topScore = 0;
+        }
+        this.highScoreNotified = false;
+        this.highScoreNoticeStartTime = 0;
+        
 		// 2P: bonus life adds to team pool + singleplayer mode
         if (this.bonusLife) {
             if (state.isSharedLives()) {
@@ -109,6 +126,13 @@ public class GameScreen extends Screen {
             }
         }
 	}
+    /**
+     * Resets the session high score notification flag.
+     * Should be called when a new game starts from the main menu.
+     */
+    public static void resetSessionHighScoreNotified() {
+        sessionHighScoreNotified = false;
+    }
 
 	public final void initialize() {
 		super.initialize();
@@ -224,6 +248,12 @@ public class GameScreen extends Screen {
 		cleanBullets();
 		draw();
 
+        if (!sessionHighScoreNotified && this.state.getScore() > this.topScore) {
+            sessionHighScoreNotified = true;
+            this.highScoreNotified = true;
+            this.highScoreNoticeStartTime = System.currentTimeMillis();
+        }
+
 		// End condition: formation cleared or TEAM lives exhausted.
 		if ((this.enemyShipFormation.isEmpty() || !state.teamAlive()) && !this.levelFinished) {
 			this.levelFinished = true;
@@ -277,7 +307,6 @@ public class GameScreen extends Screen {
 
 
 		drawManager.drawCoins(this,  state.getCoins()); // ADD THIS LINE - 2P mode: team total
-
         // 2P mode: setting per-player coin count
         if (state.isCoop()) {
             // left: P1
@@ -301,7 +330,10 @@ public class GameScreen extends Screen {
 			drawManager.drawHorizontalLine(this, this.height / 2 - this.height / 12);
 			drawManager.drawHorizontalLine(this, this.height / 2 + this.height / 12);
 		}
-
+        if (this.highScoreNotified &&
+                System.currentTimeMillis() - this.highScoreNoticeStartTime < HIGH_SCORE_NOTICE_DURATION) {
+            drawManager.drawNewHighScoreNotice(this);
+        }
 		drawManager.completeDrawing(this);
 	}
 

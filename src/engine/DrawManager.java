@@ -448,6 +448,7 @@ public final class DrawManager {
 	 * @param isNewRecord
 	 *                       If the score is a new high score.
 	 */
+
 	public void drawResults(final Screen screen, final int score,
 			final int livesRemaining, final int shipsDestroyed,
 			final float accuracy, final boolean isNewRecord, final boolean accuracy1P) {
@@ -458,6 +459,14 @@ public final class DrawManager {
 				.format("accuracy %.2f%%", accuracy * 100);
 
 		int height = isNewRecord ? 4 : 2;
+        if (isNewRecord) {
+            backBufferGraphics.setColor(Color.RED);
+        } else {
+            backBufferGraphics.setColor(Color.WHITE);
+        }
+
+        drawCenteredRegularString(screen, scoreString, screen.getHeight()
+                / height);
 
 		backBufferGraphics.setColor(Color.WHITE);
 		drawCenteredRegularString(screen, scoreString, screen.getHeight()
@@ -686,4 +695,9 @@ public final class DrawManager {
 			drawCenteredBigString(screen, "GO!", screen.getHeight() / 2
 					+ fontBigMetrics.getHeight() / 3);
 	}
+    public void drawNewHighScoreNotice(final Screen screen) {
+        String message = "NEW HIGH SCORE!";
+        backBufferGraphics.setColor(Color.YELLOW);
+        drawCenteredBigString(screen, message, screen.getHeight() / 4);
+    }
 }
