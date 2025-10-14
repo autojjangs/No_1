@@ -216,7 +216,15 @@ public class GameState {
 		return sharedLives ? (teamLives > 0) : (lives[0] > 0 || lives[1] > 0);
 	}
 
+	// for ItemEffect.java
 	public int getTeamLivesCap() {
 		return teamLivesCap;
+	}
+
+	// for ItemEffect.java
+	public int getPlayerLives(int p) {
+		if (sharedLives) return teamLives;
+		if (p >= 0 && p < NUM_PLAYERS) return lives[p];
+		return 0;
 	}
 }

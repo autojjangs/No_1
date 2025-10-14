@@ -40,11 +40,21 @@ public class ItemEffect {
         Logger logger = Core.getLogger();
         final int beforeLife = gameState.getLivesRemaining();
 
-        if (gameState.getTeamLives() + lifeAmount > gameState.getTeamLivesCap()) {
-            gameState.addScore(getPlayerIndex(playerId), lifeAmount * 20);
+        // if 2p mode
+        if (gameState.isCoop()) {
+            if (gameState.getTeamLives() + lifeAmount > gameState.getTeamLivesCap()) {
+                gameState.addScore(getPlayerIndex(playerId), lifeAmount * 20);
+            } else {
+                gameState.addLife(getPlayerIndex(playerId), lifeAmount);
+            }
         } else {
-            gameState.addLife(getPlayerIndex(playerId), lifeAmount);
+            if (gameState.getPlayerLives(playerId) + lifeAmount > 3) {
+                gameState.addScore(getPlayerIndex(playerId), lifeAmount * 20);
+            } else {
+                gameState.addLife(getPlayerIndex(playerId), lifeAmount);
+            }
         }
+
 
         logger.info("Player added " + lifeAmount + " lives. before : " + beforeLife + ", after : " + gameState.getLivesRemaining());
     }
