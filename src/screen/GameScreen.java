@@ -425,6 +425,7 @@ public class GameScreen extends Screen {
         for (Bullet bullet : this.bullets) {
             if (bullet.getSpeed() > 0) {
                 // Enemy bullet vs both players
+
                 for (int p = 0; p < GameState.NUM_PLAYERS; p++) {
                     Ship ship = this.ships[p];
                     if (ship != null && !ship.isDestroyed()
@@ -432,6 +433,7 @@ public class GameScreen extends Screen {
                         recyclable.add(bullet);
 
                         ship.destroy(); // explosion/respawn handled by Ship.update()
+                        SoundManager.playOnce("sound/explosion.wav");
                         state.decLife(p); // decrement shared/team lives by 1
 
                         this.logger.info("Hit on player " + (p + 1) + ", team lives now: " + state.getLivesRemaining());
@@ -447,7 +449,7 @@ public class GameScreen extends Screen {
 				for (EnemyShip enemyShip : this.enemyShipFormation)
 					if (!enemyShip.isDestroyed() && checkCollision(bullet, enemyShip)) {
                         recyclable.add(bullet);
-
+                        SoundManager.playOnce("sound/invaderkilled.wav");
                         if(enemyShip.getDamage(1) > 0){
                             continue;
                         }
