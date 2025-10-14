@@ -221,6 +221,9 @@ public class GameScreen extends Screen {
 
 				if (fire && ship.shoot(this.bullets)) {
 
+					// play shooting sound effect
+					SoundManager.playOnce("sound/shooting.wav");
+
 					state.incBulletsShot(p); // 2P mode: increments per-player bullet shots
 
 				}
