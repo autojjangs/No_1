@@ -7,6 +7,7 @@ import engine.DrawManager.SpriteType;
 import engine.GameState;
 import engine.ItemDB;
 import engine.ItemData;
+import engine.ItemEffect;
 import engine.ItemManager.ItemType;
 
 
