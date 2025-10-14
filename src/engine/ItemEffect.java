@@ -1,5 +1,7 @@
 package engine;
 
+import java.util.logging.Logger;
+
 public class ItemEffect {
     /**
      * Applies the coin item effect to the specified player.
