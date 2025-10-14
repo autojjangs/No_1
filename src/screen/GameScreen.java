@@ -271,14 +271,11 @@ public class GameScreen extends Screen {
 
 		// Aggregate UI (team score & team lives)
 		drawManager.drawScore(this, state.getScore());
+//        drawManager.drawLives(this, state.getLivesRemaining());
+        drawManager.drawLives(this, state.getLivesRemaining(),state.isCoop() );
 
 
-        if (state.isCoop()) {
-            drawManager.drawLives(this, state.getLives(0), state.getLives(1), true);
-        }
-        else {
-            drawManager.drawLives(this, state.getLives(0), 0, false);
-        }
+
 		drawManager.drawCoins(this,  state.getCoins()); // ADD THIS LINE - 2P mode: team total
 
         // 2P mode: setting per-player coin count

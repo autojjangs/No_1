@@ -274,40 +274,38 @@ public final class DrawManager {
 	 * Draws number of remaining lives on screen.
 	 *
 	 * @param screen    Screen to draw on.
-     * @param p1Lives   Player 1's remaining lives.
-     * @param p2Lives   Player 2's remaining lives.
-     * @param isCoop    Whether the game is in co-op mode.
+     * @param lives    Whether the game is in co-op mode.
 	 */
 
-    public void drawLives(final Screen screen, final int p1Lives, final int p2Lives, final boolean isCoop) {
+
+    public void drawLives(final Screen screen, final int lives, final boolean isCoop) {
         backBufferGraphics.setFont(fontRegular);
+        backBufferGraphics.setColor(Color.WHITE);
+
 
         Entity heart = new Entity(0, 0, 6*2, 5*2, Color.RED) {
-            {this.spriteType = SpriteType.Heart;}
+            { this.spriteType = SpriteType.Heart; }
         };
 
         if (isCoop) {
-            // 2P mode
-            backBufferGraphics.setColor(Color.CYAN); //Player 1
-            backBufferGraphics.drawString("P1: ", 20, 25);
-            backBufferGraphics.drawString(String.valueOf(p1Lives), 50, 25);
-            for (int i = 0; i < p1Lives; i++)
-                drawEntity(heart, 70 + 30 * i, 11);
+            backBufferGraphics.drawString(Integer.toString(lives), 20, 25);
+            for (int i = 0; i < lives; i++) {
+                if (i < 3) {
 
-            backBufferGraphics.setColor(Color.MAGENTA); //Player 2
-            backBufferGraphics.drawString("P2: ", 20, 52);
-            backBufferGraphics.drawString(String.valueOf(p2Lives), 50, 52);
+                    drawEntity(heart, 40 + 35 * i, 9);
+                } else {
 
-            for (int i = 0; i < p2Lives; i++)
-                drawEntity(heart, 70 + 30 * i, 37);
-
-        } else {
-            // 1P mode
-            backBufferGraphics.setColor(Color.WHITE);
-            backBufferGraphics.drawString(Integer.toString(p1Lives), 20, 40);
-            for (int i = 0; i < p1Lives; i++)
-                drawEntity(heart, 40 + 30 * i, 23);
+                    drawEntity(heart, 40 + 35 * (i - 3), 9 + 25);
+                }
+            }
         }
+        else {
+            backBufferGraphics.drawString(Integer.toString(lives), 20, 40);
+            for (int i = 0; i<lives; i++) {
+                drawEntity(heart, 40 + 35 * i, 23);
+            }
+        }
+
     }
 	/**
 	 * Draws current coin count on screen.

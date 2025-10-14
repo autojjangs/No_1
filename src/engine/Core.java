@@ -114,9 +114,9 @@ public final class Core {
 
               do {
                 // Extra life this level? Give it if team pool is below cap.
-                  int maxLivesCap = MAX_LIVES;
+                  int teamCap = gameState.isCoop() ? (MAX_LIVES * GameState.NUM_PLAYERS) : MAX_LIVES;
                   boolean bonusLife = gameState.getLevel() % EXTRA_LIFE_FRECUENCY == 0
-                          && gameState.getLivesRemaining() < maxLivesCap;
+                          && (gameState.getLivesRemaining() < teamCap || gameState.getLivesRemaining() < MAX_LIVES);
 
                 currentScreen = new GameScreen(gameState, gameSettings.get(gameState.getLevel() - 1), bonusLife, width, height, FPS, achievementManager);
 
