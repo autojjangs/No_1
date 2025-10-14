@@ -1,5 +1,6 @@
 package engine;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.ConsoleHandler;
@@ -29,15 +30,6 @@ public final class Core {
 	/** Lives per player (used to compute team pool in shared mode). */
 	private static final int MAX_LIVES = 3;
 	private static final int EXTRA_LIFE_FRECUENCY = 3;
-	private static final int NUM_LEVELS = 7;
-
-	private static final GameSettings SETTINGS_LEVEL_1 = new GameSettings(5, 4, 60, 2000);
-	private static final GameSettings SETTINGS_LEVEL_2 = new GameSettings(5, 5, 50, 2500);
-	private static final GameSettings SETTINGS_LEVEL_3 = new GameSettings(6, 5, 40, 1500);
-	private static final GameSettings SETTINGS_LEVEL_4 = new GameSettings(6, 6, 30, 1500);
-	private static final GameSettings SETTINGS_LEVEL_5 = new GameSettings(7, 6, 20, 1000);
-	private static final GameSettings SETTINGS_LEVEL_6 = new GameSettings(7, 7, 10, 1000);
-	private static final GameSettings SETTINGS_LEVEL_7 = new GameSettings(8, 7, 2, 500);
 
 	/** Frame to draw the screen on. */
 	private static Frame frame;
@@ -46,6 +38,7 @@ public final class Core {
 	private static final Logger LOGGER = Logger.getLogger(Core.class.getSimpleName());
 	private static Handler fileHandler;
 	private static ConsoleHandler consoleHandler;
+	private static int NUM_LEVELS; // Total number of levels
 
 	/**
 	 * Test implementation.
@@ -53,7 +46,7 @@ public final class Core {
 	 * @param args
 	 *             Program args, ignored.
 	 */
-	public static void main(final String[] args) {
+	public static void main(final String[] args) throws IOException {
 		try {
 			LOGGER.setUseParentHandlers(false);
 			fileHandler = new FileHandler("log");
@@ -72,40 +65,36 @@ public final class Core {
 		int width = frame.getWidth();
 		int height = frame.getHeight();
 
-		gameSettings = new ArrayList<GameSettings>();
-		gameSettings.add(SETTINGS_LEVEL_1);
-		gameSettings.add(SETTINGS_LEVEL_2);
-		gameSettings.add(SETTINGS_LEVEL_3);
-		gameSettings.add(SETTINGS_LEVEL_4);
-		gameSettings.add(SETTINGS_LEVEL_5);
-		gameSettings.add(SETTINGS_LEVEL_6);
-		gameSettings.add(SETTINGS_LEVEL_7);
+		gameSettings = GameSettings.getGameSettings();
+		NUM_LEVELS = gameSettings.size(); // Initialize total number of levels
 
 
-        // 2P mode: modified to null to allow for switch between 2 modes
-        GameState gameState = null;
-        boolean coopSelected = false; // false = 1P, true = 2P
+		// 2P mode: modified to null to allow for switch between 2 modes
+		GameState gameState = null;
+		boolean coopSelected = false; // false = 1P, true = 2P
 
-        int returnCode = 1;
-        do {
+		AchievementManager achievementManager = new AchievementManager(); // add 1P/2P achievement manager
+
+		int returnCode = 1;
+		do {
 
 			switch (returnCode) {
 				case 1:
 					currentScreen = new TitleScreen(width, height, FPS);
 					LOGGER.info("Starting " + WIDTH + "x" + HEIGHT + " title screen at " + FPS + " fps.");
 					returnCode = frame.setScreen(currentScreen);
-                    LOGGER.info("Closing title screen.");
+					LOGGER.info("Closing title screen.");
 
-                    // 2P mode: reading the mode which user chose from TitleScreen
-                    if (returnCode == 2 || returnCode == 3) {
-                        coopSelected = ((TitleScreen) currentScreen).isCoopSelected();
-                    }
+					// 2P mode: reading the mode which user chose from TitleScreen
+					if (returnCode == 2 || returnCode == 3) {
+						coopSelected = ((TitleScreen) currentScreen).isCoopSelected();
+					}
 
 					break;
 
 				case 2:
-                    // 2P mode: building gameState now using user choice
-                    gameState = new GameState(1, MAX_LIVES, coopSelected);
+					// 2P mode: building gameState now using user choice
+					gameState = new GameState(1, MAX_LIVES, coopSelected);
 
 					do {
 						// Extra life this level? Give it if team pool is below cap.
@@ -116,7 +105,7 @@ public final class Core {
 						currentScreen = new GameScreen(
 								gameState,
 								gameSettings.get(gameState.getLevel() - 1),
-								bonusLife, width, height, FPS);
+								bonusLife, width, height, FPS, achievementManager);
 
 						LOGGER.info("Starting " + WIDTH + "x" + HEIGHT + " game screen at " + FPS + " fps.");
 						frame.setScreen(currentScreen);
@@ -128,14 +117,14 @@ public final class Core {
 							gameState.nextLevel();
 						}
 
-					} while (gameState.teamAlive() && gameState.getLevel() <= NUM_LEVELS);
+					} while (gameState.teamAlive() && gameState.getLevel() <= gameSettings.size());
 
 					LOGGER.info("Starting " + WIDTH + "x" + HEIGHT + " score screen at " + FPS + " fps, with a score of "
 							+ gameState.getScore() + ", "
 							+ gameState.getLivesRemaining() + " lives remaining, "
 							+ gameState.getBulletsShot() + " bullets shot and "
 							+ gameState.getShipsDestroyed() + " ships destroyed.");
-					currentScreen = new ScoreScreen(width, height, FPS, gameState);
+					currentScreen = new ScoreScreen(width, height, FPS, gameState, achievementManager);
 					returnCode = frame.setScreen(currentScreen);
 					LOGGER.info("Closing score screen.");
 					break;
@@ -148,7 +137,7 @@ public final class Core {
 					returnCode = frame.setScreen(currentScreen);
 					LOGGER.info("Closing high score screen.");
 					break;
-          
+
 				default:
 					break;
 			}
@@ -170,7 +159,7 @@ public final class Core {
 	/**
 	 * Controls access to the logger.
 	 * sh
-	 * 
+	 *
 	 * @return Application logger.
 	 */
 	public static Logger getLogger() {
@@ -225,7 +214,18 @@ public final class Core {
 	 * @return A new cooldown with variance.
 	 */
 	public static Cooldown getVariableCooldown(final int milliseconds,
-			final int variance) {
+											   final int variance) {
 		return new Cooldown(milliseconds, variance);
 	}
+
+	/**
+	 * For Check Achievement release
+	 *
+	 * @return Total Number of level
+	 * 2025-10-02 add method
+	 */
+	public static int getNumLevels(){
+		return NUM_LEVELS;
+	}
+
 }

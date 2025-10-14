@@ -169,7 +169,6 @@ pip-log.txt
 ## Custom
 #############
 
-
 log*
 *.ttf
 .checkstyle
@@ -177,4 +176,4 @@ log*
 .vscode/
 *.iml
 *.class
-
+/out/

@@ -5,10 +5,7 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
-import engine.Cooldown;
-import engine.Core;
-import engine.GameState;
-import engine.Score;
+import engine.*;
 
 /**
  * Implements the score screen.
@@ -48,6 +45,8 @@ public class ScoreScreen extends Screen {
 	private int nameCharSelected;
 	/** Time between changes in user selection. */
 	private Cooldown selectionCooldown;
+	/** manages achievements.*/
+	private AchievementManager achievementManager;
 	/** Total coins earned in the game. */ // ADD THIS LINE
 	private int totalCoins; // ADD THIS LINE
 
@@ -62,9 +61,12 @@ public class ScoreScreen extends Screen {
 	 *                  Frames per second, frame rate at which the game is run.
 	 * @param gameState
 	 *                  Current game state.
+	 * @param achievementManager
+	 * 			            Achievement manager instance used to track and save player achievements.
+	 * 			  2025-10-03  add generator parameter and comment
 	 */
 	public ScoreScreen(final int width, final int height, final int fps,
-			final GameState gameState) {
+					   final GameState gameState, final AchievementManager achievementManager) {
 		super(width, height, fps);
 		this.gameState = gameState; // Added
 
@@ -78,6 +80,7 @@ public class ScoreScreen extends Screen {
 		this.nameCharSelected = 0;
 		this.selectionCooldown = Core.getCooldown(SELECTION_TIME);
 		this.selectionCooldown.reset();
+		this.achievementManager = achievementManager;
 
 		try {
 			this.highScores = Core.getFileManager().loadHighScores();
@@ -113,14 +116,18 @@ public class ScoreScreen extends Screen {
 				// Return to main menu.
 				this.returnCode = 1;
 				this.isRunning = false;
-				if (this.isNewRecord)
+				if (this.isNewRecord) {
 					saveScore();
+					saveAchievement(); //2025-10-03 call method for save achievement released
+				}
 			} else if (inputManager.isKeyDown(KeyEvent.VK_SPACE)) {
 				// Play again.
 				this.returnCode = 2;
 				this.isRunning = false;
-				if (this.isNewRecord)
+				if (this.isNewRecord) {
 					saveScore();
+					saveAchievement(); // 2025-10-03 call method for save achievement released
+				}
 			}
 
 			if (this.isNewRecord && this.selectionCooldown.checkFinished()) {
@@ -155,7 +162,8 @@ public class ScoreScreen extends Screen {
 	 * Saves the score as a high score.
 	 */
 	private void saveScore() {
-		highScores.add(new Score(new String(this.name), this.gameState));
+		String mode = (gameState != null && gameState.isCoop()) ? "2P" : "1P";
+		highScores.add(new Score(new String(this.name), this.gameState, mode)); // update mode
 		Collections.sort(highScores);
 		if (highScores.size() > MAX_HIGH_SCORE_NUM)
 			highScores.remove(highScores.size() - 1);
@@ -164,6 +172,19 @@ public class ScoreScreen extends Screen {
 			Core.getFileManager().saveHighScores(highScores);
 		} catch (IOException e) {
 			logger.warning("Couldn't load high scores!");
+		}
+	}
+
+	/**
+	 * Save the achievement released.
+	 * 2025-10-03
+	 * add new method
+	 */
+	private void saveAchievement() {
+		try {
+			this.achievementManager.saveToFile(new String(this.name));
+		} catch (IOException e) {
+			logger.warning("Couldn't save achievements!");
 		}
 	}
 
@@ -179,43 +200,43 @@ public class ScoreScreen extends Screen {
 				? (float) this.shipsDestroyed / this.bulletsShot
 				: 0f;
 
-        // 2P mode: edit to include co-op + individual score/coins
-        if (this.gameState != null && this.gameState.isCoop()) {
-            // team summary
-            drawManager.drawResults(this,
-                    this.gameState.getScore(), // team score
-                    this.gameState.getLivesRemaining(),
-                    this.gameState.getShipsDestroyed(),
-                    0f, // leaving out team accuracy
-                    this.isNewRecord,
+		// 2P mode: edit to include co-op + individual score/coins
+		if (this.gameState != null && this.gameState.isCoop()) {
+			// team summary
+			drawManager.drawResults(this,
+					this.gameState.getScore(), // team score
+					this.gameState.getLivesRemaining(),
+					this.gameState.getShipsDestroyed(),
+					0f, // leaving out team accuracy
+					this.isNewRecord,
 					false // Draw accuracy for 2P mode
-            );
+			);
 
-            // show per-player lines when in 2P mode
+			// show per-player lines when in 2P mode
 
-            float p1Acc = this.gameState.getBulletsShot(0) > 0 ? (float) this.gameState.getShipsDestroyed(0) / this.gameState.getBulletsShot(0) : 0f;
-            float p2Acc = this.gameState.getBulletsShot(1) > 0 ? (float) this.gameState.getShipsDestroyed(1) / this.gameState.getBulletsShot(1) : 0f;
+			float p1Acc = this.gameState.getBulletsShot(0) > 0 ? (float) this.gameState.getShipsDestroyed(0) / this.gameState.getBulletsShot(0) : 0f;
+			float p2Acc = this.gameState.getBulletsShot(1) > 0 ? (float) this.gameState.getShipsDestroyed(1) / this.gameState.getBulletsShot(1) : 0f;
 
-            String p1 = String.format("P1  %04d  |  acc %.2f%%", this.gameState.getScore(0), p1Acc * 100f);
-            String p2 = String.format("P2  %04d  |  acc %.2f%%", this.gameState.getScore(1), p2Acc * 100f);
+			String p1 = String.format("P1  %04d  |  acc %.2f%%", this.gameState.getScore(0), p1Acc * 100f);
+			String p2 = String.format("P2  %04d  |  acc %.2f%%", this.gameState.getScore(1), p2Acc * 100f);
 
-            int y;  // tweak these if you want
+			int y;  // tweak these if you want
 			if (this.isNewRecord) {
 				y = this.getHeight() / 2 - 5; // Position if new record is True
 			} else {
 				y = this.getHeight() / 2 + 60; // Position if new record is False
 			}
-            drawManager.drawCenteredRegularString(this, p1, y);
-            drawManager.drawCenteredRegularString(this, p2, y + 40); // Increase spacing
+			drawManager.drawCenteredRegularString(this, p1, y);
+			drawManager.drawCenteredRegularString(this, p2, y + 40); // Increase spacing
 
-        } else {
-            // 1P legacy summary with accuracy
-            float acc = (this.bulletsShot > 0) ? (float) this.shipsDestroyed / this.bulletsShot : 0f;
+		} else {
+			// 1P legacy summary with accuracy
+			float acc = (this.bulletsShot > 0) ? (float) this.shipsDestroyed / this.bulletsShot : 0f;
 
-            drawManager.drawResults(this, this.score, this.livesRemaining, this.shipsDestroyed, acc, this.isNewRecord, true); // Draw accuracy for 1P mode
-        }
+			drawManager.drawResults(this, this.score, this.livesRemaining, this.shipsDestroyed, acc, this.isNewRecord, true); // Draw accuracy for 1P mode
+		}
 
-        if (this.isNewRecord)
+		if (this.isNewRecord)
 			drawManager.drawNameInput(this, this.name, this.nameCharSelected);
 
 		drawManager.completeDrawing(this);
