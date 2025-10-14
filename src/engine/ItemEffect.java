@@ -1,8 +1,4 @@
-package entity;
-
-import java.util.logging.Logger;
-import engine.Core;
-import engine.GameState;
+package engine;
 
 public class ItemEffect {
     public static void applyCoinItem(final GameState gameState, final int playerId, int coinAmount) {
