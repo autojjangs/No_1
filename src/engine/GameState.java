@@ -32,9 +32,10 @@ public class GameState {
 
 	// 2P mode: co-op aware constructor used by the updated Core loop - livesEach
 	// applies per-player; co-op uses shared pool.
-	public GameState(final int level, final int livesEach, final boolean coop) {
+	public GameState(final int level, final int livesEach, final boolean coop, final int coin) {
 		this.level = level;
 		this.coop = coop;
+        this.coins[0] = coin;
 
 		if (coop) {
 			this.sharedLives = true;
@@ -118,7 +119,6 @@ public class GameState {
 		return t;
 
 	}
-
 
 	/* ----- Per-player getters (needed by Score.java) ----- */
 	public int getScore(final int p) {
