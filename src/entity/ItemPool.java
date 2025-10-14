@@ -1,6 +1,7 @@
 package entity;
 
 import engine.DrawManager;
+import engine.ItemManager.ItemType;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -25,6 +26,9 @@ public final class ItemPool {
 	 * isn't.
      * Caller should call item.init(...) to set position/type/sprite after obtaining.
 	 *
+     * @param type
+     *          type of item created
+     *
 	 * @param positionX
 	 *            Requested position of the item in the X axis.
 	 * @param positionY
@@ -34,20 +38,23 @@ public final class ItemPool {
 	 *            on direction - positive is down.
 	 * @return Requested item.
 	 */
-    public static Item getItem(final int positionX,
+    public static Item getItem( final ItemType type, final int positionX,
                                final int positionY, final int speed) {
+        // create new item
         Item item;
         if (!pool.isEmpty()) {
             item = pool.iterator().next();
             pool.remove(item);
+
+            item.reset(type);
             item.setPositionX(positionX - item.getWidth() / 2);
             item.setPositionY(positionY);
             item.setItemSpeed(speed);
-            item.setSprite();
+
         } else {
-            item = new Item(positionX, positionY, 2, 1, DrawManager.SpriteType.Ship, Item.ItemType.ITEM_1, 1, 1, 0.5);
-            item.setPositionX(positionX - item.getWidth() / 2);
+            item = new Item(type, type.spriteType, positionX-3, positionY, 2);
         }
+
         return item;
     }
 
