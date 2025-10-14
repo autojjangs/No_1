@@ -42,7 +42,7 @@ public final class FileManager {
      * Max number of high scores.
      */
     private static final int MAX_SCORES = 7;
-  
+
     // coins.csv file to save changes about coin content
     private static final String COIN_FILENAME = "coins.csv";
 
@@ -160,7 +160,8 @@ public final class FileManager {
             while ((input = reader.readLine()) != null) {
                 String[] pair = input.split(",");
                 String name = pair[0], score = pair[1];
-                Score highScore = new Score(name, Integer.parseInt(score));
+                String mode = pair[2];
+                Score highScore = new Score(name, Integer.parseInt(score), mode);
                 highScores.add(highScore);
             }
         } finally {
@@ -201,12 +202,26 @@ public final class FileManager {
 
             logger.info("Loading user high scores.");
             // except first line
-            bufferedReader.readLine();
+            //bufferedReader.readLine();
+
+            String line = bufferedReader.readLine();
+            if (line != null && !line.contains(",")) {
+                // skip header
+                // do nothing;
+            } else if (line != null) {
+                // First line is a valid score, process it
+                String[] pair = line.split(",");
+                String name = pair[0];
+                String score = pair[1];
+                String mode = pair[2];
+                highScores.add(new Score(name, Integer.parseInt(score), mode));
+            }
             String input;
             while ((input = bufferedReader.readLine()) != null) {
                 String[] pair = input.split(",");
                 String name = pair[0], score = pair[1];
-                Score highScore = new Score(name, Integer.parseInt(score));
+                String mode = pair[2];
+                Score highScore = new Score(name, Integer.parseInt(score), mode);
                 highScores.add(highScore);
             }
         } catch (FileNotFoundException e) {
@@ -257,7 +272,7 @@ public final class FileManager {
 
             // Before this PR, we can save only 7 scores, but now we can more.
             for (Score score : highScores) {
-                bufferedWriter.write(score.getName() + "," + score.getScore());
+                bufferedWriter.write(score.getName() + "," + score.getScore() + "," + score.getMode()); // add score.getMode()
                 bufferedWriter.newLine();
             }
 
@@ -267,7 +282,7 @@ public final class FileManager {
         }
     }
 
-        /**
+    /**
      * Loads the coin count from the coins.csv file.
      *
      * @return The saved coin count, or 0 if the file is not found or empty.
