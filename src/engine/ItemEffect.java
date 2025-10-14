@@ -43,14 +43,18 @@ public class ItemEffect {
         // if 2p mode
         if (gameState.isCoop()) {
             if (gameState.getTeamLives() + lifeAmount > gameState.getTeamLivesCap()) {
+                // if adding life exceeds max, convert to score instead
                 gameState.addScore(getPlayerIndex(playerId), lifeAmount * 20);
             } else {
                 gameState.addLife(getPlayerIndex(playerId), lifeAmount);
             }
-        } else {
-            if (gameState.getPlayerLives(playerId) + lifeAmount > 3) {
+        } else { // 1p mode
+            if (gameState.get1PlayerLives() + lifeAmount > 3) {
+                // if adding life exceeds max, convert to score instead
+
                 gameState.addScore(getPlayerIndex(playerId), lifeAmount * 20);
             } else {
+                System.out.println(gameState.get1PlayerLives());
                 gameState.addLife(getPlayerIndex(playerId), lifeAmount);
             }
         }

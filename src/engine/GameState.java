@@ -222,9 +222,8 @@ public class GameState {
 	}
 
 	// for ItemEffect.java
-	public int getPlayerLives(int p) {
-		if (sharedLives) return teamLives;
-		if (p >= 0 && p < NUM_PLAYERS) return lives[p];
-		return 0;
+	public int get1PlayerLives() {
+
+		return lives[0];
 	}
 }
