@@ -449,7 +449,6 @@ public final class DrawManager {
         // Return Code List
         // 1. Play, 2. In-game, 3. High Scores, 4. Settings, 5. mode selection, 0. exit
         String[] items = {"Play", "Achievements", "Settings", "Exit"};
-        final int[] returnCodes = {1, 3, 4, 0};
 
         int baseY = screen.getHeight() / 3 * 2; // same option choice, different formatting
         for (int i = 0; i < items.length; i++) {
@@ -457,37 +456,6 @@ public final class DrawManager {
             backBufferGraphics.setColor(highlight ? Color.GREEN : Color.WHITE);
             drawCenteredRegularString(screen, items[i], (int) (baseY + fontRegularMetrics.getHeight() * 1.5 * i));
         }
-
-		/** String playString = "1-Player Mode";
-		String play2String = "2-Player Mode";
-		String highScoresString = "High scores";
-		String exitString = "exit";
-		int spacing = fontRegularMetrics.getHeight() + 10;
-
-		if (option == 2)
-			backBufferGraphics.setColor(Color.GREEN);
-		else
-			backBufferGraphics.setColor(Color.WHITE);
-		drawCenteredRegularString(screen, playString,
-				screen.getHeight() / 3 * 2);
-		if (option == 1)
-			backBufferGraphics.setColor(Color.GREEN);
-		else
-			backBufferGraphics.setColor(Color.WHITE);
-		drawCenteredRegularString(screen, play2String,
-				screen.getHeight() / 3 * 2 + spacing);
-		if (option == 3)
-			backBufferGraphics.setColor(Color.GREEN);
-		else
-			backBufferGraphics.setColor(Color.WHITE);
-		drawCenteredRegularString(screen, highScoresString, screen.getHeight()
-				/ 3 * 2 + spacing * 2);
-		if (option == 0)
-			backBufferGraphics.setColor(Color.GREEN);
-		else
-			backBufferGraphics.setColor(Color.WHITE);
-		drawCenteredRegularString(screen, exitString, screen.getHeight() / 3
-				* 2 + spacing * 3); */
 	}
 
     /**
@@ -698,6 +666,9 @@ public final class DrawManager {
         backBufferGraphics.setColor(Color.GRAY);
         drawCenteredRegularString(screen, instructionsString,
                 screen.getHeight() / 5);
+
+        // draw back button at top-left
+        drawBackButton(screen, false);
     }
 
     /**
@@ -781,8 +752,8 @@ public final class DrawManager {
      * @param selectedIndex
      *                  Currently selected option (0 = 1P, 1 = 2P, 2 = Back).
      */
-
-    public void drawPlayMenu(final Screen screen, final int selectedIndex) {
+    // Modify to accept hoverIndex for highlighting
+    public void drawPlayMenu(final Screen screen, final Integer hoverOption, final int selectedIndex) {
         String[] items = {"1 Player", "2 Players"};
         // Removed center back button
 
@@ -791,7 +762,8 @@ public final class DrawManager {
 
         int baseY = screen.getHeight() / 2 - 20; // Modified the position with the choice reduced to two
         for (int i = 0; i < items.length; i++) {
-            backBufferGraphics.setColor(i == selectedIndex ? Color.GREEN : Color.WHITE);
+            boolean highlight = (hoverOption != null) ? (i == hoverOption) : (i == selectedIndex);
+            backBufferGraphics.setColor(highlight ? Color.GREEN : Color.WHITE);
             drawCenteredRegularString(screen, items[i],
                     baseY + fontRegularMetrics.getHeight() * 3 * i);
         }
@@ -846,6 +818,24 @@ public final class DrawManager {
         int h = ascent + descent + 25;
 
         return new Rectangle(margin, y, w, h);
+    }
+
+    public Rectangle[] getPlayMenuHitboxes(final Screen screen) {
+        if (fontRegularMetrics == null) {
+            backBufferGraphics.setFont(fontRegular);
+            fontRegularMetrics = backBufferGraphics.getFontMetrics(fontRegular);
+        }
+
+        final String[] items = {"1 Player", "2 Players"};
+        int baseY = screen.getHeight() / 2 - 20;
+        Rectangle[] boxes = new Rectangle[items.length];
+
+        for (int i = 0; i < items.length; i++) {
+            int baselineY = baseY + fontRegularMetrics.getHeight() * 3 * i;
+            boxes[i] = centeredStringBounds(screen, items[i], baselineY);
+        }
+
+        return boxes;
     }
 
     /*
