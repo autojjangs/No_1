@@ -71,7 +71,6 @@ public class GameScreen extends Screen {
     private int score;
     private int lives;
     private int bulletsShot;
-    private int shipsDestroyed;
     private Ship ship;
 
     /** checks if player took damage
@@ -115,7 +114,6 @@ public class GameScreen extends Screen {
 		if (this.bonusLife)
 			this.lives++;
 		this.bulletsShot = gameState.getBulletsShot();
-		this.shipsDestroyed = gameState.getShipsDestroyed();
 
 		// for check Achievement 2025-10-02 add
 		this.achievementManager = achievementManager;
@@ -285,7 +283,7 @@ public class GameScreen extends Screen {
 				achievementManager.unlock("Clear");
 			}
 			//Perfect Shooter
-			if(this.bulletsShot > 0 && this.bulletsShot == this.shipsDestroyed){
+			if(this.bulletsShot > 0 && this.bulletsShot == state.getShipsDestroyed()){
 				achievementManager.unlock("Perfect Shooter");
 			}
 		}
@@ -456,6 +454,11 @@ public class GameScreen extends Screen {
 
 						this.enemyShipFormation.destroy(enemyShip);
 						this.logger.info("Hit on enemy ship.");
+
+                        //check of 'First Blood' achievement release
+                        if(state.getShipsDestroyed() == 1) {
+                            achievementManager.unlock("First Blood");
+                        }
 
 						recyclable.add(bullet);
 						break;

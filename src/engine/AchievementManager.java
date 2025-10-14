@@ -25,6 +25,7 @@ public class AchievementManager {
         list.add(new Achievement("First Blood", "Defeat your first enemy."));
         list.add(new Achievement("Survivor", "Clear a round without losing a life."));
         list.add(new Achievement("Clear", "Clear 5 levels."));
+
         return list;
     }
 

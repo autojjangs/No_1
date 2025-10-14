@@ -191,13 +191,11 @@ public final class FileManager {
      * Loads high scores from file, and returns a sorted list of pairs score -
      * value.
      *
-     * @param player
-     *             case of 1p/2p; true for 1p; false for 2p;
      * @return Sorted list of scores - players.
      * @throws IOException
      *             In case of loading problems.
      */
-    public List<Score> loadHighScores(boolean player) throws IOException {
+    public List<Score> loadHighScores() throws IOException {
         List<Score> highScores = new ArrayList<Score>();
         InputStream inputStream = null;
         BufferedReader bufferedReader = null;
@@ -257,8 +255,6 @@ public final class FileManager {
      * @param highScores
      *            High scores to save.
      *
-     * @param player
-     *            case of 1p/2p; true for 1p; false for 2p;
      * @throws IOException
      *             In case of loading problems.
      */
@@ -286,7 +282,6 @@ public final class FileManager {
                     outputStream, Charset.forName("UTF-8")));
 
             logger.info("Saving user high scores.");
-            bufferedWriter.write("player, score");
             bufferedWriter.newLine();
 
             // Before this PR, we can save only 7 scores, but now we can more.
@@ -476,6 +471,7 @@ public final class FileManager {
                     flag = true;
                     logger.info("Achievement has been updated");
                     for (int i = 1; i < playRecord.length; i++) {
+                        logger.info("HEre! " + unlockedAchievement.get(i).toString());
                         if (playRecord[i].equals("0") && unlockedAchievement.get(i))
                             playRecord[i] = "1";
                     }
