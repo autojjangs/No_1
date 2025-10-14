@@ -1,7 +1,9 @@
 package entity;
 
 import java.awt.Color;
+import java.util.logging.Logger;
 
+import engine.Core;
 import engine.DrawManager.SpriteType;
 
 import engine.GameState;
@@ -16,10 +18,13 @@ import engine.ItemManager.ItemType;
  */
 public class Item extends Entity {
 
-    // Type of Item
+    /** Logger instance for logging purposes. */
+    private Logger logger;
+
+    /** Type of Item. */
     private ItemType type;
 
-    // Item Movement Speed
+    /** Item Movement Speed. */
     private int itemSpeed;
 
     /**
@@ -27,9 +32,6 @@ public class Item extends Entity {
      *
      * @param itemType
      *            Type of Item being spawned
-     *
-     * @param spriteType
-     *            Sprite of itemType
      *
      * @param positionX
      *            Initial position of the Item in the X axis.
@@ -40,21 +42,24 @@ public class Item extends Entity {
      *            direction - positive is down.
      */
 
-    public Item(ItemType itemType, SpriteType spriteType,
+    public Item(ItemType itemType,
                 final int positionX, final int positionY, final int speed) {
 
         super(positionX, positionY, 3 * 2, 5 * 2, Color.WHITE);
 
+        logger = Core.getLogger();
+
         this.type = itemType;
-        this.spriteType = spriteType;
         this.itemSpeed = speed;
 
         setSprite();
 
     }
 
+    /**
+     * Setter for the sprite of the Item using data from ItemDB.
+     */
     public final void setSprite() {
-        // Load sprite info from CSV instead of enum
         ItemDB itemDB = new ItemDB();
         ItemData data = itemDB.getItemData(type.name());
 
@@ -63,12 +68,12 @@ public class Item extends Entity {
                 this.spriteType = SpriteType.valueOf(data.getSpriteType());
             } catch (IllegalArgumentException e) {
                 this.spriteType = SpriteType.ItemScore; // fallback
+                this.logger.warning("[Item]: Unknown sprite type in ItemDB: " + data.getSpriteType() + ", using default.");
             }
         } else {
             this.spriteType = SpriteType.ItemScore;
         }
     }
-
 
     /**
      * Updates the Item's position.
@@ -77,28 +82,33 @@ public class Item extends Entity {
         this.positionY += this.itemSpeed;
     }
 
-    /** Apply the Item's effect. */
+    /**
+     * Applies the effect of the Item to the player.
+     *
+     * @param gameState
+     *            current game state instance.
+     * @param playerId
+     *            ID of the player to apply the effect to.
+     */
     public void applyEffect(final GameState gameState, final int playerId) {
         ItemDB itemDB = new ItemDB();
         ItemData data = itemDB.getItemData(type.name());
 
         if (data == null) return;
 
-        String ItemType = data.getType();
         int value = data.getEffectValue();
         int duration = data.getEffectDuration();
-        switch (ItemType) {
-            case "COIN":
+        switch (this.type) {
+            case COIN:
                 ItemEffect.applyCoinItem(gameState, playerId, value);
                 break;
-            case "HEAL":
+            case HEAL:
                 ItemEffect.applyHealItem(gameState, playerId, value);
                 break;
-            case "SCORE":
+            case SCORE:
                 ItemEffect.applyScoreItem(gameState, playerId, value);
                 break;
             default:
-
                 break;
         }
     };
@@ -113,10 +123,22 @@ public class Item extends Entity {
         this.itemSpeed = itemSpeed;
     }
 
+    /**
+     * Getter for Item Movement Speed.
+     *
+     * @return speed of the Item.
+     */
     public final int getItemSpeed() {
         return this.itemSpeed;
     }
 
+    /**
+     * Reset the Item.
+     * Set the item type and sprite to newType, and the speed to 0.
+     *
+     * @param newType
+     *            new type of the Item.
+     */
     public final void reset(ItemType newType) {
         this.type = newType;
         this.itemSpeed = 0;
@@ -126,7 +148,7 @@ public class Item extends Entity {
     /**
      * Getter for the speed of the Item.
      *
-     * @return Speed of the Item.
+     * @return type of the Item.
      */
     public final ItemType getType() {
         return this.type;
