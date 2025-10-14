@@ -33,12 +33,12 @@ public class HighScoreScreen extends Screen {
 
         this.returnCode = 1;
 
-		try {
-			this.highScores = Core.getFileManager().loadHighScores(true);
-		} catch (NumberFormatException | IOException e) {
-			logger.warning("Couldn't load high scores!");
-		}
-	}
+        try {
+            this.highScores = Core.getFileManager().loadHighScores();
+        } catch (NumberFormatException | IOException e) {
+            logger.warning("Couldn't load high scores!");
+        }
+    }
 
     /**
      * Starts the action.
