@@ -30,15 +30,6 @@ public final class Core {
 	/** Lives per player (used to compute team pool in shared mode). */
 	private static final int MAX_LIVES = 3;
 	private static final int EXTRA_LIFE_FRECUENCY = 3;
-	private static final int NUM_LEVELS = 7;
-
-	private static final GameSettings SETTINGS_LEVEL_1 = new GameSettings(5, 4, 60, 2000);
-	private static final GameSettings SETTINGS_LEVEL_2 = new GameSettings(5, 5, 50, 2500);
-	private static final GameSettings SETTINGS_LEVEL_3 = new GameSettings(6, 5, 40, 1500);
-	private static final GameSettings SETTINGS_LEVEL_4 = new GameSettings(6, 6, 30, 1500);
-	private static final GameSettings SETTINGS_LEVEL_5 = new GameSettings(7, 6, 20, 1000);
-	private static final GameSettings SETTINGS_LEVEL_6 = new GameSettings(7, 7, 10, 1000);
-	private static final GameSettings SETTINGS_LEVEL_7 = new GameSettings(8, 7, 2, 500);
 
 	/** Frame to draw the screen on. */
 	private static Frame frame;
@@ -47,6 +38,7 @@ public final class Core {
 	private static final Logger LOGGER = Logger.getLogger(Core.class.getSimpleName());
 	private static Handler fileHandler;
 	private static ConsoleHandler consoleHandler;
+	private static int NUM_LEVELS; // Total number of levels
 
 	/**
 	 * Test implementation.
@@ -149,8 +141,7 @@ public final class Core {
             case 3:
               // High scores.
               currentScreen = new HighScoreScreen(width, height, FPS);
-              LOGGER.info("Starting " + WIDTH + "x" + HEIGHT
-                  + " high score screen at " + FPS + " fps.");
+              LOGGER.info("Starting " + WIDTH + "x" + HEIGHT + " high score screen at " + FPS + " fps.");
               returnCode = frame.setScreen(currentScreen);
               LOGGER.info("Closing high score screen.");
               break;
@@ -175,7 +166,7 @@ public final class Core {
 	/**
 	 * Controls access to the logger.
 	 * sh
-	 * 
+	 *
 	 * @return Application logger.
 	 */
 	public static Logger getLogger() {
