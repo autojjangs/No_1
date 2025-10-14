@@ -412,8 +412,7 @@ public final class DrawManager {
 		String scoreString = String.format("score %04d", score);
 		String livesRemainingString = "lives remaining " + livesRemaining;
 		String shipsDestroyedString = "enemies destroyed " + shipsDestroyed;
-		String accuracyString = String
-				.format("accuracy %.2f%%", accuracy * 100);
+		String accuracyString = String.format("accuracy %.2f%%", Float.isNaN(accuracy) ? 0.0 : accuracy * 100);
 
 		int height = isNewRecord ? 4 : 2;
 
