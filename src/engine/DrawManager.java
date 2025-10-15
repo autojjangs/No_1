@@ -909,4 +909,21 @@ public final class DrawManager {
 		backBufferGraphics.drawString(volumeText, bar_endWidth+10, indicatorY);
 
 	}
+
+	public void drawSettingLayout(final Screen screen, final String[] menuItems, final int selectedmenuItems) {
+		int splitPointX = screen.getWidth() *3/10;
+		backBufferGraphics.setFont(fontRegular);
+		int menuY = screen.getHeight()*3/10;
+		for (int i = 0; i < menuItems.length; i++) {
+			if (i == selectedmenuItems) {
+				backBufferGraphics.setColor(Color.GREEN);
+			}
+			else {
+				backBufferGraphics.setColor(Color.WHITE);
+			}
+			backBufferGraphics.drawString(menuItems[i], 30, menuY+(i*60));
+			backBufferGraphics.setColor(Color.GREEN);
+		}
+		backBufferGraphics.drawLine(splitPointX, screen.getHeight()/4, splitPointX,(menuY+menuItems.length*60));
+	}
 }
