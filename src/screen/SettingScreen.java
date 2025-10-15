@@ -36,20 +36,23 @@ public class SettingScreen extends Screen {
         this.selectMenuItem = volumeMenu;
         this.volumelevel = 50;
     }
-
+    public final int run(){
+        super.run();
+        return this.returnCode;
+    }
     /**
      * Updates the elements on screen and checks for events.
      */
     protected final void update() {
         super.update();
 
-        if(inputManager.isKeyDown(KeyEvent.VK_UP)&&this.inputDelay.checkFinished()&&this.selectMenuItem>0) {
+        if(inputManager.isKeyDown(KeyEvent.VK_UP)&&this.inputCooldown.checkFinished()&&this.selectMenuItem>0) {
             this.selectMenuItem--;
-            this.inputDelay.reset();
+            this.inputCooldown.reset();
         }
-        if(inputManager.isKeyDown(KeyEvent.VK_DOWN)&&this.inputDelay.checkFinished()&&this.selectMenuItem<menuItem.length-1) {
+        if(inputManager.isKeyDown(KeyEvent.VK_DOWN)&&this.inputCooldown.checkFinished()&&this.selectMenuItem<menuItem.length-1) {
             this.selectMenuItem++;
-            this.inputDelay.reset();
+            this.inputCooldown.reset();
         }
         if(this.selectMenuItem == volumeMenu) {
              if(this.inputCooldown.checkFinished()){
@@ -63,8 +66,9 @@ public class SettingScreen extends Screen {
                 }
         }
         }
-        if (inputManager.isKeyDown(java.awt.event.KeyEvent.VK_SPACE) && this.inputDelay.checkFinished()) {
+        if (inputManager.isKeyDown(KeyEvent.VK_ESCAPE) && this.inputCooldown.checkFinished()) {
             this.isRunning = false;
+            this.inputCooldown.reset();
         }
         draw();
     }
