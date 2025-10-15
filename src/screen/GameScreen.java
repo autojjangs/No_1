@@ -31,19 +31,12 @@ import engine.ItemManager;
  */
 public class GameScreen extends Screen {
 
-	/** Milliseconds until the screen accepts user input. */
 	private static final int INPUT_DELAY = 6000;
-	/** Bonus score for each life remaining at the end of the level. */
 	private static final int LIFE_SCORE = 100;
-	/** Minimum time between bonus ship's appearances. */
 	private static final int BONUS_SHIP_INTERVAL = 20000;
-	/** Maximum variance in the time between bonus ship's appearances. */
 	private static final int BONUS_SHIP_VARIANCE = 10000;
-	/** Time until bonus ship explosion disappears. */
 	private static final int BONUS_SHIP_EXPLOSION = 500;
-	/** Time from finishing the level to screen change. */
 	private static final int SCREEN_CHANGE_INTERVAL = 1500;
-	/** Height of the interface separation line. */
 	private static final int SEPARATION_LINE_HEIGHT = 40;
 
 	/** For Check Achievement
@@ -57,20 +50,13 @@ public class GameScreen extends Screen {
 	private EnemyShipFormation enemyShipFormation;
 	private Ship[] ships = new Ship[GameState.NUM_PLAYERS];
 	private EnemyShip enemyShipSpecial;
-	/** Minimum time between bonus ship appearances. */
 	private Cooldown enemyShipSpecialCooldown;
-	/** Time until bonus ship explosion disappears. */
 	private Cooldown enemyShipSpecialExplosionCooldown;
-	/** Time from finishing the level to screen change. */
 	private Cooldown screenFinishedCooldown;
-	/** Set of all bullets fired by on screen ships. */
 	private Set<Bullet> bullets;
-    /** Set of all items spawned. */
-    private Set<Item> items;
+	private Set<Item> items;
 	private long gameStartTime;
-	/** Checks if the level is finished. */
 	private boolean levelFinished;
-	/** Checks if a bonus life is received. */
 	private boolean bonusLife;
 	private boolean isPaused;
 	private Cooldown pauseCooldown;
@@ -362,7 +348,6 @@ public class GameScreen extends Screen {
 
 		drawManager.drawHorizontalLine(this, SEPARATION_LINE_HEIGHT - 1);
 
-		// Countdown to game start.
 		if (!this.inputDelay.checkFinished()) {
 			int countdown = (int) ((INPUT_DELAY - (System.currentTimeMillis() - this.gameStartTime)) / 1000);
 			drawManager.drawCountDown(this, this.state.getLevel(), countdown, this.bonusLife);
@@ -376,9 +361,6 @@ public class GameScreen extends Screen {
 		drawManager.completeDrawing(this);
 	}
 
-	/**
-	 * Cleans bullets that go off screen.
-	 */
 	private void cleanBullets() {
 		Set<Bullet> recyclable = new HashSet<Bullet>();
 		for (Bullet bullet : this.bullets) {
