@@ -12,13 +12,13 @@ public class SettingScreen extends Screen {
     private int selectMenuItem;
     private Cooldown inputCooldown;
     private int volumelevel;
-    private int selectedSection = 0; // 0: 왼쪽 메뉴, 1: 오른쪽 키 설정 영역
+    private int selectedSection = 0;
     private int selectedKeyIndex = 0;
     private String[] keyItems = {"MOVE LEFT", "MOVE RIGHT", "ATTACK"};
     private boolean[] keySelected = {false, false, false};
-    private boolean waitingForNewKey = false;      // 현재 키 변경 대기 상태인지 여부
-    private int[] player1Keys; // 초기화 값 제거
-    private int[] player2Keys; // 2P 키 배열 필드 추가
+    private boolean waitingForNewKey = false;
+    private int[] player1Keys;
+    private int[] player2Keys;
 
     /**
      * Constructor, establishes the properties of the screen.
@@ -86,7 +86,7 @@ public class SettingScreen extends Screen {
          * Change key settings
          */
          else if (this.selectMenuItem == firstplayerMenu || this.selectMenuItem == secondplayerMenu) {
-             if (inputManager.isKeyDown(KeyEvent.VK_RIGHT) && this.inputCooldown.checkFinished()) {
+             if (inputManager.isKeyDown(KeyEvent.VK_RIGHT) && this.inputCooldown.checkFinished() && waitingForNewKey == false) {
                  this.selectedSection= 1;
                  this.selectedKeyIndex = 0;
                  this.inputCooldown.reset();
