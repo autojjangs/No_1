@@ -72,6 +72,7 @@ public class GameScreen extends Screen {
     private int score;
     private int lives;
     private int bulletsShot;
+    private int shipsDestroyed;
     private Ship ship;
 
     /** checks if player took damage
@@ -467,36 +468,10 @@ public class GameScreen extends Screen {
                         break;
                     }
 
-						int points = enemyShip.getPointValue();
-						state.addCoins(pIdx, enemyShip.getCoinValue()); // 2P mode: modified to per-player coins
-
-						state.addScore(pIdx, points); // 2P mode: modified to add to P1 score for now
-						state.incShipsDestroyed(pIdx);
-
-						// obtain drop from ItemManager (may return null)
-						Item drop = engine.ItemManager.getInstance().obtainDrop(enemyShip);
-						if (drop != null) {
-							this.items.add(drop);
-							this.logger.info("Spawned " + drop.getType() + " at " + drop.getPositionX() + "," + drop.getPositionY());
-						}
-
-						this.enemyShipFormation.destroy(enemyShip);
-						this.logger.info("Hit on enemy ship.");
-
-                        //check of 'First Blood' achievement release
-                        if(state.getShipsDestroyed() == 1) {
-                            achievementManager.unlock("First Blood");
-                        }
-
-						recyclable.add(bullet);
-						break;
-					}
-				if (this.enemyShipSpecial != null
-						&& !this.enemyShipSpecial.isDestroyed()
-						&& checkCollision(bullet, this.enemyShipSpecial)) {
-					int points = this.enemyShipSpecial.getPointValue();
-
-					state.addCoins(pIdx, this.enemyShipSpecial.getCoinValue()); // 2P mode: modified to per-player coins
+                if (this.enemyShipSpecial != null
+                        && !this.enemyShipSpecial.isDestroyed()
+                        && checkCollision(bullet, this.enemyShipSpecial)) {
+                    int points = this.enemyShipSpecial.getPointValue();
 
                     state.addCoins(pIdx, this.enemyShipSpecial.getCoinValue()); // 2P mode: modified to per-player coins
 
