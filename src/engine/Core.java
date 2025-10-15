@@ -246,7 +246,7 @@ public final class Core {
 		return NUM_LEVELS;
 	}
 
-	private static int volumeLevel = 50; // 앱 기본값
+	private static int volumeLevel = 50;
 
 	public static int getVolumeLevel() {
 		return volumeLevel;
