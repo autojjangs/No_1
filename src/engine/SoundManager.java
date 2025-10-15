@@ -2,6 +2,7 @@ package engine;
 
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.Clip;
 import javax.sound.sampled.DataLine;
 import javax.sound.sampled.FloatControl;
@@ -63,6 +64,57 @@ public final class  SoundManager {
                         } catch (Exception ignored) {}
                     }
                 });
+            }
+        }
+    }
+
+    /**
+     * Plays a WAV in a loop until {@link #stop()} is called.
+     */
+    public static void playLoop(String resourcePath) {
+        stop();
+
+        AudioInputStream audioStream = null;
+        try {
+            audioStream = openAudioStream(resourcePath);
+            if (audioStream == null) return;
+            audioStream = toPcmSigned(audioStream);
+
+            DataLine.Info info = new DataLine.Info(Clip.class, audioStream.getFormat());
+            loopClip = (Clip) AudioSystem.getLine(info);
+            loopClip.open(audioStream);
+
+            // Slight attenuation by default for loops
+            if (loopClip.isControlSupported(FloatControl.Type.MASTER_GAIN)) {
+                FloatControl gain = (FloatControl) loopClip.getControl(FloatControl.Type.MASTER_GAIN);
+                float attenuationDb = -8.0f;
+                gain.setValue(Math.max(gain.getMinimum(), Math.min(gain.getMaximum(), attenuationDb)));
+            }
+
+            loopClip.loop(Clip.LOOP_CONTINUOUSLY);
+            loopClip.start();
+            logger.fine("Started looped sound: " + resourcePath);
+        } catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
+            logger.fine("Unable to loop sound '" + resourcePath + "': " + e.getMessage());
+            if (loopClip != null) {
+                try { loopClip.close(); } catch (Exception ignored) {}
+                loopClip = null;
+            }
+        }
+    }
+
+    /**
+     * Stops and releases the current looped clip, if any.
+     */
+    public static void stop() {
+        if (loopClip != null) {
+            try {
+                loopClip.stop();
+                loopClip.close();
+            } catch (Exception e) {
+                logger.fine("Error stopping looped sound: " + e.getMessage());
+            } finally {
+                loopClip = null;
             }
         }
     }
@@ -131,6 +183,41 @@ public final class  SoundManager {
     private static void cleanupMusicResources() {
         backgroundMusicClip = null;
         isMusicPlaying = false;
+    }
+
+    /** Opens an audio stream from classpath resources or absolute/relative file path. */
+    private static AudioInputStream openAudioStream(String resourcePath)
+            throws UnsupportedAudioFileException, IOException {
+        InputStream in = SoundManager.class.getClassLoader().getResourceAsStream(resourcePath);
+        if (in != null) {
+            return AudioSystem.getAudioInputStream(in);
+        }
+        // Fallback to file system path for developer/local runs
+        try (FileInputStream fis = new FileInputStream(resourcePath)) {
+            return AudioSystem.getAudioInputStream(fis);
+        } catch (FileNotFoundException e) {
+            logger.fine("Audio resource not found: " + resourcePath);
+            return null;
+        }
+    }
+
+    /** Ensures the audio stream is PCM_SIGNED for Clip compatibility on all JVMs. */
+    private static AudioInputStream toPcmSigned(AudioInputStream source) throws UnsupportedAudioFileException, IOException {
+        AudioFormat format = source.getFormat();
+        if (format.getEncoding() == AudioFormat.Encoding.PCM_SIGNED) {
+            return source;
+        }
+
+        AudioFormat targetFormat = new AudioFormat(
+                AudioFormat.Encoding.PCM_SIGNED,
+                format.getSampleRate(),
+                16,
+                format.getChannels(),
+                format.getChannels() * 2,
+                format.getSampleRate(),
+                false
+        );
+        return AudioSystem.getAudioInputStream(targetFormat, source);
     }
 }
 
