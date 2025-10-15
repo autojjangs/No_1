@@ -1,11 +1,17 @@
 package engine;
 
 import java.util.logging.Logger;
-import
 
 public class ItemEffect {
 
-    Logger logger = Core.getLogger();
+    private static final Logger logger = Core.getLogger();
+
+    public enum ItemEffectType {
+        TRIPLESHOT,
+    }
+
+    /**=========================SINGLE USE=================================**/
+
     /**
      * Applies the coin item effect to the specified player.
      *
@@ -84,27 +90,17 @@ public class ItemEffect {
         logger.info("[ItemEffect - SCORE] Player " + playerId + " : " + beforeScore + " + " + scoreAmount + " -> " + gameState.getScore(playerIndex));
     }
 
+    /**========================= DURATION ITEM =================================**/
+
     /**
-     * Applies the score item effect to the specified player.
-     *
-     * @param gameState
-     *            current game state instance.
-     * @param playerId
-     *            ID of the player to apply the effect to.
-     * @param effectDuration
-     *            duration of item effect.
+     * Applies the TripleShot timed effect to the specified player.
      */
-    public static void applyTripleShot(final GameState gameState, final int playerId, int effectDuration) {
-//        if (gameState == null) return;
-//        final bool tripleShotEffect = true;
-//
-//        // if single player - full duration, if 2p - halved duration
-//        final int tripleShotDuration = (effectDuration / 2) ? gameState.isCoop() : effectDuration;
-//
-//        logger.info("[ItemEffect - TRIPLESHOT] Player " + playerId + " has TripleShot for" + tripleShotDuration);
-//        // when item effect wears off
-//        if tripleShotEffect
-//        logger.info("[ItemEffect - TRIPLESHOT] Player " + playerId + ": TripleShot duration wore off.");
+    public static void applyTripleShot(final GameState gameState, final int playerId, int duration) {
+        if (gameState == null) return;
+        int playerIndex = getPlayerIndex(playerId);
+
+        // apply duration
+        gameState.addEffect(playerIndex, ItemEffectType.TRIPLESHOT, duration);
     }
 
     /**

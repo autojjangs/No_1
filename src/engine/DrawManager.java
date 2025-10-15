@@ -81,6 +81,7 @@ public final class DrawManager {
         /** Item Graphics Temp */
         ItemScore,
         ItemCoin,
+        ItemHeal,
         ItemTripleShot
 	};
 

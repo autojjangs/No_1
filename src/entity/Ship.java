@@ -5,7 +5,11 @@ import java.util.Set;
 
 import engine.Cooldown;
 import engine.Core;
+import engine.GameState;
 import engine.DrawManager.SpriteType;
+
+import static engine.ItemEffect.ItemEffectType.*;
+
 
 /**
  * Implements a ship, to be controlled by the player.
@@ -15,7 +19,9 @@ import engine.DrawManager.SpriteType;
  */
 public class Ship extends Entity {
 
-	/** Time between shots. */
+    private GameState gameState;
+
+    /** Time between shots. */
 	private static final int SHOOTING_INTERVAL = 750;
 	/** Speed of the bullets shot by the ship. */
 	private static final int BULLET_SPEED = -6;
@@ -78,16 +84,51 @@ public class Ship extends Entity {
 	 * @return Checks if the bullet was shot correctly.
 	 */
 	public final boolean shoot(final Set<Bullet> bullets) {
-		if (this.shootingCooldown.checkFinished()) {
-			this.shootingCooldown.reset();
-			Bullet b = (BulletPool.getBullet(positionX + this.width / 2,
-					positionY, BULLET_SPEED)); // shoots bullet and tags with shooter's team
+        if (this.gameState == null)
+            this.gameState = Core.getGameState();
 
-			b.setOwnerPlayerId(this.getPlayerId()); // 2P mode:owner tag for bullet
-			b.setTeam(this.getTeam()); // bullet inherits shooter's team
-			bullets.add(b);
-			return true;
-		}
+        if (this.gameState == null)
+            return false;
+
+        int bulletX = positionX + this.width / 2;
+        int bulletY = positionY;
+
+        /** Check Bullet Cooldown**/
+        if (this.shootingCooldown.checkFinished()) {
+            this.shootingCooldown.reset();
+
+            /** Check Item Effect **/
+            int bulletOffset = 20;
+            // TRIPLESHOT check
+            if (gameState.hasEffect(playerId - 1, TRIPLESHOT)) {
+                // center bullet
+                Bullet center = (BulletPool.getBullet(bulletX, bulletY, BULLET_SPEED)); // shoots bullet and tags with shooter's team
+
+                center.setOwnerPlayerId(this.getPlayerId()); // 2P mode:owner tag for bullet
+                center.setTeam(this.getTeam()); // bullet inherits shooter's team
+                bullets.add(center);
+
+                // Left bullet
+                Bullet left = BulletPool.getBullet(bulletX - bulletOffset, bulletY, BULLET_SPEED);
+                left.setOwnerPlayerId(this.getPlayerId());
+                left.setTeam(this.getTeam());
+                bullets.add(left);
+
+                // Right bullet
+                Bullet right = BulletPool.getBullet(bulletX + bulletOffset, bulletY, BULLET_SPEED);
+                right.setOwnerPlayerId(this.getPlayerId());
+                right.setTeam(this.getTeam());
+                bullets.add(right);
+            }
+            else {
+                // default shooting
+                    Bullet b = (BulletPool.getBullet(bulletX, bulletY, BULLET_SPEED)); // shoots bullet and tags with shooter's team
+                    b.setOwnerPlayerId(this.getPlayerId()); // 2P mode:owner tag for bullet
+                    b.setTeam(this.getTeam()); // bullet inherits shooter's team
+                    bullets.add(b);
+            }
+            return true;
+        }
 		return false;
 	}
 

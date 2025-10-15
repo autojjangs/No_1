@@ -38,6 +38,7 @@ public final class ItemManager {
 
     /** ITEM WEIGHT **/
     public static enum DropTier {
+        DEBUG    (500.0),
         NONE     (60.0),
         COMMON   (25.0),
         UNCOMMON (15.0),

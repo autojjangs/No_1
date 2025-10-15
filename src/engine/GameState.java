@@ -1,17 +1,23 @@
 // engine/GameState.java
 package engine;
 
+import java.util.HashMap;
+import java.util.Map;
+import engine.ItemEffect.ItemEffectType;
+
 /**
  * Implements an object that stores the state of the game between levels -
  * supports 2-player co-op with shared lives.
  *
  * @author <a href="mailto:RobertoIA1987@gmail.com">Roberto Izquierdo Amo</a>
  *
- * 
+ *
  */
 public class GameState {
 
-	// 2P mode: number of players used for shared lives in co-op
+    private static final java.util.logging.Logger logger = Core.getLogger();
+
+    // 2P mode: number of players used for shared lives in co-op
 	public static final int NUM_PLAYERS = 2; // adjust later if needed
 
 	// 2P mode: true if in co-op mode
@@ -30,6 +36,19 @@ public class GameState {
 	/** Current coin count. */ // ADD THIS LINE
     private final int[] coins = new int[NUM_PLAYERS]; // ADD THIS LINE - edited for 2P mode
 
+    private static class EffectState {
+        Cooldown cooldown;
+        boolean active;
+
+        EffectState() {
+            this.cooldown = null;
+            this.active = false;
+        }
+    }
+
+    /** Each player has all effect types always initialized (inactive at start). */
+    private final Map<Integer, Map<ItemEffectType, EffectState>> playerEffects = new HashMap<>();
+
 	// 2P mode: co-op aware constructor used by the updated Core loop - livesEach
 	// applies per-player; co-op uses shared pool.
 	public GameState(final int level, final int livesEach, final boolean coop) {
@@ -47,7 +66,9 @@ public class GameState {
 			// legacy: put all lives on P1
 			lives[0] = Math.max(0, livesEach);
 		}
-	}
+
+        initializeEffectStates();
+    }
 
 	// 2P mode: per-player tallies (used for stats/scoring; lives[] unused in shared
 	// mode).
@@ -90,7 +111,9 @@ public class GameState {
 
         this.coins[0] = Math.max(0, coins); // ADD THIS LINE - edited for 2P mode
 		this.coop = false; // 2P: single-player mode
-	}
+
+        initializeEffectStates();
+    }
 
 	/* ------- 2P mode: aggregate totals used by Core/ScoreScreen/UI------- */
 	public int getScore() {
@@ -226,4 +249,70 @@ public class GameState {
 
 		return lives[0];
 	}
+
+    /** ---------- Item effects status methods ---------- **/
+
+    /** Initialize all possible effects for every player (inactive). */
+    private void initializeEffectStates() {
+        for (int p = 0; p < NUM_PLAYERS; p++) {
+            Map<ItemEffectType, EffectState> effectMap = new HashMap<>();
+            for (ItemEffectType type : ItemEffectType.values()) {
+                effectMap.put(type, new EffectState());
+            }
+            playerEffects.put(p, effectMap);
+        }
+    }
+
+    public void addEffect(int playerIndex, ItemEffectType type, int durationSeconds) {
+        if (playerIndex < 0 || playerIndex >= NUM_PLAYERS) return;
+
+        Map<ItemEffectType, EffectState> effects = playerEffects.get(playerIndex);
+        if (effects == null) return;
+
+        EffectState state = effects.get(type);
+        if (state == null) return;
+
+        if (state.active && state.cooldown != null) {
+            // Extend existing effect
+            state.cooldown.addTime(durationSeconds * 1000);
+            logger.info("[GameState] Player " + playerIndex + " extended " + type
+                    + " by " + durationSeconds + "s to " + state.cooldown.getDuration() );
+        } else {
+            // Start new effect
+            state.cooldown = Core.getCooldown(durationSeconds * 1000);
+            state.cooldown.reset();
+            state.active = true;
+            logger.info("[GameState] Player " + playerIndex + " started " + type
+                    + " for " + durationSeconds + "s");
+        }
+    }
+
+    public boolean hasEffect(int playerIndex, ItemEffectType type) {
+        if (playerIndex < 0 || playerIndex >= NUM_PLAYERS) return false;
+
+        Map<ItemEffectType, EffectState> effects = playerEffects.get(playerIndex);
+        if (effects == null) return false;
+
+        EffectState state = effects.get(type);
+        if (state == null || !state.active) return false;
+
+        return !state.cooldown.checkFinished();
+    }
+
+    /** Call this each frame to clean up expired effects */
+    public void updateEffects() {
+        for (int p = 0; p < NUM_PLAYERS; p++) {
+            Map<ItemEffectType, EffectState> effects = playerEffects.get(p);
+            if (effects == null) continue;
+
+            for (Map.Entry<ItemEffectType, EffectState> entry : effects.entrySet()) {
+                EffectState state = entry.getValue();
+                if (state.active && state.cooldown != null && state.cooldown.checkFinished()) {
+                    logger.info("[GameState] Player " + p + " effect " + entry.getKey() + " expired.");
+                    state.active = false;
+                    state.cooldown = null;  // Release reference
+                }
+            }
+        }
+    }
 }
