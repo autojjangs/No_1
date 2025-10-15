@@ -926,15 +926,20 @@ public final class DrawManager {
 		}
 		backBufferGraphics.drawLine(splitPointX, screen.getHeight()/4, splitPointX,(menuY+menuItems.length*60));
 	}
+//	int for adjust volume hitbox
+	private int volumeHitBoxOffset = 20;
 
 	public Rectangle getVolumeBarHitbox(final Screen screen){
 		int bar_startWidth = screen.getWidth() / 2;
-		int bar_endWidth = screen.getWidth() - 20;
+		int bar_endWidth = screen.getWidth() - 40;
 		int barHeight = screen.getHeight() * 3 / 10;
 
 		int barThickness = 20;
+
+		int centerY = barHeight + volumeHitBoxOffset;
+
 		int x = bar_startWidth;
-		int y = barHeight - barThickness;
+		int y = centerY - barThickness;
 		int width = bar_endWidth - bar_startWidth;
 		int height = barThickness * 2;
 
