@@ -901,12 +901,33 @@ public final class DrawManager {
 		backBufferGraphics.setColor(Color.WHITE);
 		backBufferGraphics.drawString(volumelabel, bar_startWidth-80, barHeight+7);
 
-		int indicatorX = bar_startWidth + (int)((bar_endWidth-bar_startWidth)*(volumlevel/100.0));
-		int indicatorY = barHeight+7;
-		backBufferGraphics.fillRect(indicatorX, indicatorY-13, 14, 14);
+//		change this line to get indicator center position
+		int size = 14;
+		double ratio = volumlevel / 100.0;
+		int centerX = bar_startWidth + (int) ((bar_endWidth - bar_startWidth) * ratio);
+		int indicatorX = centerX - size / 2 - 3;
+		int indicatorY = barHeight - size / 2 ;
+
+		int rawX = Core.getInputManager().getMouseX();
+		int rawY = Core.getInputManager().getMouseY();
+		Insets insets = frame.getInsets();
+		int mouseX = rawX - insets.left;
+		int mouseY = rawY - insets.top;
+
+		boolean hoverIndicator = mouseX >= indicatorX && mouseX <= indicatorX + size &&
+				mouseY >= indicatorY && mouseY <= indicatorY + size;
+
+		if (hoverIndicator) {
+			backBufferGraphics.setColor(Color.GREEN);
+		} else {
+			backBufferGraphics.setColor(Color.WHITE);
+		}
+
+		backBufferGraphics.fillRect(indicatorX, indicatorY, size, size);
+
 		backBufferGraphics.setColor(Color.WHITE);
 		String volumeText = Integer.toString(volumlevel);
-		backBufferGraphics.drawString(volumeText, bar_endWidth+10, indicatorY);
+		backBufferGraphics.drawString(volumeText, bar_endWidth+10, barHeight +7);
 
 	}
 
