@@ -137,6 +137,21 @@ public final class FileManager {
     }
 
     /**
+     * Returns the filepath
+     *
+     * @param fileName
+     *      file to get path
+     * @return full file path
+     * @throws IOException
+     *      In case of loading problems
+     * */
+    private String getFilePath(String fileName) throws IOException {
+        String filePath = System.getProperty("user.dir");
+        filePath += File.separator + "res" + File.separator + fileName;
+        return filePath;
+    }
+
+    /**
      * Returns the application default scores if there is no user high scores
      * file.
      *
@@ -181,7 +196,6 @@ public final class FileManager {
      *             In case of loading problems.
      */
     public List<Score> loadHighScores() throws IOException {
-
         List<Score> highScores = new ArrayList<Score>();
         InputStream inputStream = null;
         BufferedReader bufferedReader = null;
@@ -197,9 +211,7 @@ public final class FileManager {
 
             File scoresFile = new File(scoresPath);
             inputStream = new FileInputStream(scoresFile);
-            bufferedReader = new BufferedReader(new InputStreamReader(
-                    inputStream, Charset.forName("UTF-8")));
-
+            bufferedReader = new BufferedReader(new InputStreamReader(inputStream, Charset.forName("UTF-8")));
             logger.info("Loading user high scores.");
             // except first line
             //bufferedReader.readLine();
@@ -242,6 +254,7 @@ public final class FileManager {
      *
      * @param highScores
      *            High scores to save.
+     *
      * @throws IOException
      *             In case of loading problems.
      */
@@ -269,6 +282,7 @@ public final class FileManager {
                     outputStream, Charset.forName("UTF-8")));
 
             logger.info("Saving user high scores.");
+            bufferedWriter.newLine();
 
             // Before this PR, we can save only 7 scores, but now we can more.
             for (Score score : highScores) {
@@ -303,8 +317,7 @@ public final class FileManager {
 
             File coinsFile = new File(coinsPath);
             inputStream = new FileInputStream(coinsFile);
-            bufferedReader = new BufferedReader(new InputStreamReader(
-                    inputStream, Charset.forName("UTF-8")));
+            bufferedReader = new BufferedReader(new InputStreamReader(inputStream, Charset.forName("UTF-8")));
 
             logger.info("Loading coin count from " + COIN_FILENAME + ".");
 
@@ -488,5 +501,55 @@ public final class FileManager {
         } catch (FileNotFoundException e) {
             logger.info("No achievements to save");
         }
+    }
+
+    /**
+     * Unlocks an achievement for the given user.
+     *
+     * @param achievement achievement's name to search.
+     * @throws IOException In case of loading problems.
+     *
+     * [2025-10-09] Added in commit: feat: add method to retrieve achievement completer
+     */
+    public List<String> getAchievementCompleter(Achievement achievement)
+            throws IOException {
+        List<String> completer = new ArrayList<String>();
+        try {
+                String jarPath = FileManager.class.getProtectionDomain()
+                        .getCodeSource().getLocation().getPath();
+                jarPath = URLDecoder.decode(jarPath, "UTF-8");
+
+                String achievementPath = String.valueOf(new File(jarPath));
+                achievementPath += File.separator;
+                achievementPath += "achievement.csv";
+
+                InputStream iStream = new FileInputStream(achievementPath);
+                BufferedReader bReader = new BufferedReader(
+                        new InputStreamReader(iStream, Charset.forName("UTF-8")));
+
+                String line;
+                String[] header = bReader.readLine().split(",");
+                int idx = -1;
+                for(int i = 0; i < header.length; i++){
+                    if(header[i].equals(achievement.getName())){
+                        idx = i;
+                        break;
+                    }
+                }
+                if (idx == -1){
+                    logger.info("No such achievement");
+                    return completer;
+                }
+                while ((line = bReader.readLine()) != null) {
+                    String[] tmp = line.split(",");
+                    if(tmp[idx].equals("1")) completer.add(tmp[0]);
+                }
+        } catch (IOException e) {
+            logger.info("Error reading achievement file, using default users.");
+            completer.add("ABC");
+            completer.add("CDF");
+            completer.add("EFG");
+        }
+        return completer;
     }
 }
