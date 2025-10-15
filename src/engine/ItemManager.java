@@ -53,7 +53,8 @@ public final class ItemManager {
         SCORE,
         COIN,
         HEAL,
-        TRIPLESHOT
+        TRIPLESHOT,
+        SCOREBOOST
     }
 
     /** -------------------------- INIT -------------------------- **/

@@ -113,6 +113,7 @@ public class Item extends Entity {
                 break;
             case SCOREBOOST:
                 ItemEffect.applyScoreBoost(gameState, playerId, duration);
+                break;
             default:
                 this.logger.warning("[Item]: No ItemEffect for type " + this.type.name());
                 break;
