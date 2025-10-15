@@ -36,16 +36,18 @@ public class GameState {
 		this.level = level;
 		this.coop = coop;
 
+
+
 		if (coop) {
-			this.sharedLives = true;
-			this.teamLives = Math.max(0, livesEach * NUM_PLAYERS);
-			this.teamLivesCap = this.teamLives;
+            this.sharedLives = true;
+            this.teamLives = Math.max(0, livesEach * NUM_PLAYERS);
+            this.teamLivesCap = this.teamLives;
 		} else {
-			this.sharedLives = false;
-			this.teamLives = 0;
-			this.teamLivesCap = 0;
-			// legacy: put all lives on P1
-			lives[0] = Math.max(0, livesEach);
+            this.sharedLives = false;
+            this.teamLives = 0;
+            this.teamLivesCap = 0;
+            // legacy: put all lives on P1
+            lives[0] = Math.max(0, livesEach);
 		}
 	}
 
@@ -170,6 +172,7 @@ public class GameState {
 		return sharedLives;
 	}
 
+    //unused
 	public int getTeamLives() {
 		return teamLives;
 	}

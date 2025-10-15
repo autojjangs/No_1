@@ -3,6 +3,8 @@ package screen;
 import java.awt.event.KeyEvent;
 import java.util.HashSet;
 import java.util.Set;
+import java.io.IOException;
+import java.util.List;
 
 import engine.*;
 import entity.Bullet;
@@ -38,9 +40,9 @@ public class GameScreen extends Screen {
 	private static final int BONUS_SHIP_EXPLOSION = 500;
 	/** Time from finishing the level to screen change. */
 	private static final int SCREEN_CHANGE_INTERVAL = 1500;
-	/** Height of the interface separation line. */
-	private static final int SEPARATION_LINE_HEIGHT = 40;
-
+	private static final int SEPARATION_LINE_HEIGHT = 68;
+    private static final int HIGH_SCORE_NOTICE_DURATION = 2000;
+    private static boolean sessionHighScoreNotified = false;
 	/** For Check Achievement
 	 * 2015-10-02 add new */
 	private AchievementManager achievementManager;
@@ -67,6 +69,9 @@ public class GameScreen extends Screen {
 	private boolean levelFinished;
 	/** Checks if a bonus life is received. */
 	private boolean bonusLife;
+    private int topScore;
+    private boolean highScoreNotified;
+    private long highScoreNoticeStartTime;
 
     private int score;
     private int lives;
@@ -121,6 +126,16 @@ public class GameScreen extends Screen {
 		this.achievementManager = achievementManager;
 		this.tookDamageThisLevel = false;
 
+        try {
+            List<Score> highScores = Core.getFileManager().loadHighScores();
+            this.topScore = highScores.isEmpty() ? 0 : highScores.get(0).getScore();
+        } catch (IOException e) {
+            logger.warning("Couldn't load high scores for checking!");
+            this.topScore = 0;
+        }
+        this.highScoreNotified = false;
+        this.highScoreNoticeStartTime = 0;
+        
 		// 2P: bonus life adds to team pool + singleplayer mode
 		if (this.bonusLife) {
 			if (state.isSharedLives()) {
@@ -134,6 +149,13 @@ public class GameScreen extends Screen {
 		// [ADD] ensure achievementManager is not null for popup system
 		if (this.achievementManager == null) this.achievementManager = new AchievementManager();
 	}
+    /**
+     * Resets the session high score notification flag.
+     * Should be called when a new game starts from the main menu.
+     */
+    public static void resetSessionHighScoreNotified() {
+        sessionHighScoreNotified = false;
+    }
 
 	/**
 	 * Initializes basic screen properties, and adds necessary elements.
@@ -264,6 +286,12 @@ public class GameScreen extends Screen {
 
         draw();
 
+        if (!sessionHighScoreNotified && this.state.getScore() > this.topScore) {
+            sessionHighScoreNotified = true;
+            this.highScoreNotified = true;
+            this.highScoreNoticeStartTime = System.currentTimeMillis();
+        }
+
 		// End condition: formation cleared or TEAM lives exhausted.
 		if ((this.enemyShipFormation.isEmpty() || !state.teamAlive()) && !this.levelFinished) {
 			// The object managed by the object pool pattern must be recycled at the end of the level.
@@ -327,24 +355,28 @@ public class GameScreen extends Screen {
 
 		// Aggregate UI (team score & team lives)
 		drawManager.drawScore(this, state.getScore());
-		drawManager.drawLives(this, state.getLivesRemaining());
-		drawManager.drawCoins(this,  state.getCoins()); // ADD THIS LINE - 2P mode: team total
+//        drawManager.drawLives(this, state.getLivesRemaining());
+        drawManager.drawLives(this, state.getLivesRemaining(),state.isCoop() );
 
-		// 2P mode: setting per-player coin count
-		if (state.isCoop()) {
-			// left: P1
-			String p1 = String.format("P1  S:%d  K:%d  B:%d  C:%d",
-					state.getScore(0), state.getShipsDestroyed(0),
-					state.getBulletsShot(0), state.getCoins(0));
-			// right: P2
-			String p2 = String.format("P2  S:%d  K:%d  B:%d  C:%d",
-					state.getScore(1), state.getShipsDestroyed(1),
-					state.getBulletsShot(1), state.getCoins(1));
+
+
+		drawManager.drawCoins(this,  state.getCoins()); // ADD THIS LINE - 2P mode: team total
+        // 2P mode: setting per-player coin count
+        if (state.isCoop()) {
+            // left: P1
+            String p1 = String.format("P1  S:%d  K:%d  B:%d  C:%d",
+                    state.getScore(0), state.getShipsDestroyed(0),
+                    state.getBulletsShot(0), state.getCoins(0));
+            // right: P2
+            String p2 = String.format("P2  S:%d  K:%d  B:%d  C:%d",
+                    state.getScore(1), state.getShipsDestroyed(1),
+                    state.getBulletsShot(1), state.getCoins(1));
 
 			// remove the unnecessary "P1 S: K: B: C:" and "P2 S: K: B: C:" lines from the game screen
-		}
-
+        }
+        drawManager.drawLevel(this, this.state.getLevel());
 		drawManager.drawHorizontalLine(this, SEPARATION_LINE_HEIGHT - 1);
+        drawManager.drawShipCount(this, enemyShipFormation.getShipCount());
 
 		// Countdown to game start.
 		if (!this.inputDelay.checkFinished()) {
@@ -353,6 +385,10 @@ public class GameScreen extends Screen {
 			drawManager.drawHorizontalLine(this, this.height / 2 - this.height / 12);
 			drawManager.drawHorizontalLine(this, this.height / 2 + this.height / 12);
 		}
+        if (this.highScoreNotified &&
+                System.currentTimeMillis() - this.highScoreNoticeStartTime < HIGH_SCORE_NOTICE_DURATION) {
+            drawManager.drawNewHighScoreNotice(this);
+        }
 
 		// [ADD] draw achievement popups right before completing the frame
 		drawManager.drawAchievementToasts(

@@ -82,6 +82,9 @@ public final class DrawManager {
 		EnemyShipSpecial,
 		/** Destroyed enemy ship. */
 		Explosion,
+        /** Heart for lives display. */
+        Heart, //추가
+	
 
         /** Item Graphics Temp */
         ItemScore,
@@ -112,6 +115,7 @@ public final class DrawManager {
 			spriteMap.put(SpriteType.EnemyShipC2, new boolean[12][8]);
 			spriteMap.put(SpriteType.EnemyShipSpecial, new boolean[16][7]);
 			spriteMap.put(SpriteType.Explosion, new boolean[13][7]);
+            spriteMap.put(SpriteType.Heart, new boolean[11][10]); //추가
 
             // Item sprite placeholder
             spriteMap.put(SpriteType.ItemScore, new boolean[5][5]);
@@ -359,20 +363,40 @@ public final class DrawManager {
 	/**
 	 * Draws number of remaining lives on screen.
 	 *
-	 * @param screen
-	 *               Screen to draw on.
-	 * @param lives
-	 *               Current lives.
+	 * @param screen    Screen to draw on.
+     * @param lives    Whether the game is in co-op mode.
 	 */
-	public void drawLives(final Screen screen, final int lives) {
-		backBufferGraphics.setFont(fontRegular);
-		backBufferGraphics.setColor(Color.WHITE);
-		backBufferGraphics.drawString(Integer.toString(lives), 20, 25);
-		Ship dummyShip = new Ship(0, 0);
-		for (int i = 0; i < lives; i++)
-			drawEntity(dummyShip, 40 + 35 * i, 10);
-	}
 
+
+    public void drawLives(final Screen screen, final int lives, final boolean isCoop) {
+        backBufferGraphics.setFont(fontRegular);
+        backBufferGraphics.setColor(Color.WHITE);
+
+
+        Entity heart = new Entity(0, 0, 6*2, 5*2, Color.RED) {
+            { this.spriteType = SpriteType.Heart; }
+        };
+
+        if (isCoop) {
+            backBufferGraphics.drawString(Integer.toString(lives), 20, 25);
+            for (int i = 0; i < lives; i++) {
+                if (i < 3) {
+
+                    drawEntity(heart, 40 + 35 * i, 9);
+                } else {
+
+                    drawEntity(heart, 40 + 35 * (i - 3), 9 + 25);
+                }
+            }
+        }
+        else {
+            backBufferGraphics.drawString(Integer.toString(lives), 20, 40);
+            for (int i = 0; i<lives; i++) {
+                drawEntity(heart, 40 + 35 * i, 23);
+            }
+        }
+
+    }
 	/**
 	 * Draws current coin count on screen.
 	 *
@@ -384,8 +408,9 @@ public final class DrawManager {
 	public void drawCoins(final Screen screen, final int coins) { // ADD THIS METHOD
 		backBufferGraphics.setFont(fontRegular); // ADD THIS METHOD
 		backBufferGraphics.setColor(Color.YELLOW); // ADD THIS METHOD
-		String coinString = String.format("Coins: %04d", coins); // ADD THIS METHOD
-		backBufferGraphics.drawString(coinString, screen.getWidth() - 180, 25); // ADD THIS METHOD
+		String coinString = String.format("%04d", coins); // ADD THIS METHOD
+		backBufferGraphics.drawString(coinString, screen.getWidth() - 60, 52); // ADD THIS METHOD
+        backBufferGraphics.drawString("COIN : ", screen.getWidth()-115, 52);
 	} // ADD THIS METHOD
 
     // 2P mode: drawCoins method but for both players, but separate coin counts
@@ -397,20 +422,39 @@ public final class DrawManager {
         backBufferGraphics.drawString("P2: " + String.format("%04d", coinsP2), screen.getWidth() - 100, 25);
     }
 
-    /**
-     * Draws a thick line from side to side of the screen.
-     *
-     * @param screen
-     *                  Screen to draw on.
-     * @param positionY
-     *                  Y coordinate of the line.
-     */
-    public void drawHorizontalLine(final Screen screen, final int positionY) {
-        backBufferGraphics.setColor(Color.GREEN);
-        backBufferGraphics.drawLine(0, positionY, screen.getWidth(), positionY);
-        backBufferGraphics.drawLine(0, positionY + 1, screen.getWidth(),
-                positionY + 1);
+	/**
+	 * Draws a thick line from side to side of the screen.
+	 *
+	 * @param screen
+	 *                  Screen to draw on.
+	 * @param positionY
+	 *                  Y coordinate of the line.
+	 */
+	public void drawHorizontalLine(final Screen screen, final int positionY) {
+		backBufferGraphics.setColor(Color.GREEN);
+		backBufferGraphics.drawLine(0, positionY, screen.getWidth(), positionY);
+		backBufferGraphics.drawLine(0, positionY + 1, screen.getWidth(),
+				positionY + 1);
+	}
+
+    public void drawLevel (final Screen screen, final int level) {
+        backBufferGraphics.setColor(Color.WHITE);
+        String levelString = "Level " + level;
+        backBufferGraphics.drawString(levelString, screen.getWidth()-250, 25);
     }
+
+    public void drawShipCount (final Screen screen, final int shipCount) {
+        backBufferGraphics.setColor(Color.GREEN);
+        Entity enemyIcon = new Entity(0, 0, 12*2, 8*2, Color.GREEN) {
+            { this.spriteType = SpriteType.EnemyShipB2; }
+        };
+        int iconX = screen.getWidth() - 252;
+        int iconY = 37;
+        drawEntity(enemyIcon, iconX, iconY);
+        String shipString = ": " + shipCount;
+        backBufferGraphics.drawString(shipString, iconX + 30, 52);
+    }
+
 
     /**
      * Draws game title.
@@ -505,8 +549,13 @@ public final class DrawManager {
                 .format("accuracy %.2f%%", accuracy * 100);
 
         int height = isNewRecord ? 4 : 2;
+      if (isNewRecord) {
+            backBufferGraphics.setColor(Color.RED);
+        } else {
+            backBufferGraphics.setColor(Color.WHITE);
+        }
 
-        backBufferGraphics.setColor(Color.WHITE);
+        
         drawCenteredRegularString(screen, scoreString, screen.getHeight()
                 / height);
         drawCenteredRegularString(screen, livesRemainingString,
@@ -733,6 +782,12 @@ public final class DrawManager {
 			drawCenteredBigString(screen, "GO!", screen.getHeight() / 2
 					+ fontBigMetrics.getHeight() / 3);
 	}
+    public void drawNewHighScoreNotice(final Screen screen) {
+        String message = "NEW HIGH SCORE!";
+        backBufferGraphics.setColor(Color.YELLOW);
+        drawCenteredBigString(screen, message, screen.getHeight() / 4);
+    }
+
 
 	/**
 	 * Draws achievement toasts.
