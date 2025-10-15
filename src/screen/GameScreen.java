@@ -26,86 +26,117 @@ import engine.ItemManager;
  */
 public class GameScreen extends Screen {
 
-    /** Milliseconds until the screen accepts user input. */
+    /**
+     * Milliseconds until the screen accepts user input.
+     */
     private static final int INPUT_DELAY = 6000;
-    /** Bonus score for each life remaining at the end of the level. */
+    /**
+     * Bonus score for each life remaining at the end of the level.
+     */
     private static final int LIFE_SCORE = 100;
-    /** Minimum time between bonus ship's appearances. */
+    /**
+     * Minimum time between bonus ship's appearances.
+     */
     private static final int BONUS_SHIP_INTERVAL = 20000;
-    /** Maximum variance in the time between bonus ship's appearances. */
+    /**
+     * Maximum variance in the time between bonus ship's appearances.
+     */
     private static final int BONUS_SHIP_VARIANCE = 10000;
-    /** Time until bonus ship explosion disappears. */
+    /**
+     * Time until bonus ship explosion disappears.
+     */
     private static final int BONUS_SHIP_EXPLOSION = 500;
-    /** Time from finishing the level to screen change. */
+    /**
+     * Time from finishing the level to screen change.
+     */
     private static final int SCREEN_CHANGE_INTERVAL = 1500;
-    /** Height of the interface separation line. */
+    /**
+     * Height of the interface separation line.
+     */
     private static final int SEPARATION_LINE_HEIGHT = 40;
 
-    /** For Check Achievement
-     * 2015-10-02 add new */
+    /**
+     * For Check Achievement
+     * 2015-10-02 add new
+     */
     private AchievementManager achievementManager;
-    /** Current game difficulty settings. */
+    /**
+     * Current game difficulty settings.
+     */
     private GameSettings gameSettings;
-    /** Current difficulty level number. */
+    /**
+     * Current difficulty level number.
+     */
     private int level;
-    /** Formation of enemy ships. */
+    /**
+     * Formation of enemy ships.
+     */
     private EnemyShipFormation enemyShipFormation;
     private EnemyShip enemyShipSpecial;
-    /** Formation of player ships. */
+    /**
+     * Formation of player ships.
+     */
     private Ship[] ships = new Ship[GameState.NUM_PLAYERS];
-    /** Minimum time between bonus ship appearances. */
+    /**
+     * Minimum time between bonus ship appearances.
+     */
     private Cooldown enemyShipSpecialCooldown;
-    /** Time until bonus ship explosion disappears. */
+    /**
+     * Time until bonus ship explosion disappears.
+     */
     private Cooldown enemyShipSpecialExplosionCooldown;
-    /** Time from finishing the level to screen change. */
+    /**
+     * Time from finishing the level to screen change.
+     */
     private Cooldown screenFinishedCooldown;
-    /** Set of all bullets fired by on screen ships. */
+    /**
+     * Set of all bullets fired by on screen ships.
+     */
     private Set<Bullet> bullets;
-    /** Set of all items spawned. */
+    /**
+     * Set of all items spawned.
+     */
     private Set<Item> items;
     private long gameStartTime;
-    /** Checks if the level is finished. */
+    /**
+     * Checks if the level is finished.
+     */
     private boolean levelFinished;
-    /** Checks if a bonus life is received. */
+    /**
+     * Checks if a bonus life is received.
+     */
     private boolean bonusLife;
 
     private int score;
     private int lives;
     private int bulletsShot;
-    private int shipsDestroyed;
     private Ship ship;
 
-    /** checks if player took damage
+    /**
+     * checks if player took damage
      * 2025-10-02 add new variable
-     * */
+     *
+     */
     private boolean tookDamageThisLevel;
 
     private final GameState state;
 
     private Ship.ShipType shipTypeP1;
     private Ship.ShipType shipTypeP2;
+
     /**
      * Constructor, establishes the properties of the screen.
      *
-     * @param gameState
-     *                     Current game state.
-     * @param gameSettings
-     *                     Current game settings.
-     * @param bonusLife
-     *                     Checks if a bonus life is awarded this level.
-     * @param width
-     *                     Screen width.
-     * @param height
-     *                     Screen height.
-     * @param fps
-     *                     Frames per second, frame rate at which the game is run.
-     * @param shipTypeP1
-     *                     Player 1's ship type.
-     * @param shipTypeP2
-     *                     Player 2's ship type.
-     * @param achievementManager
-     * 			               Achievement manager instance used to track and save player achievements.
-     * 			  2025-10-03 add generator parameter and comment
+     * @param gameState          Current game state.
+     * @param gameSettings       Current game settings.
+     * @param bonusLife          Checks if a bonus life is awarded this level.
+     * @param width              Screen width.
+     * @param height             Screen height.
+     * @param fps                Frames per second, frame rate at which the game is run.
+     * @param shipTypeP1         Player 1's ship type.
+     * @param shipTypeP2         Player 2's ship type.
+     * @param achievementManager Achievement manager instance used to track and save player achievements.
+     *                           2025-10-03 add generator parameter and comment
      */
     public GameScreen(final GameState gameState,
                       final GameSettings gameSettings, final boolean bonusLife,
@@ -123,7 +154,6 @@ public class GameScreen extends Screen {
         if (this.bonusLife)
             this.lives++;
         this.bulletsShot = gameState.getBulletsShot();
-        this.shipsDestroyed = gameState.getShipsDestroyed();
 
         // for check Achievement 2025-10-02 add
         this.achievementManager = achievementManager;
@@ -285,15 +315,15 @@ public class GameScreen extends Screen {
 			          2025-10-02 add three 'if'statements
 			      */
             // Survivor
-            if(!this.tookDamageThisLevel && this.level == Core.getNumLevels()){
+            if (!this.tookDamageThisLevel && this.level == Core.getNumLevels()) {
                 achievementManager.unlock("Survivor");
             }
             // Clear
-            if(this.level == Core.getNumLevels()){
+            if (this.level == Core.getNumLevels()) {
                 achievementManager.unlock("Clear");
             }
             //Perfect Shooter
-            if(this.bulletsShot > 0 && this.bulletsShot == this.shipsDestroyed){
+            if (this.bulletsShot > 0 && this.bulletsShot == this.state.getShipsDestroyed()) {
                 achievementManager.unlock("Perfect Shooter");
             }
         }
@@ -331,7 +361,7 @@ public class GameScreen extends Screen {
         // Aggregate UI (team score & team lives)
         drawManager.drawScore(this, state.getScore());
         drawManager.drawLives(this, state.getLivesRemaining());
-        drawManager.drawCoins(this,  state.getCoins()); // ADD THIS LINE - 2P mode: team total
+        drawManager.drawCoins(this, state.getCoins()); // ADD THIS LINE - 2P mode: team total
 
         // 2P mode: setting per-player coin count
         if (state.isCoop()) {
@@ -395,8 +425,8 @@ public class GameScreen extends Screen {
     private void manageItemPickups() {
         Set<Item> collected = new HashSet<Item>();
         for (Item item : this.items) {
-            for(Ship ship: this.ships) {
-                if(ship == null) continue;
+            for (Ship ship : this.ships) {
+                if (ship == null) continue;
                 if (checkCollision(item, ship) && !collected.contains(item)) {
                     collected.add(item);
                     item.applyEffect();
@@ -460,13 +490,34 @@ public class GameScreen extends Screen {
                                 check of 'First Blood' achievement release
                                 2025.10.02 add
                             */
-                            if(this.shipsDestroyed == 1) {
+                            if (state.getShipsDestroyed() == 1) {
                                 //achievementManager.unlockFirstBlood();
                                 achievementManager.unlock("First Blood");
                             }
                         }
                         break;
                     }
+
+                int points = enemyShip.getPointValue();
+                state.addCoins(pIdx, enemyShip.getCoinValue()); // 2P mode: modified to per-player coins
+
+                state.addScore(pIdx, points); // 2P mode: modified to add to P1 score for now
+                state.incShipsDestroyed(pIdx);
+
+                // obtain drop from ItemManager (may return null)
+                Item drop = engine.ItemManager.getInstance().obtainDrop(enemyShip);
+                if (drop != null) {
+                    this.items.add(drop);
+                    this.logger.info("Spawned " + drop.getType() + " at " + drop.getPositionX() + "," + drop.getPositionY());
+                }
+
+                this.enemyShipFormation.destroy(enemyShip);
+                this.logger.info("Hit on enemy ship.");
+
+                //check of 'First Blood' achievement release
+                if (state.getShipsDestroyed() == 1) {
+                    achievementManager.unlock("First Blood");
+                }
 
                 if (this.enemyShipSpecial != null
                         && !this.enemyShipSpecial.isDestroyed()
@@ -483,9 +534,10 @@ public class GameScreen extends Screen {
                     recyclable.add(bullet);
                 }
             }
+
+            this.bullets.removeAll(recyclable);
+            BulletPool.recycle(recyclable);
         }
-        this.bullets.removeAll(recyclable);
-        BulletPool.recycle(recyclable);
     }
 
     /**
@@ -497,7 +549,7 @@ public class GameScreen extends Screen {
      *          Second entity, the ship.
      * @return Result of the collision test.
      */
-    private boolean checkCollision(final Entity a, final Entity b) {
+    private boolean checkCollision ( final Entity a, final Entity b){
         int centerAX = a.getPositionX() + a.getWidth() / 2;
         int centerAY = a.getPositionY() + a.getHeight() / 2;
         int centerBX = b.getPositionX() + b.getWidth() / 2;
