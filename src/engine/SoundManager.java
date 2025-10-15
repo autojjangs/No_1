@@ -67,6 +67,72 @@ public final class SoundManager {
             }
         }
     }
+    // Background music clip - static to persist across method calls
+    private static Clip backgroundMusicClip = null;
+    private static boolean isMusicPlaying = false;
+    private static float musicVolumeDb = -10.0f; // Default music volume
+
+    /**
+     * starts playing background music that loops during gameplay
+     */
+    public static void startBackgroundMusic(String musicResourcePath) {
+        // stop any currently playing music
+        stopBackgroundMusic();
+
+        InputStream in = null;
+        AudioInputStream audioStream = null;
+
+        try {
+            in = SoundManager.class.getClassLoader().getResourceAsStream(musicResourcePath);
+            if (in == null) {
+                logger.fine("Music resource not found: " + musicResourcePath);
+                return;
+            }
+
+            audioStream = AudioSystem.getAudioInputStream(in);
+            DataLine.Info info = new DataLine.Info(Clip.class, audioStream.getFormat());
+            backgroundMusicClip = (Clip) AudioSystem.getLine(info);
+            backgroundMusicClip.open(audioStream);
+
+            // set looping
+            backgroundMusicClip.loop(Clip.LOOP_CONTINUOUSLY);
+
+            // set music volume
+            if (backgroundMusicClip.isControlSupported(FloatControl.Type.MASTER_GAIN)) {
+                FloatControl gain = (FloatControl) backgroundMusicClip.getControl(FloatControl.Type.MASTER_GAIN);
+                gain.setValue(Math.max(gain.getMinimum(), Math.min(gain.getMaximum(), musicVolumeDb)));
+            }
+
+            backgroundMusicClip.start();
+            isMusicPlaying = true;
+            logger.fine("Background music started: " + musicResourcePath);
+
+        } catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
+            logger.fine("Unable to play background music '" + musicResourcePath + "': " + e.getMessage());
+            cleanupMusicResources();
+        }
+    }
+
+    /**
+     * stops the background music and releases resources
+     */
+    public static void stopBackgroundMusic() {
+        if (backgroundMusicClip != null) {
+            try {
+                backgroundMusicClip.stop();
+                backgroundMusicClip.close();
+            } catch (Exception e) {
+                logger.fine("Error stopping background music: " + e.getMessage());
+            } finally {
+                cleanupMusicResources();
+            }
+        }
+    }
+
+    private static void cleanupMusicResources() {
+        backgroundMusicClip = null;
+        isMusicPlaying = false;
+    }
 }
 
 
