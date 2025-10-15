@@ -22,122 +22,122 @@ public class GameSettings {
 	private int shootingFrecuency;
 
 
-    //추가 사항
-    public static class ChangeData {
-        //바꿀 적 위치
-        public int x, y;
+	//추가 사항
+	public static class ChangeData {
+		//바꿀 적 위치
+		public int x, y;
 
-        //적 체력
-        public int hp;
-        //적 색상
-        public Color color = null;
+		//적 체력
+		public int hp;
+		//적 색상
+		public Color color = null;
 
-        //보상 배율
-        public int multiplier;
+		//보상 배율
+		public int multiplier;
 
-        public ChangeData(int x, int y, int hp, int multiplier) {
-            this.x = x; this.y = y;
-            this.hp = hp;
-            this.multiplier = multiplier;
-        }
+		public ChangeData(int x, int y, int hp, int multiplier) {
+			this.x = x; this.y = y;
+			this.hp = hp;
+			this.multiplier = multiplier;
+		}
 
-        public ChangeData(int x, int y, int hp, int multiplier, Color color) {
-            this.x = x; this.y = y;
-            this.hp = hp;
-            this.multiplier = multiplier;
-            this.color = color;
-        }
-    }
+		public ChangeData(int x, int y, int hp, int multiplier, Color color) {
+			this.x = x; this.y = y;
+			this.hp = hp;
+			this.multiplier = multiplier;
+			this.color = color;
+		}
+	}
 
-    private List<ChangeData> changeDataList;
-    public final List<ChangeData> getChangeDataList() {
-        return changeDataList;
-    }
+	private List<ChangeData> changeDataList;
+	public final List<ChangeData> getChangeDataList() {
+		return changeDataList;
+	}
 
-    public static List<GameSettings> getGameSettings(){
-        List<GameSettings> result = new ArrayList<>();
+	public static List<GameSettings> getGameSettings(){
+		List<GameSettings> result = new ArrayList<>();
 
-        GameSettings setting;
+		GameSettings setting;
 
-            //Level 1
-            setting = new GameSettings(4, 3, 80, 2000);
-            result.add(setting);
+		//Level 1
+		setting = new GameSettings(4, 3, 80, 2000);
+		result.add(setting);
 
-            //Level 2
-            setting = new GameSettings(5, 4, 70, 1500);
-            setting.changeDataList = Arrays.asList(
-                    new ChangeData(0, 0, 2, 2, Color.RED),
-                    new ChangeData(1, 0, 2, 2, Color.RED),
-                    new ChangeData(2, 0, 2, 2, Color.RED),
-                    new ChangeData(3, 0, 2, 2, Color.RED),
-                    new ChangeData(4, 0, 2, 2, Color.RED)
-            );
-            result.add(setting);
+		//Level 2
+		setting = new GameSettings(5, 4, 70, 1500);
+		setting.changeDataList = Arrays.asList(
+				new ChangeData(0, 0, 2, 2, Color.RED),
+				new ChangeData(1, 0, 2, 2, Color.RED),
+				new ChangeData(2, 0, 2, 2, Color.RED),
+				new ChangeData(3, 0, 2, 2, Color.RED),
+				new ChangeData(4, 0, 2, 2, Color.RED)
+		);
+		result.add(setting);
 
-        //Bonus Stage
-        setting = new GameSettings(5, 4, 1, 1000000);
-        setting.changeDataList = Arrays.asList(
-                new ChangeData(0, 0, 0, 0),
-                new ChangeData(1, 0, 0, 0),
-                new ChangeData(2, 0, 1, 2, Color.yellow),
-                new ChangeData(3, 0, 0, 0),
-                new ChangeData(4, 0, 0, 0),
+		//Bonus Stage
+		setting = new GameSettings(5, 4, 1, 1000000);
+		setting.changeDataList = Arrays.asList(
+				new ChangeData(0, 0, 0, 0),
+				new ChangeData(1, 0, 0, 0),
+				new ChangeData(2, 0, 1, 2, Color.yellow),
+				new ChangeData(3, 0, 0, 0),
+				new ChangeData(4, 0, 0, 0),
 
-                new ChangeData(0, 1, 1, 2, Color.yellow),
-                new ChangeData(1, 1, 1, 2, Color.yellow),
-                new ChangeData(2, 1, 1, 2, Color.yellow),
-                new ChangeData(3, 1, 1, 2, Color.yellow),
-                new ChangeData(4, 1, 1, 2, Color.yellow),
+				new ChangeData(0, 1, 1, 2, Color.yellow),
+				new ChangeData(1, 1, 1, 2, Color.yellow),
+				new ChangeData(2, 1, 1, 2, Color.yellow),
+				new ChangeData(3, 1, 1, 2, Color.yellow),
+				new ChangeData(4, 1, 1, 2, Color.yellow),
 
-                new ChangeData(0, 2, 0, 0),
-                new ChangeData(1, 2, 1, 2, Color.yellow),
-                new ChangeData(2, 2, 1, 2, Color.yellow),
-                new ChangeData(3, 2, 1, 2, Color.yellow),
-                new ChangeData(4, 2, 0, 0),
+				new ChangeData(0, 2, 0, 0),
+				new ChangeData(1, 2, 1, 2, Color.yellow),
+				new ChangeData(2, 2, 1, 2, Color.yellow),
+				new ChangeData(3, 2, 1, 2, Color.yellow),
+				new ChangeData(4, 2, 0, 0),
 
-                new ChangeData(0, 3, 0, 0),
-                new ChangeData(1, 3, 1, 2, Color.yellow),
-                new ChangeData(2, 3, 0, 0),
-                new ChangeData(3, 3, 1, 2, Color.yellow),
-                new ChangeData(4, 3, 0, 0)
+				new ChangeData(0, 3, 0, 0),
+				new ChangeData(1, 3, 1, 2, Color.yellow),
+				new ChangeData(2, 3, 0, 0),
+				new ChangeData(3, 3, 1, 2, Color.yellow),
+				new ChangeData(4, 3, 0, 0)
 
-        );
-        result.add(setting);
+		);
+		result.add(setting);
 
-        //Level 4
-        setting = new GameSettings(8, 2, 40, 1000);
-        setting.changeDataList = Arrays.asList(
-                new ChangeData(0, 0, 2, 2, Color.RED),
-                new ChangeData(1, 1, 2, 2, Color.RED),
-                new ChangeData(2, 0, 2, 2, Color.RED),
-                new ChangeData(3, 1, 2, 2, Color.RED),
-                new ChangeData(4, 0, 2, 2, Color.RED),
-                new ChangeData(5, 1, 2, 2, Color.RED),
-                new ChangeData(6, 0, 2, 2, Color.RED),
-                new ChangeData(7, 1, 2, 2, Color.RED)
-        );
-        result.add(setting);
+		//Level 4
+		setting = new GameSettings(8, 2, 40, 1000);
+		setting.changeDataList = Arrays.asList(
+				new ChangeData(0, 0, 2, 2, Color.RED),
+				new ChangeData(1, 1, 2, 2, Color.RED),
+				new ChangeData(2, 0, 2, 2, Color.RED),
+				new ChangeData(3, 1, 2, 2, Color.RED),
+				new ChangeData(4, 0, 2, 2, Color.RED),
+				new ChangeData(5, 1, 2, 2, Color.RED),
+				new ChangeData(6, 0, 2, 2, Color.RED),
+				new ChangeData(7, 1, 2, 2, Color.RED)
+		);
+		result.add(setting);
 
-        //Level 5
-        setting = new GameSettings(3, 3, 40, 1000);
-        setting.changeDataList = Arrays.asList(
-                new ChangeData(0, 0, 3, 3, Color.BLUE),
-                new ChangeData(1, 0, 3, 3, Color.BLUE),
-                new ChangeData(2, 0, 3, 3, Color.BLUE),
+		//Level 5
+		setting = new GameSettings(3, 3, 40, 1000);
+		setting.changeDataList = Arrays.asList(
+				new ChangeData(0, 0, 3, 3, Color.BLUE),
+				new ChangeData(1, 0, 3, 3, Color.BLUE),
+				new ChangeData(2, 0, 3, 3, Color.BLUE),
 
-                new ChangeData(0, 1, 3, 3, Color.BLUE),
-                new ChangeData(1, 1, 10, 10, Color.MAGENTA),
-                new ChangeData(2, 1, 3, 3, Color.BLUE),
+				new ChangeData(0, 1, 3, 3, Color.BLUE),
+				new ChangeData(1, 1, 10, 10, Color.MAGENTA),
+				new ChangeData(2, 1, 3, 3, Color.BLUE),
 
-                new ChangeData(0, 2, 3, 3, Color.BLUE),
-                new ChangeData(1, 2, 3, 3, Color.BLUE),
-                new ChangeData(2, 2, 3, 3, Color.BLUE)
+				new ChangeData(0, 2, 3, 3, Color.BLUE),
+				new ChangeData(1, 2, 3, 3, Color.BLUE),
+				new ChangeData(2, 2, 3, 3, Color.BLUE)
 
-        );
-        result.add(setting);
+		);
+		result.add(setting);
 
-        return result;
-    }
+		return result;
+	}
 
 
 	/**
@@ -153,12 +153,12 @@ public class GameSettings {
 	 *                          Frecuency of enemy shootings, +/- 30%.
 	 */
 	public GameSettings(final int formationWidth, final int formationHeight,
-			final int baseSpeed, final int shootingFrecuency) {
+						final int baseSpeed, final int shootingFrecuency) {
 		this.formationWidth = formationWidth;
 		this.formationHeight = formationHeight;
 		this.baseSpeed = baseSpeed;
 		this.shootingFrecuency = shootingFrecuency;
-        this.changeDataList = new ArrayList<>();
+		this.changeDataList = new ArrayList<>();
 	}
 
 	/**
