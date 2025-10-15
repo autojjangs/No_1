@@ -660,6 +660,17 @@ public final class DrawManager {
             i++;
         }
     }
+	// Made it to check if the Achievement button works temporarily.
+	public void drawAchievementMenu(final Screen screen) {
+		String AchievementsString = "Achievements";
+		String instructionsString = "Press Space to return";
+		backBufferGraphics.setColor(Color.GREEN);
+		drawCenteredBigString(screen, AchievementsString, screen.getHeight() / 8);
+
+		backBufferGraphics.setColor(Color.GRAY);
+		drawCenteredRegularString(screen, instructionsString,
+				screen.getHeight() / 5);
+	}
 
     public void drawSettingMenu(final Screen screen) {
         String settingsString = "Settings";
@@ -667,41 +678,64 @@ public final class DrawManager {
 
         backBufferGraphics.setColor(Color.GREEN);
         drawCenteredBigString(screen, settingsString, screen.getHeight() / 8);
-
+		backBufferGraphics.setFont(fontRegular);
         backBufferGraphics.setColor(Color.GRAY);
-        drawCenteredRegularString(screen, instructionsString,
-                screen.getHeight() / 5);
+        drawCenteredRegularString(screen, instructionsString, screen.getHeight() / 6);
     }
+	public void drawSettingLayout(final Screen screen, final String[] menuItems, final int selectedmenuItems) {
+		int splitPointX = screen.getWidth() *3/10;
+		backBufferGraphics.setFont(fontRegular);
+		int menuY = screen.getHeight()*3/10;
+		for (int i = 0; i < menuItems.length; i++) {
+			if (i == selectedmenuItems) {
+				backBufferGraphics.setColor(Color.GREEN);
+			}
+			else {
+				backBufferGraphics.setColor(Color.WHITE);
+			}
+			backBufferGraphics.drawString(menuItems[i], 30, menuY+(i*60));
+			backBufferGraphics.setColor(Color.GREEN);
+		}
+		backBufferGraphics.drawLine(splitPointX, screen.getHeight()/4, splitPointX,(menuY+menuItems.length*60));
+	}
+	public void drawVolumeBar(final Screen screen, final int volumlevel){
+		int bar_startWidth = screen.getWidth() / 2;
+		int bar_endWidth = screen.getWidth()-40;
+		int barHeight = screen.getHeight()*3/10;
 
-    // Made it to check if the Achievement button works temporarily.
-    public void drawAchievementMenu(final Screen screen) {
-        String AchievementsString = "Achievements";
-        String instructionsString = "Press Space to return";
+		String volumelabel = "Volume";
+		backBufferGraphics.setFont(fontRegular);
+		backBufferGraphics.setColor(Color.WHITE);
+		backBufferGraphics.drawLine(bar_startWidth, barHeight, bar_endWidth, barHeight);
 
-        backBufferGraphics.setColor(Color.GREEN);
-        drawCenteredBigString(screen, AchievementsString, screen.getHeight() / 8);
+		backBufferGraphics.setColor(Color.WHITE);
+		backBufferGraphics.drawString(volumelabel, bar_startWidth-80, barHeight+7);
 
-        backBufferGraphics.setColor(Color.GRAY);
-        drawCenteredRegularString(screen, instructionsString,
-                screen.getHeight() / 5);
-    }
+		int indicatorX = bar_startWidth + (int)((bar_endWidth-bar_startWidth)*(volumlevel/100.0));
+		int indicatorY = barHeight+7;
+		backBufferGraphics.fillRect(indicatorX, indicatorY-13, 14, 14);
+		backBufferGraphics.setColor(Color.WHITE);
+		String volumeText = Integer.toString(volumlevel);
+		backBufferGraphics.drawString(volumeText, bar_endWidth+10, indicatorY);
 
-    /**
-     * Draws a centered string on regular font.
-     *
-     * @param screen
-     *               Screen to draw on.
-     * @param string
-     *               String to draw.
-     * @param height
-     *               Height of the drawing.
-     */
-    public void drawCenteredRegularString(final Screen screen,
-                                          final String string, final int height) {
-        backBufferGraphics.setFont(fontRegular);
-        backBufferGraphics.drawString(string, screen.getWidth() / 2
-                - fontRegularMetrics.stringWidth(string) / 2, height);
-    }
+	}
+
+	/**
+	 * Draws a centered string on regular font.
+	 *
+	 * @param screen
+	 *               Screen to draw on.
+	 * @param string
+	 *               String to draw.
+	 * @param height
+	 *               Height of the drawing.
+	 */
+	public void drawCenteredRegularString(final Screen screen,
+			final String string, final int height) {
+		backBufferGraphics.setFont(fontRegular);
+		backBufferGraphics.drawString(string, screen.getWidth() / 2
+				- fontRegularMetrics.stringWidth(string) / 2, height);
+	}
 
     /**
      * Draws a centered string on big font.
