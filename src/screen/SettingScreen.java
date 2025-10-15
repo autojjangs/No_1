@@ -66,7 +66,7 @@ public class SettingScreen extends Screen {
                 }
         }
         }
-        if (inputManager.isKeyDown(KeyEvent.VK_ESCAPE) && this.inputCooldown.checkFinished()) {
+        if (inputManager.isKeyDown(KeyEvent.VK_SPACE) && this.inputCooldown.checkFinished()) {
             this.isRunning = false;
             this.inputCooldown.reset();
         }
