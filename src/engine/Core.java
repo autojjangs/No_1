@@ -57,7 +57,9 @@ public final class Core {
 		}
 
 		frame = new Frame(WIDTH, HEIGHT);
-		DrawManager.getInstance().setFrame(frame);
+        InputManager input = InputManager.getInstance();
+        frame.addKeyListener(input); // Register an instance to allow the window to receive keyboard event information
+        DrawManager.getInstance().setFrame(frame);
 		int width = frame.getWidth();
 		int height = frame.getHeight();
 
@@ -145,6 +147,8 @@ public final class Core {
                       + " setting screen at " + FPS + " fps.");
               returnCode = frame.setScreen(currentScreen);
               LOGGER.info("Closing setting screen.");
+              frame.removeKeyListener(InputManager.getInstance());
+              frame.addKeyListener(InputManager.getInstance()); // Remove and re-register the input manager, forcing the key setting of the frame to be updated
               break;
 
           case 5:
