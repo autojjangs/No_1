@@ -132,7 +132,8 @@ public class GameScreen extends Screen {
                 state.addLife(0, 1);  // singleplayer
             }
         }
-	}
+        SoundManager.startBackgroundMusic("sound/SpaceInvader-GameTheme.wav");
+    }
 
 	/**
 	 * Initializes basic screen properties, and adds necessary elements.
@@ -180,8 +181,8 @@ public class GameScreen extends Screen {
 
 		// 2P mode: award bonus score for remaining TEAM lives
 		state.addScore(0, LIFE_SCORE * state.getLivesRemaining());
-
-		this.logger.info("Screen cleared with a score of " + state.getScore());
+        SoundManager.stopBackgroundMusic();
+        this.logger.info("Screen cleared with a score of " + state.getScore());
 		return this.returnCode;
 	}
 
@@ -231,7 +232,7 @@ public class GameScreen extends Screen {
 				if (fire && ship.shoot(this.bullets)) {
 
 					// play shooting sound effect
-					SoundManager.playOnce("sound/shooting.wav");
+					SoundManager.playOnce("sound/shoot.wav");
 
 					state.incBulletsShot(p); // 2P mode: increments per-player bullet shots
 
@@ -285,6 +286,7 @@ public class GameScreen extends Screen {
 			// The object managed by the object pool pattern must be recycled at the end of the level.
 			BulletPool.recycle(this.bullets);
 			this.bullets.removeAll(this.bullets);
+
 			ItemPool.recycle(items);
 			this.items.removeAll(this.items);
 
@@ -460,7 +462,6 @@ public class GameScreen extends Screen {
 				for (EnemyShip enemyShip : this.enemyShipFormation)
 					if (!enemyShip.isDestroyed() && checkCollision(bullet, enemyShip)) {
                         recyclable.add(bullet);
-                        SoundManager.playOnce("sound/invaderkilled.wav");
                         if(enemyShip.getDamage(1) > 0){
                             continue;
                         }

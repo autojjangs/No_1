@@ -66,102 +66,71 @@ public final class  SoundManager {
             }
         }
     }
+    // Background music clip - static to persist across method calls
+    private static Clip backgroundMusicClip = null;
+    private static boolean isMusicPlaying = false;
+    private static float musicVolumeDb = -10.0f; // Default music volume
 
     /**
-     * Plays a WAV resource in a continuous loop until stopped.
-     * Suitable for background music like the main menu.
+     * starts playing background music that loops during gameplay
      */
-    public static void playLoop(String resourcePath) {
-        stop();
+    public static void startBackgroundMusic(String musicResourcePath) {
+        // stop any currently playing music
+        stopBackgroundMusic();
+
+        InputStream in = null;
         AudioInputStream audioStream = null;
+
         try {
-            audioStream = openAudioStream(resourcePath);
-            if (audioStream == null) return;
-            audioStream = toPcmSigned(audioStream);
+            in = SoundManager.class.getClassLoader().getResourceAsStream(musicResourcePath);
+            if (in == null) {
+                logger.fine("Music resource not found: " + musicResourcePath);
+                return;
+            }
+
+            audioStream = AudioSystem.getAudioInputStream(in);
             DataLine.Info info = new DataLine.Info(Clip.class, audioStream.getFormat());
-            loopClip = (Clip) AudioSystem.getLine(info);
-            loopClip.open(audioStream);
+            backgroundMusicClip = (Clip) AudioSystem.getLine(info);
+            backgroundMusicClip.open(audioStream);
 
-            // Lower volume a bit to avoid overpowering SFX
-            if (loopClip.isControlSupported(FloatControl.Type.MASTER_GAIN)) {
-                FloatControl gain = (FloatControl) loopClip.getControl(FloatControl.Type.MASTER_GAIN);
-                float attenuationDb = -8.0f;
-                gain.setValue(Math.max(gain.getMinimum(), Math.min(gain.getMaximum(), attenuationDb)));
+            // set looping
+            backgroundMusicClip.loop(Clip.LOOP_CONTINUOUSLY);
+
+            // set music volume
+            if (backgroundMusicClip.isControlSupported(FloatControl.Type.MASTER_GAIN)) {
+                FloatControl gain = (FloatControl) backgroundMusicClip.getControl(FloatControl.Type.MASTER_GAIN);
+                gain.setValue(Math.max(gain.getMinimum(), Math.min(gain.getMaximum(), musicVolumeDb)));
             }
 
-            loopClip.loop(Clip.LOOP_CONTINUOUSLY);
-            loopClip.start();
-            logger.info("Started looped sound: " + resourcePath);
+            backgroundMusicClip.start();
+            isMusicPlaying = true;
+            logger.fine("Background music started: " + musicResourcePath);
+
         } catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
-            logger.info("Unable to play looped sound '" + resourcePath + "': " + e.getMessage());
-            if (loopClip != null) {
-                try { loopClip.close(); } catch (Exception ignored) {}
-            }
-            loopClip = null;
-        } finally {
-            if (audioStream != null) {
-                try { audioStream.close(); } catch (IOException ignored) {}
-            }
+            logger.fine("Unable to play background music '" + musicResourcePath + "': " + e.getMessage());
+            cleanupMusicResources();
         }
     }
 
     /**
-     * Stops any currently looping sound started by playLoop.
+     * stops the background music and releases resources
      */
-    public static void stop() {
-        if (loopClip != null) {
+    public static void stopBackgroundMusic() {
+        if (backgroundMusicClip != null) {
             try {
-                loopClip.stop();
-            } catch (Exception ignored) {}
-            try {
-                loopClip.close();
-            } catch (Exception ignored) {}
-            loopClip = null;
-        }
-    }
-
-    /**
-     * Tries to open an AudioInputStream from classpath, then from filesystem.
-     * Accepted filesystem paths: given path as-is, or prefixed with "res/".
-     */
-    private static AudioInputStream openAudioStream(String resourcePath)
-            throws IOException, UnsupportedAudioFileException {
-        // Try classpath first
-        InputStream in = SoundManager.class.getClassLoader().getResourceAsStream(resourcePath);
-        if (in != null) {
-            return AudioSystem.getAudioInputStream(in);
-        }
-        // Try filesystem as-is
-        try {
-            return AudioSystem.getAudioInputStream(new FileInputStream(resourcePath));
-        } catch (FileNotFoundException ignored) {
-            // Try under res/
-            try {
-                return AudioSystem.getAudioInputStream(new FileInputStream("res/" + resourcePath));
-            } catch (FileNotFoundException ignoredToo) {
-                logger.info("Sound not found in classpath or filesystem: " + resourcePath);
-                return null;
+                backgroundMusicClip.stop();
+                backgroundMusicClip.close();
+            } catch (Exception e) {
+                logger.fine("Error stopping background music: " + e.getMessage());
+            } finally {
+                cleanupMusicResources();
             }
         }
     }
 
-    /**
-     * Ensures the audio stream is PCM_SIGNED so it can be opened by Clip across platforms.
-     */
-    private static AudioInputStream toPcmSigned(AudioInputStream source) {
-        final javax.sound.sampled.AudioFormat base = source.getFormat();
-        if (base.getEncoding() == javax.sound.sampled.AudioFormat.Encoding.PCM_SIGNED) {
-            return source;
-        }
-        final javax.sound.sampled.AudioFormat target = new javax.sound.sampled.AudioFormat(
-                javax.sound.sampled.AudioFormat.Encoding.PCM_SIGNED,
-                base.getSampleRate(),
-                16,
-                base.getChannels(),
-                base.getChannels() * 2,
-                base.getSampleRate(),
-                false);
-        return AudioSystem.getAudioInputStream(target, source);
+    private static void cleanupMusicResources() {
+        backgroundMusicClip = null;
+        isMusicPlaying = false;
     }
 }
 
