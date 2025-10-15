@@ -41,7 +41,7 @@ public final class DrawManager {
 	/** Normal sized font. */
 	private static Font fontRegular;
 	/** Normal sized font properties. */
-	private static FontMetrics fontRegularMetrics; // add this line
+	private static FontMetrics fontRegularMetrics;
 	/** Big sized font. */
 	private static Font fontBig;
 	/** Big sized font properties. */
@@ -456,7 +456,38 @@ public final class DrawManager {
             backBufferGraphics.setColor(highlight ? Color.GREEN : Color.WHITE);
             drawCenteredRegularString(screen, items[i], (int) (baseY + fontRegularMetrics.getHeight() * 1.5 * i));
         }
-	}
+
+        /** String playString = "1-Player Mode";
+         String play2String = "2-Player Mode";
+         String highScoresString = "High scores";
+         String exitString = "exit";
+         int spacing = fontRegularMetrics.getHeight() + 10;
+
+         if (option == 2)
+         backBufferGraphics.setColor(Color.GREEN);
+         else
+         backBufferGraphics.setColor(Color.WHITE);
+         drawCenteredRegularString(screen, playString,
+         screen.getHeight() / 3 * 2);
+         if (option == 1)
+         backBufferGraphics.setColor(Color.GREEN);
+         else
+         backBufferGraphics.setColor(Color.WHITE);
+         drawCenteredRegularString(screen, play2String,
+         screen.getHeight() / 3 * 2 + spacing);
+         if (option == 3)
+         backBufferGraphics.setColor(Color.GREEN);
+         else
+         backBufferGraphics.setColor(Color.WHITE);
+         drawCenteredRegularString(screen, highScoresString, screen.getHeight()
+         / 3 * 2 + spacing * 2);
+         if (option == 0)
+         backBufferGraphics.setColor(Color.GREEN);
+         else
+         backBufferGraphics.setColor(Color.WHITE);
+         drawCenteredRegularString(screen, exitString, screen.getHeight() / 3
+         * 2 + spacing * 3); */
+    }
 
     /**
      * Draws game results.
