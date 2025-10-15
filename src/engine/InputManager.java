@@ -17,12 +17,18 @@ public final class InputManager implements KeyListener {
 	private static boolean[] keys;
 	/** Singleton instance of the class. */
 	private static InputManager instance;
+	/** Last character typed. */
+	private static char lastCharTyped;
+	/** Flag to check if a character was typed. */
+	private static boolean charTyped;
 
 	/**
 	 * Private constructor.
 	 */
 	private InputManager() {
 		keys = new boolean[NUM_KEYS];
+		lastCharTyped = '\0';
+		charTyped = false;
 	}
 
 	/**
@@ -46,6 +52,20 @@ public final class InputManager implements KeyListener {
 	public boolean isKeyDown(final int keyCode) {
 		return keys[keyCode];
 	}
+
+	/**
+	 * Returns the last character typed and resets the flag.
+	 *
+	 * @return Last character typed, or '\0' if none.
+	 */
+	public char getLastCharTyped() {
+		if (charTyped) {
+			charTyped = false;
+			return lastCharTyped;
+		}
+		return '\0';
+	}
+
 
     // === PLAYER 1 CONTROLS (Existing functionality) ===
     // Player 1 uses WASD + Spacebar configuration
@@ -146,6 +166,17 @@ public final class InputManager implements KeyListener {
 	 */
 	@Override
 	public void keyTyped(final KeyEvent key) {
+		lastCharTyped = key.getKeyChar();
+		charTyped = true;
+	}
 
+	/**
+	 * Clears any pending key or character input.
+	 * (Prevents unintended key carry-over between screens)
+	 * 게임 플레이 화면에서 이월되는 키 입력을 막기 위해 임의로 clear 합니다.
+	 */
+	public void clearLastKey() {
+		lastCharTyped = '\0' ;
+		charTyped = false ;
 	}
 }

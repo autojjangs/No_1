@@ -23,14 +23,16 @@ public class ScoreScreen extends Screen {
 	private static final int FIRST_CHAR = 65;
 	/** Code of last mayus character. */
 	private static final int LAST_CHAR = 90;
+	/** Maximum name length. */
+	private static final int MAX_NAME_LENGTH = 5;
 
 	// Added for persist per-player breakdown
 	private final GameState gameState;
 
 	/** Current score. */
 	private int score;
-	/** Player lives left. */
-	private int livesRemaining;
+	/** Current coins. */
+	private int coins;
 	/** Total bullets shot by the player. */
 	private int bulletsShot;
 	/** Total ships destroyed by the player. */
@@ -40,9 +42,11 @@ public class ScoreScreen extends Screen {
 	/** Checks if current score is a new high score. */
 	private boolean isNewRecord;
 	/** Player name for record input. */
-	private char[] name;
+	private StringBuilder name;
 	/** Character of players name selected for change. */
 	private int nameCharSelected;
+	/** Make sure the name is less than 3 characters. */
+	private boolean showNameError = false;
 	/** Time between changes in user selection. */
 	private Cooldown selectionCooldown;
 	/** manages achievements.*/
@@ -71,12 +75,12 @@ public class ScoreScreen extends Screen {
 		this.gameState = gameState; // Added
 
 		this.score = gameState.getScore();
-		this.livesRemaining = gameState.getLivesRemaining();
+		this.coins = gameState.getCoins();
 		this.bulletsShot = gameState.getBulletsShot();
 		this.shipsDestroyed = gameState.getShipsDestroyed();
 		this.totalCoins = gameState.getCoins(); // ADD THIS LINE
 		this.isNewRecord = false;
-		this.name = "AAA".toCharArray();
+		this.name = new StringBuilder();
 		this.nameCharSelected = 0;
 		this.selectionCooldown = Core.getCooldown(SELECTION_TIME);
 		this.selectionCooldown.reset();
@@ -91,6 +95,9 @@ public class ScoreScreen extends Screen {
 		} catch (IOException e) {
 			logger.warning("Couldn't load high scores!");
 		}
+
+		// clear last key
+		inputManager.clearLastKey();
 	}
 
 	/**
@@ -121,6 +128,9 @@ public class ScoreScreen extends Screen {
 					saveAchievement(); //2025-10-03 call method for save achievement released
 				}
 			} else if (inputManager.isKeyDown(KeyEvent.VK_SPACE)) {
+				// name too short -> return
+				if (this.isNewRecord && this.name.length() < 3) return;
+
 				// Play again.
 				this.returnCode = 2;
 				this.isRunning = false;
@@ -130,32 +140,37 @@ public class ScoreScreen extends Screen {
 				}
 			}
 
-			if (this.isNewRecord && this.selectionCooldown.checkFinished()) {
-				if (inputManager.isKeyDown(KeyEvent.VK_RIGHT)) {
-					this.nameCharSelected = this.nameCharSelected == 2 ? 0
-							: this.nameCharSelected + 1;
-					this.selectionCooldown.reset();
+			// Handle name input if new record
+			if (this.isNewRecord) {
+				// Handle backspace
+				if (inputManager.isKeyDown(KeyEvent.VK_BACK_SPACE)
+						&& this.selectionCooldown.checkFinished()) {
+					if (this.name.length() > 0) {
+						this.name.deleteCharAt(this.name.length() - 1);
+						this.selectionCooldown.reset();
+					}
 				}
-				if (inputManager.isKeyDown(KeyEvent.VK_LEFT)) {
-					this.nameCharSelected = this.nameCharSelected == 0 ? 2
-							: this.nameCharSelected - 1;
-					this.selectionCooldown.reset();
-				}
-				if (inputManager.isKeyDown(KeyEvent.VK_UP)) {
-					this.name[this.nameCharSelected] = (char) (this.name[this.nameCharSelected] == LAST_CHAR
-							? FIRST_CHAR
-							: this.name[this.nameCharSelected] + 1);
-					this.selectionCooldown.reset();
-				}
-				if (inputManager.isKeyDown(KeyEvent.VK_DOWN)) {
-					this.name[this.nameCharSelected] = (char) (this.name[this.nameCharSelected] == FIRST_CHAR
-							? LAST_CHAR
-							: this.name[this.nameCharSelected] - 1);
-					this.selectionCooldown.reset();
+
+				// Handle character input
+				char typedChar = inputManager.getLastCharTyped();
+				if (typedChar != '\0') {
+					// Checks the name is not short when you press the space bar
+					if (typedChar == ' ') {
+						if (this.name.length() < 3) {
+//                     System.out.println("too short!!");
+							this.showNameError = true;
+						}
+					}
+
+					// Check if it's a valid character (alphanumeric only)
+
+					else if ((Character.isLetterOrDigit(typedChar))
+							&& this.name.length() < MAX_NAME_LENGTH) {
+						this.name.append(Character.toUpperCase(typedChar));
+					}
 				}
 			}
 		}
-
 	}
 
 	/**
@@ -200,15 +215,15 @@ public class ScoreScreen extends Screen {
 				? (float) this.shipsDestroyed / this.bulletsShot
 				: 0f;
 
-		// 2P mode: edit to include co-op + individual score/coins
-		if (this.gameState != null && this.gameState.isCoop()) {
-			// team summary
-			drawManager.drawResults(this,
-					this.gameState.getScore(), // team score
-					this.gameState.getLivesRemaining(),
-					this.gameState.getShipsDestroyed(),
-					0f, // leaving out team accuracy
-					this.isNewRecord,
+        // 2P mode: edit to include co-op + individual score/coins
+        if (this.gameState != null && this.gameState.isCoop()) {
+            // team summary
+            drawManager.drawResults(this,
+                    this.gameState.getScore(), // team score
+                    this.gameState.getCoins(),
+                    this.gameState.getShipsDestroyed(),
+                    0f, // leaving out team accuracy
+                    this.isNewRecord,
 					false // Draw accuracy for 2P mode
 			);
 
@@ -233,11 +248,15 @@ public class ScoreScreen extends Screen {
 			// 1P legacy summary with accuracy
 			float acc = (this.bulletsShot > 0) ? (float) this.shipsDestroyed / this.bulletsShot : 0f;
 
-			drawManager.drawResults(this, this.score, this.livesRemaining, this.shipsDestroyed, acc, this.isNewRecord, true); // Draw accuracy for 1P mode
+            drawManager.drawResults(this, this.score, this.coins, this.shipsDestroyed, acc, this.isNewRecord, true); // Draw accuracy for 1P mode
+        }
+
+        if (this.isNewRecord) {
+			drawManager.drawNameInput(this, this.name);
+			if (showNameError)
+				drawManager.drawNameInputError(this);
 		}
 
-		if (this.isNewRecord)
-			drawManager.drawNameInput(this, this.name, this.nameCharSelected);
 
 		drawManager.completeDrawing(this);
 	}
