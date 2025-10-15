@@ -84,6 +84,19 @@ public class SettingScreen extends Screen {
                 }
         }
         }
+
+        // make mouse work on volume bar
+        java.awt.Rectangle barBox = drawManager.getVolumeBarHitbox(this);
+        int volmx = inputManager.getMouseX();
+        int volmy = inputManager.getMouseY();
+
+        if ((inputManager.isMouseClicked() || inputManager.isMousePressed()) && barBox.contains(volmx, volmy)) {
+            double ratio = (double) (volmx - barBox.x) / barBox.width;
+            ratio = Math.max(0.0, Math.min(1.0, ratio));
+            this.volumelevel = (int) (ratio * 100);
+        }
+
+
         if (inputManager.isKeyDown(KeyEvent.VK_SPACE) && this.inputCooldown.checkFinished()) {
             if(this.selectMenuItem == back) {
                 this.returnCode = 1;

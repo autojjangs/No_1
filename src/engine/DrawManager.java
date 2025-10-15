@@ -926,4 +926,18 @@ public final class DrawManager {
 		}
 		backBufferGraphics.drawLine(splitPointX, screen.getHeight()/4, splitPointX,(menuY+menuItems.length*60));
 	}
+
+	public Rectangle getVolumeBarHitbox(final Screen screen){
+		int bar_startWidth = screen.getWidth() / 2;
+		int bar_endWidth = screen.getWidth() - 20;
+		int barHeight = screen.getHeight() * 3 / 10;
+
+		int barThickness = 20;
+		int x = bar_startWidth;
+		int y = barHeight - barThickness;
+		int width = bar_endWidth - bar_startWidth;
+		int height = barThickness * 2;
+
+		return new Rectangle(x, y, width, height);
+	}
 }
