@@ -79,6 +79,7 @@ public class GameScreen extends Screen {
 	 * 2025-10-02 add new variable
 	 * */
 	private boolean tookDamageThisLevel;
+    private boolean countdownSoundPlayed = false;
 
 	/**
 	 * Constructor, establishes the properties of the screen.
@@ -189,6 +190,13 @@ public class GameScreen extends Screen {
 	 */
 	protected final void update() {
 		super.update();
+        if (!this.inputDelay.checkFinished() && !countdownSoundPlayed) {
+            long elapsed = System.currentTimeMillis() - this.gameStartTime;
+            if (elapsed > 1750) {
+                SoundManager.playOnce("sound/CountDownSound.wav");
+                countdownSoundPlayed = true;
+            }
+        }
 
 		if (this.inputDelay.checkFinished() && !this.levelFinished) {
 
