@@ -315,4 +315,32 @@ public class GameState {
             }
         }
     }
+
+    /** Clear all active effects for a specific player */
+    public void clearEffects(int playerIndex) {
+        //
+        if (playerIndex < 0 || playerIndex >= NUM_PLAYERS) return;
+
+        Map<ItemEffectType, EffectState> effects = playerEffects.get(playerIndex);
+        if (effects == null) return;
+
+        // for - all effect types for this player
+        for (Map.Entry<ItemEffectType, EffectState> entry : effects.entrySet()) {
+            // get effect state
+            EffectState state = entry.getValue();
+            // if state active then false
+            if (state.active) {
+                state.active = false;
+                state.cooldown = null;
+            }
+        }
+        logger.info("[GameState] Player " + playerIndex + ": All effects cleared.");
+    }
+
+    /** Clear all active effects for all players */
+    public void clearAllEffects() {
+        for (int p = 0; p < NUM_PLAYERS; p++) {
+            clearEffects(p);
+        }
+    }
 }

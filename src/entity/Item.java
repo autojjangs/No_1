@@ -10,8 +10,6 @@ import engine.GameState;
 import engine.ItemDB;
 import engine.ItemData;
 import engine.ItemEffect;
-import engine.ItemManager.ItemType;
-
 
 /**
  * Implements Item that moves vertically down.
@@ -22,7 +20,7 @@ public class Item extends Entity {
     private Logger logger;
 
     /** Type of Item. */
-    private ItemType type;
+    private String type;
 
     /** Item Movement Speed. */
     private int itemSpeed;
@@ -42,8 +40,7 @@ public class Item extends Entity {
      *            direction - positive is down.
      */
 
-    public Item(ItemType itemType,
-                final int positionX, final int positionY, final int speed) {
+    public Item(String itemType, final int positionX, final int positionY, final int speed) {
 
         super(positionX, positionY, 3 * 2, 5 * 2, Color.WHITE);
 
@@ -53,7 +50,6 @@ public class Item extends Entity {
         this.itemSpeed = speed;
 
         setSprite();
-
     }
 
     /**
@@ -61,7 +57,7 @@ public class Item extends Entity {
      */
     public final void setSprite() {
         ItemDB itemDB = new ItemDB();
-        ItemData data = itemDB.getItemData(type.name());
+        ItemData data = itemDB.getItemData(this.type);
 
         if (data != null) {
             try {
@@ -92,27 +88,27 @@ public class Item extends Entity {
      */
     public void applyEffect(final GameState gameState, final int playerId) {
         ItemDB itemDB = new ItemDB();
-        ItemData data = itemDB.getItemData(type.name());
+        ItemData data = itemDB.getItemData(this.type);
 
         if (data == null) return;
 
         int value = data.getEffectValue();
         int duration = data.getEffectDuration();
         switch (this.type) {
-            case COIN:
+            case "COIN":
                 ItemEffect.applyCoinItem(gameState, playerId, value);
                 break;
-            case HEAL:
+            case "HEAL":
                 ItemEffect.applyHealItem(gameState, playerId, value);
                 break;
-            case SCORE:
+            case "SCORE":
                 ItemEffect.applyScoreItem(gameState, playerId, value);
                 break;
-            case TRIPLESHOT:
+            case "TRIPLESHOT":
                 ItemEffect.applyTripleShot(gameState, playerId, duration);
                 break;
             default:
-                this.logger.warning("[Item]: No ItemEffect for type " + this.type.name());
+                this.logger.warning("[Item]: No ItemEffect for type " + this.type);
                 break;
         }
     };
@@ -143,7 +139,7 @@ public class Item extends Entity {
      * @param newType
      *            new type of the Item.
      */
-    public final void reset(ItemType newType) {
+    public final void reset(String newType) {
         this.type = newType;
         this.itemSpeed = 0;
         setSprite(); // change to your enum if different
@@ -154,7 +150,7 @@ public class Item extends Entity {
      *
      * @return type of the Item.
      */
-    public final ItemType getType() {
+    public final String getType() {
         return this.type;
     }
 }

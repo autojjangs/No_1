@@ -1,7 +1,6 @@
 package engine;
 
 import java.util.Random;
-import java.util.Set;
 import java.util.logging.Logger;
 
 import entity.EnemyShip;
@@ -38,7 +37,7 @@ public final class ItemManager {
 
     /** ITEM WEIGHT **/
     public static enum DropTier {
-        DEBUG    (500.0),
+        //DEBUG    (500.0),
         NONE     (60.0),
         COMMON   (25.0),
         UNCOMMON (15.0),
@@ -46,14 +45,6 @@ public final class ItemManager {
 
         public final double tierWeight;
         DropTier(double tierWeight) { this.tierWeight = Math.max(0.0, tierWeight); }
-    }
-
-    /** ITEM TYPE (name only, data is loaded from CSV) **/
-    public static enum ItemType {
-        SCORE,
-        COIN,
-        HEAL,
-        TRIPLESHOT
     }
 
     /** -------------------------- INIT -------------------------- **/
@@ -130,20 +121,18 @@ public final class ItemManager {
 
         ItemData chosenData = candidates.get(itemRoll.nextInt(candidates.size()));
 
-        // Convert String from CSV to enum ItemType
-        ItemType chosenItem;
-        try {
-            chosenItem = ItemType.valueOf(chosenData.getType().toUpperCase());
-        } catch (IllegalArgumentException e) {
-            logger.warning("[ItemManager]: Unknown item type in CSV: " + chosenData.getType());
-            return null;
-        }
-
         // get spawn position / enemy death position
         int centerX = enemy.getPositionX() + enemy.getWidth() / 2;
         int centerY = enemy.getPositionY() + enemy.getHeight() / 2;
 
-        Item drop = ItemPool.getItem(chosenItem, centerX, centerY, 2);
+// Pass ItemData directly to ItemPool
+        Item drop = ItemPool.getItem(chosenData, centerX, centerY, 2);
+
+        if (drop == null) {
+            logger.warning("[ItemManager]: Failed to create item: " + chosenData.getType());
+            return null;
+        }
+
         this.logger.info("[ItemManager]: created item " + drop.getType() + " at (" + centerX + ", " + centerY + ")");
 
         return drop;

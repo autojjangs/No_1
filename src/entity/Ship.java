@@ -10,7 +10,6 @@ import engine.DrawManager.SpriteType;
 
 import static engine.ItemEffect.ItemEffectType.*;
 
-
 /**
  * Implements a ship, to be controlled by the player.
  *
@@ -45,17 +44,18 @@ public class Ship extends Entity {
 	 * @param positionY
 	 *                  Initial position of the ship in the Y axis.
 	 */
-	public Ship(final int positionX, final int positionY) {
+	public Ship(final int positionX, final int positionY, GameState gameState) {
 		super(positionX, positionY, 13 * 2, 8 * 2, Color.GREEN);
 
+        this.gameState = gameState;
 		this.spriteType = SpriteType.Ship;
 		this.shootingCooldown = Core.getCooldown(SHOOTING_INTERVAL);
 		this.destructionCooldown = Core.getCooldown(1000);
 	}
 
 	// 2P mode: create and tag with a team in one shot
-	public Ship(final int positionX, final int positionY, final Team team) {
-		this(positionX, positionY);
+	public Ship(final int positionX, final int positionY, final Team team, GameState gameState) {
+		this(positionX, positionY, gameState);
 		this.setTeam(team); // uses Entity.setTeam
 		this.playerId = (team == Team.PLAYER1 ? 1 : team == Team.PLAYER2 ? 2 : 0);
 	}
@@ -84,11 +84,6 @@ public class Ship extends Entity {
 	 * @return Checks if the bullet was shot correctly.
 	 */
 	public final boolean shoot(final Set<Bullet> bullets) {
-        if (this.gameState == null)
-            this.gameState = Core.getGameState();
-
-        if (this.gameState == null)
-            return false;
 
         int bulletX = positionX + this.width / 2;
         int bulletY = positionY;

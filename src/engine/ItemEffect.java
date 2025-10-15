@@ -24,13 +24,13 @@ public class ItemEffect {
      */
     public static void applyCoinItem(final GameState gameState, final int playerId, int coinAmount) {
         if (gameState == null) return;
+        Logger logger = Core.getLogger();
         final int playerIndex = getPlayerIndex(playerId);
         final int beforeCoin = gameState.getCoins(playerIndex);
 
         gameState.addCoins(playerIndex, coinAmount);
-        gameState.addScore(getPlayerIndex(playerId), coinAmount);
 
-        logger.info("[ItemEffect - COIN] Player " + playerId + " : " + beforeCoin + " + " + coinAmount + " -> " + gameState.getCoins(playerIndex));
+        logger.info("Player " + playerId + " added " + coinAmount + " coins. before : " + beforeCoin + ", after : " + gameState.getCoins(playerIndex));
     }
 
     /**
@@ -45,29 +45,31 @@ public class ItemEffect {
      */
     public static void applyHealItem(final GameState gameState, final int playerId, int lifeAmount) {
         if (gameState == null) return;
+        Logger logger = Core.getLogger();
         final int beforeLife = gameState.getLivesRemaining();
 
         // if 2p mode
         if (gameState.isCoop()) {
             if (gameState.getTeamLives() + lifeAmount > gameState.getTeamLivesCap()) {
-                // if adding life exceeds max, convert to score instead
+                // if adding life exceeds max, add score and coin instead
+                gameState.addCoins(getPlayerIndex(playerId), lifeAmount * 20);
                 gameState.addScore(getPlayerIndex(playerId), lifeAmount * 20);
             } else {
                 gameState.addLife(getPlayerIndex(playerId), lifeAmount);
             }
         } else { // 1p mode
             if (gameState.get1PlayerLives() + lifeAmount > 3) {
-                // if adding life exceeds max, convert to score instead
-
+                // if adding life exceeds max, add score and coin instead
                 gameState.addScore(getPlayerIndex(playerId), lifeAmount * 20);
+                gameState.addCoins(getPlayerIndex(playerId), lifeAmount * 20);
             } else {
-                System.out.println(gameState.get1PlayerLives());
+
                 gameState.addLife(getPlayerIndex(playerId), lifeAmount);
             }
         }
 
 
-        logger.info("[ItemEffect - COIN] Player " + playerId + " : " + beforeLife + " + " + lifeAmount + " -> " + gameState.getLivesRemaining());
+        logger.info("Player added " + lifeAmount + " lives. before : " + beforeLife + ", after : " + gameState.getLivesRemaining());
     }
 
     /**

@@ -1,7 +1,6 @@
 package entity;
 
-import engine.ItemManager.ItemType;
-
+import engine.ItemData;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -25,8 +24,8 @@ public final class ItemPool {
      * isn't.
      * Caller should call item.init(...) to set position/type/sprite after obtaining.
      *
-     * @param type
-     *          type of item created
+     * @param data
+     *          data of item created
      * @param positionX
      *            Requested position of the item in the X axis.
      * @param positionY
@@ -36,8 +35,8 @@ public final class ItemPool {
      *            on direction - positive is down.
      * @return Requested item.
      */
-    public static Item getItem( final ItemType type, final int positionX,
-                                final int positionY, final int speed) {
+    public static Item getItem(ItemData data, int positionX, int positionY, int speed) {
+        String type = data.getType();
         // create new item
         Item item;
         if (!pool.isEmpty()) {

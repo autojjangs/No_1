@@ -15,7 +15,6 @@ import entity.Ship;
 // NEW Item code
 import entity.Item;
 import entity.ItemPool;
-import engine.ItemManager;
 
 /**
  * Implements the game screen, where the action happens.(supports co-op with
@@ -138,16 +137,19 @@ public class GameScreen extends Screen {
 	public final void initialize() {
 		super.initialize();
 
+        // Clear all item effects at the start of each level
+        state.clearAllEffects();
+
 		enemyShipFormation = new EnemyShipFormation(this.gameSettings);
 		enemyShipFormation.attach(this);
 
 		// 2P mode: create both ships, tagged to their respective teams
-		this.ships[0] = new Ship(this.width / 2 - 60, this.height - 30, Entity.Team.PLAYER1); // P1
+		this.ships[0] = new Ship(this.width / 2 - 60, this.height - 30, Entity.Team.PLAYER1, state); // P1
 		this.ships[0].setPlayerId(1);
 
         // only allowing second ship to spawn when 2P mode is chosen
         if (state.isCoop()) {
-            this.ships[1] = new Ship(this.width / 2 + 60, this.height - 30, Entity.Team.PLAYER2); // P2
+            this.ships[1] = new Ship(this.width / 2 + 60, this.height - 30, Entity.Team.PLAYER2, state); // P2
             this.ships[1].setPlayerId(2);
         } else {
             this.ships[1] = null; // ensuring there's no P2 ship in 1P mode

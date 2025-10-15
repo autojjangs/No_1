@@ -23,8 +23,6 @@ import screen.TitleScreen;
  */
 public final class Core {
 
-    private static GameState currentGameState;
-
     private static final int WIDTH = 448;
 	private static final int HEIGHT = 520;
 	private static final int FPS = 60;
@@ -97,7 +95,6 @@ public final class Core {
 				case 2:
 					// 2P mode: building gameState now using user choice
 					gameState = new GameState(1, MAX_LIVES, coopSelected);
-                    Core.setGameState(gameState);
 
 					do {
 						// Extra life this level? Give it if team pool is below cap.
@@ -115,7 +112,6 @@ public final class Core {
 						LOGGER.info("Closing game screen.");
 
 						gameState = ((GameScreen) currentScreen).getGameState();
-                        Core.setGameState(gameState);
 
 						if (gameState.teamAlive()) {
 							gameState.nextLevel();
@@ -231,15 +227,4 @@ public final class Core {
 	public static int getNumLevels(){
 		return NUM_LEVELS;
 	}
-
-
-    /** Added Getter and Setter for GameStates  **/
-    public static void setGameState(GameState gameState) {
-        currentGameState = gameState;
-    }
-
-    public static GameState getGameState() {
-        return currentGameState;
-    }
-
 }
