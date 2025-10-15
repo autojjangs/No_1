@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import engine.*;
+import engine.SoundManager;
 import entity.Bullet;
 import entity.BulletPool;
 import entity.EnemyShip;
@@ -78,6 +79,7 @@ public class GameScreen extends Screen {
 	 * 2025-10-02 add new variable
 	 * */
 	private boolean tookDamageThisLevel;
+    private boolean countdownSoundPlayed = false;
 
 	/**
 	 * Constructor, establishes the properties of the screen.
@@ -189,6 +191,13 @@ public class GameScreen extends Screen {
 	 */
 	protected final void update() {
 		super.update();
+        if (!this.inputDelay.checkFinished() && !countdownSoundPlayed) {
+            long elapsed = System.currentTimeMillis() - this.gameStartTime;
+            if (elapsed > 1750) {
+                SoundManager.playOnce("sound/CountDownSound.wav");
+                countdownSoundPlayed = true;
+            }
+        }
 
 		if (this.inputDelay.checkFinished() && !this.levelFinished) {
 
@@ -234,16 +243,23 @@ public class GameScreen extends Screen {
 			if (this.enemyShipSpecial != null) {
 				if (!this.enemyShipSpecial.isDestroyed())
 					this.enemyShipSpecial.move(2, 0);
-				else if (this.enemyShipSpecialExplosionCooldown.checkFinished())
+				else if (this.enemyShipSpecialExplosionCooldown.checkFinished()) {
 					this.enemyShipSpecial = null;
+					// Stop special ship sound when explosion animation ends (safety)
+					SoundManager.stop();
+				}
 			}
 			if (this.enemyShipSpecial == null && this.enemyShipSpecialCooldown.checkFinished()) {
 				this.enemyShipSpecial = new EnemyShip();
 				this.enemyShipSpecialCooldown.reset();
+				// Start special ship sound when it appears
+				SoundManager.playLoop("sound/special_ship_sound.wav");
 				this.logger.info("A special ship appears");
 			}
 			if (this.enemyShipSpecial != null && this.enemyShipSpecial.getPositionX() > this.width) {
 				this.enemyShipSpecial = null;
+				// Stop special ship sound when it escapes
+				SoundManager.stop();
 				this.logger.info("The special ship has escaped");
 			}
 
@@ -276,6 +292,9 @@ public class GameScreen extends Screen {
 
 			this.levelFinished = true;
 			this.screenFinishedCooldown.reset();
+
+			// Ensure any looped special-ship sound is stopped when the level ends
+			SoundManager.stop();
 
 			/*
 			  check of achievement release
@@ -427,6 +446,7 @@ public class GameScreen extends Screen {
                         recyclable.add(bullet);
 
                         ship.destroy(); // explosion/respawn handled by Ship.update()
+                        SoundManager.playOnce("sound/explosion.wav");
                         state.decLife(p); // decrement shared/team lives by 1
 
                         this.logger.info("Hit on player " + (p + 1) + ", team lives now: " + state.getLivesRemaining());
@@ -477,6 +497,8 @@ public class GameScreen extends Screen {
 
 					this.enemyShipSpecial.destroy();
 					this.enemyShipSpecialExplosionCooldown.reset();
+					// Stop special ship sound immediately upon destruction
+					SoundManager.stop();
 					recyclable.add(bullet);
 				}
 			}

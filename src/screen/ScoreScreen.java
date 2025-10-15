@@ -113,7 +113,8 @@ public class ScoreScreen extends Screen {
 		draw();
 		if (this.inputDelay.checkFinished()) {
 			if (inputManager.isKeyDown(KeyEvent.VK_ESCAPE)) {
-				// Return to main menu.
+                // Return to main menu.
+                SoundManager.playOnce("sound/select.wav");
 				this.returnCode = 1;
 				this.isRunning = false;
 				if (this.isNewRecord) {
@@ -122,6 +123,7 @@ public class ScoreScreen extends Screen {
 				}
 			} else if (inputManager.isKeyDown(KeyEvent.VK_SPACE)) {
 				// Play again.
+                SoundManager.playOnce("sound/select.wav");
 				this.returnCode = 2;
 				this.isRunning = false;
 				if (this.isNewRecord) {
@@ -132,22 +134,26 @@ public class ScoreScreen extends Screen {
 
 			if (this.isNewRecord && this.selectionCooldown.checkFinished()) {
 				if (inputManager.isKeyDown(KeyEvent.VK_RIGHT)) {
+                    SoundManager.playOnce("sound/hover.wav");
 					this.nameCharSelected = this.nameCharSelected == 2 ? 0
 							: this.nameCharSelected + 1;
 					this.selectionCooldown.reset();
 				}
 				if (inputManager.isKeyDown(KeyEvent.VK_LEFT)) {
+                    SoundManager.playOnce("sound/hover.wav");
 					this.nameCharSelected = this.nameCharSelected == 0 ? 2
 							: this.nameCharSelected - 1;
 					this.selectionCooldown.reset();
 				}
 				if (inputManager.isKeyDown(KeyEvent.VK_UP)) {
+                    SoundManager.playOnce("sound/hover.wav");
 					this.name[this.nameCharSelected] = (char) (this.name[this.nameCharSelected] == LAST_CHAR
 							? FIRST_CHAR
 							: this.name[this.nameCharSelected] + 1);
 					this.selectionCooldown.reset();
 				}
 				if (inputManager.isKeyDown(KeyEvent.VK_DOWN)) {
+                    SoundManager.playOnce("sound/hover.wav");
 					this.name[this.nameCharSelected] = (char) (this.name[this.nameCharSelected] == FIRST_CHAR
 							? LAST_CHAR
 							: this.name[this.nameCharSelected] - 1);

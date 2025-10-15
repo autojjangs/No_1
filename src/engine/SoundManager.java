@@ -10,14 +10,17 @@ import javax.sound.sampled.LineEvent;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.util.logging.Logger;
 
 /**
  * Minimal sound manager for short SFX.
  */
-public final class SoundManager {
+public final class  SoundManager {
 
     private static final Logger logger = Core.getLogger();
+    private static Clip loopClip;
 
     private SoundManager() {
     }
@@ -27,17 +30,12 @@ public final class SoundManager {
      * Uses a new Clip per invocation for simplicity; suitable for very short SFX.
      */
     public static void playOnce(String resourcePath) {
-        InputStream in = null;
         AudioInputStream audioStream = null;
         Clip clip = null;
         try {
-            in = SoundManager.class.getClassLoader().getResourceAsStream(resourcePath);
-            if (in == null) {
-                logger.fine("Sound resource not found: " + resourcePath);
-                return;
-            }
-
-            audioStream = AudioSystem.getAudioInputStream(in);
+            audioStream = openAudioStream(resourcePath);
+            if (audioStream == null) return;
+            audioStream = toPcmSigned(audioStream);
             DataLine.Info info = new DataLine.Info(Clip.class, audioStream.getFormat());
             clip = (Clip) AudioSystem.getLine(info);
             clip.open(audioStream);
@@ -50,8 +48,9 @@ public final class SoundManager {
             }
 
             clip.start();
+            logger.info("Started one-shot sound: " + resourcePath);
         } catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
-            logger.fine("Unable to play sound '" + resourcePath + "': " + e.getMessage());
+            logger.info("Unable to play sound '" + resourcePath + "': " + e.getMessage());
         } finally {
             // We can't close 'in' immediately because AudioSystem may stream; rely on clip close
             if (clip != null) {
