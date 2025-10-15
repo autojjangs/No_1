@@ -86,7 +86,7 @@ public class SettingScreen extends Screen {
          * Change key settings
          */
          else if (this.selectMenuItem == firstplayerMenu || this.selectMenuItem == secondplayerMenu) {
-             if (inputManager.isKeyDown(KeyEvent.VK_RIGHT) && this.inputCooldown.checkFinished()) {
+             if (inputManager.isKeyDown(KeyEvent.VK_RIGHT) && this.inputCooldown.checkFinished() && waitingForNewKey == false) {
                  this.selectedSection= 1;
                  this.selectedKeyIndex = 0;
                  this.inputCooldown.reset();
