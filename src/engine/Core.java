@@ -97,7 +97,7 @@ public final class Core {
 
                 case 2:
                     // 2P mode: building gameState now using user choice
-                    gameState = new GameState(1, MAX_LIVES, coopSelected, FileManager.getInstance().loadCoins());
+                    gameState = new GameState(1, MAX_LIVES, coopSelected);
 
                     do {
                         // Extra life this level? Give it if team pool is below cap.
