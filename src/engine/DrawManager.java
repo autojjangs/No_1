@@ -3,14 +3,12 @@ package engine;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
-import java.util.Arrays;
-import java.util.LinkedHashMap;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Logger;
 
 import Animations.BasicGameSpace;
-import Animations.InGameAnimations;
+import Animations.Explosion;
 import Animations.MenuSpace;
 import com.sun.tools.javac.Main;
 import screen.Screen;
@@ -52,14 +50,14 @@ public final class DrawManager {
 	/** Sprite types mapped to their images. */
 	private static Map<SpriteType, boolean[][]> spriteMap;
 
+    private final java.util.List<Explosion> explosions = new java.util.ArrayList<>();
+
     /**
      * Stars background animations for both game and main menu
      * Star density specified as argument.
      * */
     BasicGameSpace basicGameSpace = new BasicGameSpace(100);
     MenuSpace menuSpace = new MenuSpace(50);
-
-    InGameAnimations explosion = new InGameAnimations(5);
 
 	/** Sprite types. */
 	public static enum SpriteType {
@@ -158,7 +156,7 @@ public final class DrawManager {
 	 */
 	public void initDrawing(final Screen screen) {
 		backBuffer = new BufferedImage(screen.getWidth(), screen.getHeight(),
-				BufferedImage.TYPE_INT_RGB);
+				BufferedImage.TYPE_INT_ARGB);
 
 		graphics = frame.getGraphics();
 		backBufferGraphics = backBuffer.getGraphics();
@@ -222,11 +220,6 @@ public final class DrawManager {
 			// enemy bullets will keep their default color from the entity
 		}
 
-        if(entity instanceof Ship){
-            drawSpecialShip(positionX, positionY);
-            return;
-        }
-
 		backBufferGraphics.setColor(color);
 		for (int i = 0; i < image.length; i++)
 			for (int j = 0; j < image[i].length; j++)
@@ -235,114 +228,64 @@ public final class DrawManager {
 							+ j * 2, 1, 1);
 	}
 
-    public void drawSpecialShip(final int positionX, final int positionY) {
-        char[][] image = {
-                {'0','0','0','0','0','0','0','B','0','0'},
-                {'0','0','0','0','0','0','B','B','B','0'},
-                {'0','0','0','0','0','B','R','B','B','0'},
-                {'0','0','0','0','B','R','Q','Y','Y','Y'},
-                {'0','0','0','B','R','Q','R','Y','Y','Y'},
-                {'0','0','B','R','Q','R','B','B','0','0'},
-                {'0','B','R','Q','R','B','L','B','0','0'},
-                {'B','R','Q','R','B','L','L','L','0','0'},
-                {'0','B','R','Q','R','B','L','B','0','0'},
-                {'0','0','B','R','Q','R','B','B','0','0'},
-                {'0','0','0','B','R','Q','R','Y','Y','Y'},
-                {'0','0','0','0','B','R','Q','Y','Y','Y'},
-                {'0','0','0','0','0','B','R','B','B','0'},
-                {'0','0','0','0','0','0','B','B','B','0'},
-                {'0','0','0','0','0','0','0','B','0','0'}
-        };
-
-
-        for (int i = 0; i < image.length; i++) {
-
-            for (int j = 0; j < image[i].length; j++) {
-
-                switch(image[i][j]){
-                    case 'B':
-                        backBufferGraphics.setColor(Color.green);
-                        backBufferGraphics.drawRect(positionX + i * 2, positionY + j * 2, 1, 1);
-                        break;
-                    case 'R':
-                        backBufferGraphics.setColor(Color.RED);
-                        backBufferGraphics.drawRect(positionX + i * 2, positionY + j * 2, 1, 1);
-                        break;
-                    case 'Q':
-                        backBufferGraphics.setColor(Color.PINK);
-                        backBufferGraphics.drawRect(positionX + i * 2, positionY + j * 2, 1, 1);
-                        break;
-                    case 'L':
-                        backBufferGraphics.setColor(Color.BLUE);
-                        backBufferGraphics.drawRect(positionX + i * 2, positionY + j * 2, 1, 1);
-                        break;
-                    case 'Y':
-                        backBufferGraphics.setColor(Color.YELLOW);
-                        backBufferGraphics.drawRect(positionX + i * 2, positionY + j * 2, 1, 1);
-                        break;
-                }
-            }
-
-        }
-    }
-
 
     public void menuHover(final int state){
         menuSpace.setColor(state);
         menuSpace.setSpeed(state == 3);
     }
 
-    public void explosion(final int x, final int y){
-        explosion.updateGrid();
+    public void triggerExplosion(int x, int y) {
+        explosions.add(new Explosion(x, y));
+    }
+
+    public void drawExplosions(){
 
         Graphics2D g2d = (Graphics2D) backBufferGraphics;
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-        backBufferGraphics.setColor(Color.WHITE);
-        int[][] grid = explosion.getGrid();
+        g2d.setColor(Color.WHITE);
 
-        logger.info(Arrays.deepToString(grid));
 
-        for(int i = 0; i < grid.length; i++){
-            for(int j = 0; j < grid.length; j++){
+        Iterator<Explosion> iterator = explosions.iterator();
 
-                Color color;
-                switch(grid[i][j]){
-                    case 1:
-                        color = new Color(255,0,0,100);
-                        break;
-                    case 2:
-                        color = new Color(255,255,0,100);
-                        break;
-                    default:
-                        color = new Color(255,0,0,100);
-                        //color = new Color(255,255,255,0);
-                        break;
+        while(iterator.hasNext()){
+            Explosion e = iterator.next();
+            e.update();
+
+            if (!e.isActive()) {
+                iterator.remove();
+                continue;
+            }
+
+            for(Explosion.Particle p : e.getParticles()){
+                if(!p.active){
+                    continue;
                 }
 
-                int size = 1;
+                int size = 2;
                 int radius = size * 2;
 
                 float[] dist = {0.0f, 1.0f};
                 Color[] colors = {
-                        color,
-                        new Color(255, 255, 200, 0)
+                        new Color(p.color.getRed(), p.color.getGreen(), p.color.getBlue(), 200),
+                        new Color(p.color.getRed(), p.color.getGreen(), p.color.getBlue(), 0)
                 };
 
                 RadialGradientPaint paint = new RadialGradientPaint(
-                        new Point(x-explosion.getWidth()+i, y+explosion.getWidth()+j),
+                        new Point((int)p.x, (int)p.y),
                         radius,
                         dist,
                         colors
                 );
+
                 g2d.setPaint(paint);
-                g2d.fillOval(x-explosion.getWidth()+i - radius / 2, y+explosion.getWidth()+j - radius / 2, radius, radius);
-
-
-                backBufferGraphics.fillOval(x-explosion.getWidth()+i, y+explosion.getWidth()+j, size, size);
+                g2d.fillOval((int)(p.x), (int)(p.y), radius, radius);
             }
+
         }
     }
+
+
 
     /**
      * Draws the main menu stars background animation
@@ -381,6 +324,11 @@ public final class DrawManager {
         }
     }
 
+    public void setLastLife(boolean status){
+        basicGameSpace.setLastLife(status);
+    }
+
+
     /**
      * Draws the stars background animation during the game
      */
@@ -398,10 +346,15 @@ public final class DrawManager {
             int radius = size * 2;
 
             float[] dist = {0.0f, 1.0f};
-            Color[] colors = {
-                    new Color(255, 255, 200, 50),
-                    new Color(255, 255, 200, 0)
-            };
+            Color[] colors = new Color[2];
+            if(basicGameSpace.isLastLife()){
+                colors[0] = new Color(255, 0, 0, 100);
+                colors[1] = new Color(255, 0, 0, 50);
+            }
+            else{
+                colors[0] = new Color(255, 255, 200, 50);
+                colors[1] = new Color(255, 255, 200, 50);
+            }
 
             RadialGradientPaint paint = new RadialGradientPaint(
                     new Point(positions[i][0] + size / 2, positions[i][1] + size / 2),
