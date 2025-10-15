@@ -111,7 +111,6 @@ public class SettingScreen extends Screen {
      */
     private void draw() {
         drawManager.initDrawing(this);
-
         drawManager.drawSettingMenu(this);
         drawManager.drawSettingLayout(this, menuItem,this.selectMenuItem);
 
@@ -132,9 +131,9 @@ public class SettingScreen extends Screen {
         int my = inputManager.getMouseY();
         java.awt.Rectangle backBox = drawManager.getBackButtonHitbox(this);
 
-        if (backBox.contains(mx, my)) {
-            drawManager.drawBackButton(this, true);
-        }
+        boolean backHover = backBox.contains(mx, my);
+        boolean backSelected = (this. selectMenuItem == back);
+        drawManager.drawBackButton(this, backHover || backSelected);
 
         drawManager.completeDrawing(this);
     }
