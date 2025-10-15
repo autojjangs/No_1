@@ -24,7 +24,6 @@ public class ItemEffect {
      */
     public static void applyCoinItem(final GameState gameState, final int playerId, int coinAmount) {
         if (gameState == null) return;
-        Logger logger = Core.getLogger();
         final int playerIndex = getPlayerIndex(playerId);
         final int beforeCoin = gameState.getCoins(playerIndex);
 
@@ -45,7 +44,6 @@ public class ItemEffect {
      */
     public static void applyHealItem(final GameState gameState, final int playerId, int lifeAmount) {
         if (gameState == null) return;
-        Logger logger = Core.getLogger();
         final int beforeLife = gameState.getLivesRemaining();
 
         // if 2p mode
