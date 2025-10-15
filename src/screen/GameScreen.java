@@ -5,7 +5,11 @@ import java.awt.event.KeyEvent;
 import java.util.HashSet;
 import java.util.Set;
 
-import engine.*;
+import engine.Cooldown;
+import engine.Core;
+import engine.GameSettings;
+import engine.GameState;
+import engine.AchievementManager;
 import entity.Bullet;
 import entity.BulletPool;
 import entity.EnemyShip;
@@ -69,6 +73,10 @@ public class GameScreen extends Screen {
     private boolean levelFinished;
     /** Checks if a bonus life is received. */
     private boolean bonusLife;
+
+    private boolean isPaused;
+    private Cooldown pauseCooldown;
+    private Cooldown returnMenuCooldown;
 
     private int score;
     private int lives;
@@ -175,6 +183,10 @@ public class GameScreen extends Screen {
         this.gameStartTime = System.currentTimeMillis();
         this.inputDelay = Core.getCooldown(INPUT_DELAY);
         this.inputDelay.reset();
+
+        this.isPaused = false;
+        this.pauseCooldown = Core.getCooldown(300);
+        this.returnMenuCooldown = Core.getCooldown(300);
     }
 
     /**
@@ -198,7 +210,16 @@ public class GameScreen extends Screen {
     protected final void update() {
         super.update();
 
-        if (this.inputDelay.checkFinished() && !this.levelFinished) {
+		if (this.inputDelay.checkFinished()&&inputManager.isKeyDown(KeyEvent.VK_ESCAPE) && this.pauseCooldown.checkFinished()) {
+			this.isPaused = !this.isPaused;
+			this.pauseCooldown.reset();
+		}
+		if (this.isPaused && inputManager.isKeyDown(KeyEvent.VK_BACK_SPACE) && this.returnMenuCooldown.checkFinished()) {
+			returnCode = 1;
+			this.isRunning = false;
+		}
+		if (!this.isPaused) {
+			if (this.inputDelay.checkFinished() && !this.levelFinished) {
 
             // Per-player input/move/shoot
             for (int p = 0; p < GameState.NUM_PLAYERS; p++) {
@@ -268,8 +289,6 @@ public class GameScreen extends Screen {
         cleanItems();
         manageItemPickups();
 
-        draw();
-
         // End condition: formation cleared or TEAM lives exhausted.
         if ((this.enemyShipFormation.isEmpty() || !state.teamAlive()) && !this.levelFinished) {
             // The object managed by the object pool pattern must be recycled at the end of the level.
@@ -301,6 +320,7 @@ public class GameScreen extends Screen {
 
         if (this.levelFinished && this.screenFinishedCooldown.checkFinished())
             this.isRunning = false;
+        draw();
     }
 
     /**
@@ -309,8 +329,7 @@ public class GameScreen extends Screen {
     private void draw() {
         drawManager.initDrawing(this);
 
-
-    drawManager.updateGameSpace();
+        drawManager.updateGameSpace();
 
 		for (Ship s : this.ships)
 			if (s != null)
@@ -353,13 +372,15 @@ public class GameScreen extends Screen {
 
         drawManager.drawHorizontalLine(this, SEPARATION_LINE_HEIGHT - 1);
 
-        // Countdown to game start.
-        if (!this.inputDelay.checkFinished()) {
-            int countdown = (int) ((INPUT_DELAY - (System.currentTimeMillis() - this.gameStartTime)) / 1000);
-            drawManager.drawCountDown(this, this.state.getLevel(), countdown, this.bonusLife);
-            drawManager.drawHorizontalLine(this, this.height / 2 - this.height / 12);
-            drawManager.drawHorizontalLine(this, this.height / 2 + this.height / 12);
-        }
+		if (!this.inputDelay.checkFinished()) {
+			int countdown = (int) ((INPUT_DELAY - (System.currentTimeMillis() - this.gameStartTime)) / 1000);
+			drawManager.drawCountDown(this, this.state.getLevel(), countdown, this.bonusLife);
+			drawManager.drawHorizontalLine(this, this.height / 2 - this.height / 12);
+			drawManager.drawHorizontalLine(this, this.height / 2 + this.height / 12);
+		}
+		if(this.isPaused){
+			drawManager.drawPauseOverlay(this);
+		}
 
         drawManager.completeDrawing(this);
     }
