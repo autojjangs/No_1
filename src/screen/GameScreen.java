@@ -9,6 +9,7 @@ import engine.Cooldown;
 import engine.Core;
 import engine.GameSettings;
 import engine.GameState;
+import engine.AchievementManager;
 import entity.Bullet;
 import entity.BulletPool;
 import entity.EnemyShip;
