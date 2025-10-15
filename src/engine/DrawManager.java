@@ -2,14 +2,15 @@ package engine;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.util.LinkedHashMap;
+import java.io.*;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Logger;
 
 import Animations.BasicGameSpace;
+import Animations.Explosion;
 import Animations.MenuSpace;
+import com.sun.tools.javac.Main;
 import screen.Screen;
 import entity.Entity;
 import entity.Ship;
@@ -48,6 +49,8 @@ public final class DrawManager {
 
 	/** Sprite types mapped to their images. */
 	private static Map<SpriteType, boolean[][]> spriteMap;
+
+    private final java.util.List<Explosion> explosions = new java.util.ArrayList<>();
 
     /**
      * Stars background animations for both game and main menu
@@ -153,7 +156,7 @@ public final class DrawManager {
 	 */
 	public void initDrawing(final Screen screen) {
 		backBuffer = new BufferedImage(screen.getWidth(), screen.getHeight(),
-				BufferedImage.TYPE_INT_RGB);
+				BufferedImage.TYPE_INT_ARGB);
 
 		graphics = frame.getGraphics();
 		backBufferGraphics = backBuffer.getGraphics();
@@ -226,6 +229,64 @@ public final class DrawManager {
 	}
 
 
+    public void menuHover(final int state){
+        menuSpace.setColor(state);
+        menuSpace.setSpeed(state == 3);
+    }
+
+    public void triggerExplosion(int x, int y) {
+        explosions.add(new Explosion(x, y));
+    }
+
+    public void drawExplosions(){
+
+        Graphics2D g2d = (Graphics2D) backBufferGraphics;
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+        g2d.setColor(Color.WHITE);
+
+
+        Iterator<Explosion> iterator = explosions.iterator();
+
+        while(iterator.hasNext()){
+            Explosion e = iterator.next();
+            e.update();
+
+            if (!e.isActive()) {
+                iterator.remove();
+                continue;
+            }
+
+            for(Explosion.Particle p : e.getParticles()){
+                if(!p.active){
+                    continue;
+                }
+
+                int size = 2;
+                int radius = size * 2;
+
+                float[] dist = {0.0f, 1.0f};
+                Color[] colors = {
+                        new Color(p.color.getRed(), p.color.getGreen(), p.color.getBlue(), 200),
+                        new Color(p.color.getRed(), p.color.getGreen(), p.color.getBlue(), 0)
+                };
+
+                RadialGradientPaint paint = new RadialGradientPaint(
+                        new Point((int)p.x, (int)p.y),
+                        radius,
+                        dist,
+                        colors
+                );
+
+                g2d.setPaint(paint);
+                g2d.fillOval((int)(p.x), (int)(p.y), radius, radius);
+            }
+
+        }
+    }
+
+
+
     /**
      * Draws the main menu stars background animation
      */
@@ -245,7 +306,7 @@ public final class DrawManager {
 
             float[] dist = {0.0f, 1.0f};
             Color[] colors = {
-                    new Color(255, 255, 200, 255),
+                    menuSpace.getColor(),
                     new Color(255, 255, 200, 0)
             };
 
@@ -262,6 +323,11 @@ public final class DrawManager {
             backBufferGraphics.fillOval(positions[i][0], positions[i][1], size, size);
         }
     }
+
+    public void setLastLife(boolean status){
+        basicGameSpace.setLastLife(status);
+    }
+
 
     /**
      * Draws the stars background animation during the game
@@ -280,10 +346,15 @@ public final class DrawManager {
             int radius = size * 2;
 
             float[] dist = {0.0f, 1.0f};
-            Color[] colors = {
-                    new Color(255, 255, 200, 50),
-                    new Color(255, 255, 200, 0)
-            };
+            Color[] colors = new Color[2];
+            if(basicGameSpace.isLastLife()){
+                colors[0] = new Color(255, 0, 0, 100);
+                colors[1] = new Color(255, 0, 0, 50);
+            }
+            else{
+                colors[0] = new Color(255, 255, 200, 50);
+                colors[1] = new Color(255, 255, 200, 50);
+            }
 
             RadialGradientPaint paint = new RadialGradientPaint(
                     new Point(positions[i][0] + size / 2, positions[i][1] + size / 2),

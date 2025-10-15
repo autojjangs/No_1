@@ -110,7 +110,7 @@ public class TitleScreen extends Screen {
 	private void nextMenuItem() {
 
         this.menuIndex = (this.menuIndex + 1) % 4;
-
+        drawManager.menuHover(this.menuIndex);
 	}
 
 	/**
@@ -118,6 +118,7 @@ public class TitleScreen extends Screen {
 	 */
 	private void previousMenuItem() {
         this.menuIndex = (this.menuIndex + 3) % 4; // wrap upwards
+        drawManager.menuHover(this.menuIndex);
     }
 	/**
 	 * Draws the elements associated with the screen.

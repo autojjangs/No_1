@@ -5,6 +5,7 @@ import java.awt.event.KeyEvent;
 import java.util.HashSet;
 import java.util.Set;
 
+import Animations.Explosion;
 import engine.Cooldown;
 import engine.Core;
 import engine.GameSettings;
@@ -194,11 +195,13 @@ public class GameScreen extends Screen {
 			this.enemyShipFormation.shoot(this.bullets);
 		}
 
+
 		manageCollisions();
 		cleanBullets();
 		draw();
 
-		// End condition: formation cleared or TEAM lives exhausted.
+
+        // End condition: formation cleared or TEAM lives exhausted.
 		if ((this.enemyShipFormation.isEmpty() || !state.teamAlive()) && !this.levelFinished) {
 			this.levelFinished = true;
 			this.screenFinishedCooldown.reset();
@@ -211,8 +214,8 @@ public class GameScreen extends Screen {
 	private void draw() {
 		drawManager.initDrawing(this);
 
-
-    drawManager.updateGameSpace();
+        drawManager.drawExplosions();
+        drawManager.updateGameSpace();
 
 		for (Ship s : this.ships)
 			if (s != null)
@@ -288,8 +291,18 @@ public class GameScreen extends Screen {
 							&& checkCollision(bullet, ship) && !this.levelFinished) {
 						recyclable.add(bullet);
 
+                        drawManager.triggerExplosion(ship.getPositionX(), ship.getPositionY());
 						ship.destroy(); // explosion/respawn handled by Ship.update()
+
+
                         state.decLife(p); // decrement shared/team lives by 1
+
+                        if(state.getLivesRemaining() == 1){
+                            drawManager.setLastLife(true);
+                        }
+                        else{
+                            drawManager.setLastLife(false);
+                        }
 
 						this.logger.info("Hit on player " + (p + 1) + ", team lives now: " + state.getLivesRemaining());
 						break;
