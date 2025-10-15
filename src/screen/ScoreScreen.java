@@ -77,8 +77,9 @@ public class ScoreScreen extends Screen {
 		this.gameState = gameState; // Added
 
 		this.score = gameState.getScore();
-//		this.livesRemaining = gameState.getLivesRemaining();
-		this.name = new StringBuilder() ;
+		this.livesRemaining = gameState.getLivesRemaining();
+		this.coins = gameState.getCoins();
+		this.name = new StringBuilder();
 		this.bulletsShot = gameState.getBulletsShot();
 		this.shipsDestroyed = gameState.getShipsDestroyed();
 		this.totalCoins = gameState.getCoins(); // ADD THIS LINE
@@ -224,6 +225,7 @@ public class ScoreScreen extends Screen {
 			drawManager.drawResults(this,
 					this.gameState.getScore(), // team score
 					this.gameState.getCoins(),
+					this.gameState.getLivesRemaining(),
 					this.gameState.getShipsDestroyed(),
 					0f, // leaving out team accuracy
 					this.isNewRecord,
@@ -240,18 +242,18 @@ public class ScoreScreen extends Screen {
 
 			int y;  // tweak these if you want
 			if (this.isNewRecord) {
-				y = this.getHeight() / 2 - 5; // Position if new record is True
+				y = this.getHeight() / 2 + 40; // Position if new record is True
 			} else {
-				y = this.getHeight() / 2 + 60; // Position if new record is False
+				y = this.getHeight() / 2 + 80; // Position if new record is False
 			}
 			drawManager.drawCenteredRegularString(this, p1, y);
-			drawManager.drawCenteredRegularString(this, p2, y + 40); // Increase spacing
+			drawManager.drawCenteredRegularString(this, p2, y + 20); // Increase spacing
 
 		} else {
 			// 1P legacy summary with accuracy
 			float acc = (this.bulletsShot > 0) ? (float) this.shipsDestroyed / this.bulletsShot : 0f;
 
-			drawManager.drawResults(this, this.score, this.coins, this.shipsDestroyed, acc, this.isNewRecord, true); // Draw accuracy for 1P mode
+			drawManager.drawResults(this, this.score, this.coins, this.livesRemaining, this.shipsDestroyed, acc, this.isNewRecord, true); // Draw accuracy for 1P mode
 		}
 
 		if (this.isNewRecord) {

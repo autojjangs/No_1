@@ -539,14 +539,15 @@ public final class DrawManager {
 	 *                       If the score is a new high score.
 	 */
 	public void drawResults(final Screen screen, final int score,
-							final int coins, final int shipsDestroyed,
+							final int coins, final int livesRemaining , final int shipsDestroyed,
 							final float accuracy, final boolean isNewRecord, final boolean accuracy1P) {
 		String scoreString = String.format("score %04d", score);
 		String coinString = String.format("coins %04d", coins);
+		String livesRemainingString = String.format("lives remaining %d", livesRemaining);
 		String shipsDestroyedString = "enemies destroyed " + shipsDestroyed;
 		String accuracyString = String.format("accuracy %.2f%%", Float.isNaN(accuracy) ? 0.0 : accuracy * 100);
 
-		int height = isNewRecord ? 4 : 2;
+		int height = isNewRecord ? 4 : 3;
 
 		if (isNewRecord) {
 			backBufferGraphics.setColor(Color.RED);
@@ -559,13 +560,16 @@ public final class DrawManager {
 		drawCenteredRegularString(screen, coinString,
 				screen.getHeight() / height + fontRegularMetrics.getHeight()
 						* 2);
-		drawCenteredRegularString(screen, shipsDestroyedString,
+		drawCenteredRegularString(screen, livesRemainingString,
 				screen.getHeight() / height + fontRegularMetrics.getHeight()
 						* 4);
+		drawCenteredRegularString(screen, shipsDestroyedString,
+				screen.getHeight() / height + fontRegularMetrics.getHeight()
+						* 6);
 		// Draw accuracy for player in 1P mode
 		if (accuracy1P) {
 			drawCenteredRegularString(screen, accuracyString, screen.getHeight()
-					/ height + fontRegularMetrics.getHeight() * 6);
+					/ height + fontRegularMetrics.getHeight() * 8);
 		}
 	}
 
@@ -584,7 +588,7 @@ public final class DrawManager {
 
 		backBufferGraphics.setColor(Color.GREEN);
 		drawCenteredRegularString(screen, newRecordString, screen.getHeight()
-				/ 4 + fontRegularMetrics.getHeight() * 10);
+				/ 4 + fontRegularMetrics.getHeight() * 11);
 
 		// Draw the current name with blinking cursor
 		String displayName = name.isEmpty() ? "" : nameStr;
@@ -597,7 +601,7 @@ public final class DrawManager {
 
 		backBufferGraphics.setColor(Color.WHITE);
 		drawCenteredRegularString(screen, displayText,
-				screen.getHeight() / 4 + fontRegularMetrics.getHeight() * 11);
+				screen.getHeight() / 4 + fontRegularMetrics.getHeight() * 12);
 
 	}
 
@@ -624,7 +628,7 @@ public final class DrawManager {
 		String gameOverString = "Game Over";
 		String continueOrExitString = "Press Space to play again, Escape to exit";
 
-		int height = isNewRecord ? 4 : 2;
+		int height = isNewRecord ? 4 : 3;
 
 		backBufferGraphics.setColor(Color.GREEN);
 		drawCenteredBigString(screen, gameOverString, screen.getHeight()

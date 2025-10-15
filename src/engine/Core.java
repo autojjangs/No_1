@@ -79,7 +79,7 @@ public final class Core {
 //		int returnCode = 1;
 //		do {
 //
-//			switch (returnCode) {
+//	d		switch (returnCode) {
 //				case 1:
 //					currentScreen = new TitleScreen(width, height, FPS);
 //					LOGGER.info("Starting " + WIDTH + "x" + HEIGHT + " title screen at " + FPS + " fps.");
