@@ -887,4 +887,26 @@ public final class DrawManager {
 
         return new Rectangle(x, y, textWidth, h);
     }
+
+	public void drawVolumeBar(final Screen screen, final int volumlevel){
+		int bar_startWidth = screen.getWidth() / 2;
+		int bar_endWidth = screen.getWidth()-40;
+		int barHeight = screen.getHeight()*3/10;
+
+		String volumelabel = "Volume";
+		backBufferGraphics.setFont(fontRegular);
+		backBufferGraphics.setColor(Color.WHITE);
+		backBufferGraphics.drawLine(bar_startWidth, barHeight, bar_endWidth, barHeight);
+
+		backBufferGraphics.setColor(Color.WHITE);
+		backBufferGraphics.drawString(volumelabel, bar_startWidth-80, barHeight+7);
+
+		int indicatorX = bar_startWidth + (int)((bar_endWidth-bar_startWidth)*(volumlevel/100.0));
+		int indicatorY = barHeight+7;
+		backBufferGraphics.fillRect(indicatorX, indicatorY-13, 14, 14);
+		backBufferGraphics.setColor(Color.WHITE);
+		String volumeText = Integer.toString(volumlevel);
+		backBufferGraphics.drawString(volumeText, bar_endWidth+10, indicatorY);
+
+	}
 }
