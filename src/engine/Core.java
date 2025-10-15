@@ -246,4 +246,14 @@ public final class Core {
 		return NUM_LEVELS;
 	}
 
+	private static int volumeLevel = 50; // 앱 기본값
+
+	public static int getVolumeLevel() {
+		return volumeLevel;
+	}
+
+	public static void setVolumeLevel(int v) {
+		volumeLevel = Math.max(0, Math.min(100, v));
+	}
+
 }
