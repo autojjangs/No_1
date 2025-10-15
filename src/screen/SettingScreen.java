@@ -73,6 +73,9 @@ public class SettingScreen extends Screen {
             this.isRunning = false;
 
         // back button click event
+
+            this.inputCooldown.reset();
+        }
         if (inputManager.isMouseClicked()) {
             int mx = inputManager.getMouseX();
             int my = inputManager.getMouseY();
@@ -82,8 +85,6 @@ public class SettingScreen extends Screen {
                 this.returnCode = 1;
                 this.isRunning = false;
             }
-        }
-            this.inputCooldown.reset();
         }
         draw();
     }
