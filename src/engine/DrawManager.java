@@ -673,13 +673,13 @@ public final class DrawManager {
 
     public void drawSettingMenu(final Screen screen) {
         String settingsString = "Settings";
-        String instructionsString = "Press Space to return";
+
 
         backBufferGraphics.setColor(Color.GREEN);
         drawCenteredBigString(screen, settingsString, screen.getHeight() / 8);
 
         backBufferGraphics.setColor(Color.GRAY);
-        drawCenteredRegularString(screen, instructionsString,
+        drawCenteredRegularString(screen, "",
                 screen.getHeight() / 5);
 
         // draw back button at top-left
