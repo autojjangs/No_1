@@ -42,6 +42,125 @@ public final class Core {
 	private static ConsoleHandler consoleHandler;
 	private static int NUM_LEVELS; // Total number of levels
 
+//	/**
+//	 * Test implementation.
+//	 *
+//	 * @param args
+//	 *             Program args, ignored.
+//	 */
+//	public static void main(final String[] args) throws IOException {
+//		try {
+//			LOGGER.setUseParentHandlers(false);
+//			fileHandler = new FileHandler("log");
+//			fileHandler.setFormatter(new MinimalFormatter());
+//			consoleHandler = new ConsoleHandler();
+//			consoleHandler.setFormatter(new MinimalFormatter());
+//			LOGGER.addHandler(fileHandler);
+//			LOGGER.addHandler(consoleHandler);
+//			LOGGER.setLevel(Level.ALL);
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+//
+//		frame = new Frame(WIDTH, HEIGHT);
+//		DrawManager.getInstance().setFrame(frame);
+//		int width = frame.getWidth();
+//		int height = frame.getHeight();
+//
+//		gameSettings = GameSettings.getGameSettings();
+//		NUM_LEVELS = gameSettings.size(); // Initialize total number of levels
+//
+//		// 2P mode: modified to null to allow for switch between 2 modes
+//		GameState gameState = null;
+//		boolean coopSelected = false; // false = 1P, true = 2P
+//
+//		AchievementManager achievementManager = new AchievementManager(); // add 1P/2P achievement manager
+//
+//		int returnCode = 1;
+//		do {
+//
+//			switch (returnCode) {
+//				case 1:
+//					currentScreen = new TitleScreen(width, height, FPS);
+//					LOGGER.info("Starting " + WIDTH + "x" + HEIGHT + " title screen at " + FPS + " fps.");
+//					returnCode = frame.setScreen(currentScreen);
+//					LOGGER.info("Closing title screen.");
+//
+//					// 2P mode: reading the mode which user chose from TitleScreen
+//					if (returnCode == 2 || returnCode == 3) {
+//						coopSelected = ((TitleScreen) currentScreen).isCoopSelected();
+//					}
+//
+//					break;
+//
+//				case 2:
+//					// 2P mode: building gameState now using user choice
+//					gameState = new GameState(1, MAX_LIVES, coopSelected);
+//
+//					do {
+//						// Extra life this level? Give it if team pool is below cap.
+//						int teamCap = gameState.isCoop() ? (MAX_LIVES * GameState.NUM_PLAYERS) : MAX_LIVES;
+//						boolean bonusLife = gameState.getLevel() % EXTRA_LIFE_FRECUENCY == 0
+//								&& gameState.getLivesRemaining() < teamCap;
+//
+//						currentScreen = new GameScreen(
+//								gameState,
+//								gameSettings.get(gameState.getLevel() - 1),
+//								bonusLife, width, height, FPS, achievementManager);
+//
+//						LOGGER.info("Starting " + WIDTH + "x" + HEIGHT + " game screen at " + FPS + " fps.");
+//						frame.setScreen(currentScreen);
+//						LOGGER.info("Closing game screen.");
+//
+//						gameState = ((GameScreen) currentScreen).getGameState();
+//
+//						// Persist/refresh coin progress after the level (from feature branch)
+//						gameState = new GameState(
+//								gameState.getLevel(),
+//								gameState.getScore(),
+//								gameState.getLivesRemaining(),
+//								gameState.getBulletsShot(),
+//								gameState.getShipsDestroyed(),
+//								getFileManager().loadCoins()
+//						);
+//
+//						if (gameState.teamAlive()) {
+//							gameState.nextLevel();
+//						}
+//
+//					} while ((gameState.getLivesRemaining() > 0 || gameState.teamAlive())
+//							&& gameState.getLevel() <= NUM_LEVELS);
+//
+//					LOGGER.info("Starting " + WIDTH + "x" + HEIGHT + " score screen at " + FPS + " fps, with a score of "
+//							+ gameState.getScore() + ", "
+//							+ gameState.getLivesRemaining() + " lives remaining, "
+//							+ gameState.getBulletsShot() + " bullets shot and "
+//							+ gameState.getShipsDestroyed() + " ships destroyed.");
+//					currentScreen = new ScoreScreen(width, height, FPS, gameState, achievementManager);
+//					returnCode = frame.setScreen(currentScreen);
+//					LOGGER.info("Closing score screen.");
+//					break;
+//
+//				case 3:
+//					// High scores.
+//					currentScreen = new HighScoreScreen(width, height, FPS);
+//					LOGGER.info("Starting " + WIDTH + "x" + HEIGHT
+//							+ " high score screen at " + FPS + " fps.");
+//					returnCode = frame.setScreen(currentScreen);
+//					LOGGER.info("Closing high score screen.");
+//					break;
+//
+//				default:
+//					break;
+//			}
+//
+//		} while (returnCode != 0);
+//
+//		fileHandler.flush();
+//		fileHandler.close();
+//		System.exit(0);
+//	}
+
 	/**
 	 * Test implementation.
 	 *
@@ -69,6 +188,7 @@ public final class Core {
 
 		gameSettings = GameSettings.getGameSettings();
 		NUM_LEVELS = gameSettings.size(); // Initialize total number of levels
+
 
 		// 2P mode: modified to null to allow for switch between 2 modes
 		GameState gameState = null;
@@ -114,22 +234,11 @@ public final class Core {
 
 						gameState = ((GameScreen) currentScreen).getGameState();
 
-						// Persist/refresh coin progress after the level (from feature branch)
-						gameState = new GameState(
-								gameState.getLevel(),
-								gameState.getScore(),
-								gameState.getLivesRemaining(),
-								gameState.getBulletsShot(),
-								gameState.getShipsDestroyed(),
-								getFileManager().loadCoins()
-						);
-
 						if (gameState.teamAlive()) {
 							gameState.nextLevel();
 						}
 
-					} while ((gameState.getLivesRemaining() > 0 || gameState.teamAlive())
-							&& gameState.getLevel() <= NUM_LEVELS);
+					} while (gameState.teamAlive() && gameState.getLevel() <= gameSettings.size());
 
 					LOGGER.info("Starting " + WIDTH + "x" + HEIGHT + " score screen at " + FPS + " fps, with a score of "
 							+ gameState.getScore() + ", "

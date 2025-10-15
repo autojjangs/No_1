@@ -36,8 +36,6 @@ public class GameState {
 		this.level = level;
 		this.coop = coop;
 
-
-
 		if (coop) {
             this.sharedLives = true;
             this.teamLives = Math.max(0, livesEach * NUM_PLAYERS);
