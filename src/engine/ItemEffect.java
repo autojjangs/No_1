@@ -1,8 +1,11 @@
 package engine;
 
 import java.util.logging.Logger;
+import
 
 public class ItemEffect {
+
+    Logger logger = Core.getLogger();
     /**
      * Applies the coin item effect to the specified player.
      *
@@ -15,14 +18,13 @@ public class ItemEffect {
      */
     public static void applyCoinItem(final GameState gameState, final int playerId, int coinAmount) {
         if (gameState == null) return;
-        Logger logger = Core.getLogger();
         final int playerIndex = getPlayerIndex(playerId);
         final int beforeCoin = gameState.getCoins(playerIndex);
 
         gameState.addCoins(playerIndex, coinAmount);
         gameState.addScore(getPlayerIndex(playerId), coinAmount);
 
-        logger.info("Player " + playerId + " added " + coinAmount + " coins. before : " + beforeCoin + ", after : " + gameState.getCoins(playerIndex));
+        logger.info("[ItemEffect - COIN] Player " + playerId + " : " + beforeCoin + " + " + coinAmount + " -> " + gameState.getCoins(playerIndex));
     }
 
     /**
@@ -37,7 +39,6 @@ public class ItemEffect {
      */
     public static void applyHealItem(final GameState gameState, final int playerId, int lifeAmount) {
         if (gameState == null) return;
-        Logger logger = Core.getLogger();
         final int beforeLife = gameState.getLivesRemaining();
 
         // if 2p mode
@@ -60,7 +61,7 @@ public class ItemEffect {
         }
 
 
-        logger.info("Player added " + lifeAmount + " lives. before : " + beforeLife + ", after : " + gameState.getLivesRemaining());
+        logger.info("[ItemEffect - COIN] Player " + playerId + " : " + beforeLife + " + " + lifeAmount + " -> " + gameState.getLivesRemaining());
     }
 
     /**
@@ -75,14 +76,35 @@ public class ItemEffect {
      */
     public static void applyScoreItem(final GameState gameState, final int playerId, int scoreAmount) {
         if (gameState == null) return;
-        Logger logger = Core.getLogger();
         final int playerIndex = getPlayerIndex(playerId);
         final int beforeScore = gameState.getScore(playerIndex);
 
         gameState.addScore(getPlayerIndex(playerId), scoreAmount);
 
-        logger.info("Player " + playerId + " added " + scoreAmount + " score. before : " + beforeScore + ", after : " + gameState.getScore(playerIndex));
+        logger.info("[ItemEffect - SCORE] Player " + playerId + " : " + beforeScore + " + " + scoreAmount + " -> " + gameState.getScore(playerIndex));
+    }
 
+    /**
+     * Applies the score item effect to the specified player.
+     *
+     * @param gameState
+     *            current game state instance.
+     * @param playerId
+     *            ID of the player to apply the effect to.
+     * @param effectDuration
+     *            duration of item effect.
+     */
+    public static void applyTripleShot(final GameState gameState, final int playerId, int effectDuration) {
+//        if (gameState == null) return;
+//        final bool tripleShotEffect = true;
+//
+//        // if single player - full duration, if 2p - halved duration
+//        final int tripleShotDuration = (effectDuration / 2) ? gameState.isCoop() : effectDuration;
+//
+//        logger.info("[ItemEffect - TRIPLESHOT] Player " + playerId + " has TripleShot for" + tripleShotDuration);
+//        // when item effect wears off
+//        if tripleShotEffect
+//        logger.info("[ItemEffect - TRIPLESHOT] Player " + playerId + ": TripleShot duration wore off.");
     }
 
     /**

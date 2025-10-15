@@ -81,7 +81,7 @@ public final class DrawManager {
         /** Item Graphics Temp */
         ItemScore,
         ItemCoin,
-        ItemHeal
+        ItemTripleShot
 	};
 
 	/**
@@ -112,6 +112,7 @@ public final class DrawManager {
             spriteMap.put(SpriteType.ItemScore, new boolean[5][5]);
             spriteMap.put(SpriteType.ItemCoin, new boolean[5][5]);
             spriteMap.put(SpriteType.ItemHeal, new boolean[5][5]);
+            spriteMap.put(SpriteType.ItemTripleShot, new boolean[5][5]);
 
 			fileManager.loadSprite(spriteMap);
 			logger.info("Finished loading the sprites.");

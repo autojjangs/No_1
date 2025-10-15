@@ -49,10 +49,10 @@ public final class ItemManager {
 
     /** ITEM TYPE (name only, data is loaded from CSV) **/
     public static enum ItemType {
-
         SCORE,
         COIN,
-        HEAL
+        HEAL,
+        TRIPLESHOT
     }
 
     /** -------------------------- INIT -------------------------- **/
