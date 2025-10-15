@@ -720,6 +720,43 @@ public final class DrawManager {
 
 	}
 
+    public void drawKeysettings(final Screen screen, int playerNum) {
+        int panelWidth = 220;
+        int panelHeight = 180;
+        int x = screen.getWidth() - panelWidth - 50;  // 오른쪽 여백
+        int y = screen.getHeight() / 4;               // 세로 위치
+
+        String leftKey, rightKey, attackKey;
+        if (playerNum == 1) {
+            leftKey = "A";
+            rightKey = "D";
+            attackKey = "SPACE";
+        } else {
+            leftKey = "LEFT";
+            rightKey = "RIGHT";
+            attackKey = "ENTER";
+        }
+
+        String[] labels = {"MOVE LEFT :", "MOVE RIGHT:", "ATTACK :"};
+        String[] keys = {leftKey, rightKey, attackKey};
+
+        for (int i = 0; i < labels.length; i++) {
+            int textY = y + 70 + (i * 50);
+
+            if (i < labels.length - 1) {
+                backBufferGraphics.setColor(Color.DARK_GRAY);
+                backBufferGraphics.drawLine(x + 20, textY + 20, x + panelWidth - 20, textY + 20);
+            }
+
+            backBufferGraphics.setColor(Color.LIGHT_GRAY);
+            backBufferGraphics.drawString(labels[i], x + 30, textY);
+
+            backBufferGraphics.setColor(Color.WHITE);
+            backBufferGraphics.drawString(keys[i], x + 150, textY);
+        }
+
+    }
+
 	/**
 	 * Draws a centered string on regular font.
 	 *

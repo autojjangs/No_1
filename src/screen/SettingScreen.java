@@ -86,10 +86,10 @@ public class SettingScreen extends Screen {
                 drawManager.drawVolumeBar(this,this.volumelevel);
                 break;
             case firstplayerMenu:
-                //function
+                drawManager.drawKeysettings(this, 1);
                 break;
             case secondplayerMenu:
-                //function
+                drawManager.drawKeysettings(this, 2);
                 break;
         }
         drawManager.completeDrawing(this);
