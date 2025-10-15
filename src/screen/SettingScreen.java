@@ -13,6 +13,7 @@ public class SettingScreen extends Screen {
     private int selectMenuItem;
     private Cooldown inputCooldown;
     private int volumelevel;
+    private boolean draggingVolume = false;
     /**
      * Constructor, establishes the properties of the screen.
      *
@@ -24,6 +25,12 @@ public class SettingScreen extends Screen {
         super(width, height, fps);
 
         this.returnCode = 1;
+    }
+
+    private void setVolumeFromX(java.awt.Rectangle barBox, int mouseX) {
+        double ratio = (double)(mouseX - barBox.x) / (double)barBox.width;
+        ratio = Math.max(0.0, Math.min(1.0, ratio));
+        this.volumelevel = (int)Math.round(ratio * 100.0);
     }
 
     /**
@@ -86,37 +93,53 @@ public class SettingScreen extends Screen {
         }
 
         // make mouse work on volume bar
-        java.awt.Rectangle barBox = drawManager.getVolumeBarHitbox(this);
-        int volmx = inputManager.getMouseX();
-        int volmy = inputManager.getMouseY();
+        int mx = inputManager.getMouseX();
+        int my = inputManager.getMouseY();
+        boolean pressed = inputManager.isMousePressed();
+        boolean clicked = inputManager.isMouseClicked();
 
-        if ((inputManager.isMouseClicked() || inputManager.isMousePressed()) && barBox.contains(volmx, volmy)) {
-            double ratio = (double) (volmx - barBox.x) / barBox.width;
-            ratio = Math.max(0.0, Math.min(1.0, ratio));
-            this.volumelevel = (int) (ratio * 100);
+        java.awt.Rectangle backBox = drawManager.getBackButtonHitbox(this);
+        java.awt.Rectangle barBox  = drawManager.getVolumeBarHitbox(this);
+
+// 1) Back 클릭: 최우선, 처리 후 바로 종료(같은 프레임에 볼륨 안 건드리게)
+        if (clicked && backBox.contains(mx, my)) {
+            this.returnCode = 1;
+            this.isRunning = false;
+            return;
         }
 
+// 2) 볼륨: 바 위에서 누른 순간 드래그 시작 + 즉시 위치 반영(점프)
+        if (!draggingVolume && pressed && barBox.contains(mx, my)) {
+            draggingVolume = true;
+            setVolumeFromX(barBox, mx);
+        }
 
+// 3) 드래그 유지: 누르고 있는 동안엔 Y 무시, X만 반영
+        if (draggingVolume && pressed) {
+            setVolumeFromX(barBox, mx);
+        }
+
+// 4) 드래그 종료
+        if (!pressed) {
+            draggingVolume = false;
+        }
+
+// 5) Space로 Back
         if (inputManager.isKeyDown(KeyEvent.VK_SPACE) && this.inputCooldown.checkFinished()) {
-            if(this.selectMenuItem == back) {
+            if (this.selectMenuItem == back) {
                 this.returnCode = 1;
                 this.isRunning = false;
+                return;
             }
             this.inputCooldown.reset();
         }
 
-        // back button click event
-        if (inputManager.isMouseClicked()) {
-            int mx = inputManager.getMouseX();
-            int my = inputManager.getMouseY();
-            java.awt.Rectangle backBox = drawManager.getBackButtonHitbox(this);
 
-            if (backBox.contains(mx, my)) {
-                this.returnCode = 1;
-                this.isRunning = false;
-            }
-        }
+
         draw();
+
+        // back button click event
+
     }
 
     /**
@@ -129,7 +152,7 @@ public class SettingScreen extends Screen {
 
         switch(this.selectMenuItem) {
             case volumeMenu:
-                drawManager.drawVolumeBar(this,this.volumelevel);
+                drawManager.drawVolumeBar(this,this.volumelevel, this.draggingVolume);
                 break;
             case firstplayerMenu:
                 //function

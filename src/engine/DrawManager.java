@@ -888,7 +888,7 @@ public final class DrawManager {
         return new Rectangle(x, y, textWidth, h);
     }
 
-	public void drawVolumeBar(final Screen screen, final int volumlevel){
+	public void drawVolumeBar(final Screen screen, final int volumlevel, final boolean dragging){
 		int bar_startWidth = screen.getWidth() / 2;
 		int bar_endWidth = screen.getWidth()-40;
 		int barHeight = screen.getHeight()*3/10;
@@ -917,7 +917,7 @@ public final class DrawManager {
 		boolean hoverIndicator = mouseX >= indicatorX && mouseX <= indicatorX + size &&
 				mouseY >= indicatorY && mouseY <= indicatorY + size;
 
-		if (hoverIndicator) {
+		if (hoverIndicator || dragging) {
 			backBufferGraphics.setColor(Color.GREEN);
 		} else {
 			backBufferGraphics.setColor(Color.WHITE);
