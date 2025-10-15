@@ -1,3 +1,4 @@
+// screen/GameScreen.java
 package screen;
 
 import java.awt.event.KeyEvent;
@@ -308,9 +309,12 @@ public class GameScreen extends Screen {
     private void draw() {
         drawManager.initDrawing(this);
 
-        for (Ship s : this.ships)
-            if (s != null)
-                drawManager.drawEntity(s, s.getPositionX(), s.getPositionY());
+
+    drawManager.updateGameSpace();
+
+		for (Ship s : this.ships)
+			if (s != null)
+				drawManager.drawEntity(s, s.getPositionX(), s.getPositionY());
 
         if (this.enemyShipSpecial != null)
             drawManager.drawEntity(this.enemyShipSpecial,
@@ -473,7 +477,7 @@ public class GameScreen extends Screen {
                         && checkCollision(bullet, this.enemyShipSpecial)) {
                     int points = this.enemyShipSpecial.getPointValue();
 
-                    state.addCoins(pIdx, this.enemyShipSpecial.getCoinValue()); // 2P mode: modified to per-player coins
+					state.addCoins(pIdx, this.enemyShipSpecial.getCoinValue()); // 2P mode: modified to per-player coins
 
                     state.addScore(pIdx, points);
                     state.incShipsDestroyed(pIdx); // 2P mode: modified incrementing ships destroyed

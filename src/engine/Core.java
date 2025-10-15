@@ -9,6 +9,7 @@ import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import screen.*;
 import entity.Ship;
 import screen.*;
 
@@ -87,13 +88,15 @@ public final class Core {
                     LOGGER.info("Closing title screen.");
 
                     // 2P mode: reading the mode which user chose from TitleScreen
+                    // (edit) TitleScreen to PlayScreen
                     if (returnCode == 2) {
-                        coopSelected = ((TitleScreen) currentScreen).isCoopSelected();
-                        returnCode = 4; // Go to player selection.
-                    } else if (returnCode == 3) {
-                        coopSelected = ((TitleScreen) currentScreen).isCoopSelected();
+                        currentScreen = new PlayScreen(width, height, FPS);
+                        returnCode = frame.setScreen(currentScreen);
+
+                        coopSelected = ((PlayScreen) currentScreen).isCoopSelected();
                     }
-                    break;
+
+					break;
 
                 case 2:
                     // 2P mode: building gameState now using user choice
@@ -132,14 +135,32 @@ public final class Core {
                     LOGGER.info("Closing score screen.");
                     break;
 
-                case 3:
-                    // High scores.
-                    currentScreen = new HighScoreScreen(width, height, FPS);
-                    LOGGER.info("Starting " + WIDTH + "x" + HEIGHT
-                            + " high score screen at " + FPS + " fps.");
-                    returnCode = frame.setScreen(currentScreen);
-                    LOGGER.info("Closing high score screen.");
-                    break;
+				case 3:
+					// Achievements.
+					currentScreen = new AchievementScreen(width, height, FPS);
+					LOGGER.info("Starting " + WIDTH + "x" + HEIGHT
+							+ " achievements screen at " + FPS + " fps.");
+					returnCode = frame.setScreen(currentScreen);
+					LOGGER.info("Closing achievement screen.");
+					break;
+
+          case 4:
+              // settings screen
+              currentScreen = new SettingScreen(width, height, FPS);
+              LOGGER.info("Starting " + WIDTH + "x" + HEIGHT
+                      + " setting screen at " + FPS + " fps.");
+              returnCode = frame.setScreen(currentScreen);
+              LOGGER.info("Closing setting screen.");
+              break;
+
+          case 5:
+              // Play : Use the play to decide 1p and 2p
+              currentScreen = new PlayScreen(width, height, FPS);
+              LOGGER.info("Starting " + WIDTH + "x" + HEIGHT + " play screen at " + FPS + " fps.");
+              returnCode = frame.setScreen(currentScreen);
+              coopSelected = ((PlayScreen) currentScreen).isCoopSelected();
+              LOGGER.info("Closing play screen.");
+              break;
 
                 case 4:
                     // Ship selection for Player 1.
