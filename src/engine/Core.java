@@ -159,23 +159,28 @@ public final class Core {
               LOGGER.info("Starting " + WIDTH + "x" + HEIGHT + " play screen at " + FPS + " fps.");
               returnCode = frame.setScreen(currentScreen);
               coopSelected = ((PlayScreen) currentScreen).isCoopSelected();
+
+              // playscreen -> shipselectionscreen
+              if (returnCode == 2) {
+                  returnCode = 6;
+              }
               LOGGER.info("Closing play screen.");
               break;
 
-                case 4:
+                case 6:
                     // Ship selection for Player 1.
                     currentScreen = new ShipSelectionScreen(width, height, FPS, 1);
                     frame.setScreen(currentScreen);
                     shipTypeP1 = ((ShipSelectionScreen) currentScreen).getSelectedShipType();
 
                     if (coopSelected) {
-                        returnCode = 5; // Go to Player 2 selection.
+                        returnCode = 7; // Go to Player 2 selection.
                     } else {
                         returnCode = 2; // Start game.
                     }
                     break;
 
-                case 5:
+                case 7:
                     // Ship selection for Player 2.
                     currentScreen = new ShipSelectionScreen(width, height, FPS, 2);
                     frame.setScreen(currentScreen);
