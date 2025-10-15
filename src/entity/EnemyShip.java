@@ -5,6 +5,8 @@ import java.awt.Color;
 import engine.Cooldown;
 import engine.Core;
 import engine.DrawManager.SpriteType;
+import engine.GameSettings;
+
 
 /**
  * Implements an enemy ship, to be destroyed by the player.
@@ -83,6 +85,15 @@ public class EnemyShip extends Entity {
                 this.health = 1;
                 break;
         }
+    }
+
+    public void changeShip(GameSettings.ChangeData changeData) {
+        this.health *= changeData.hp;
+
+        this.changeColor(changeData.color);
+
+        this.pointValue *= changeData.multiplier;
+        this.coinValue *= changeData.multiplier;
     }
 
     /**
@@ -185,6 +196,11 @@ public class EnemyShip extends Entity {
                     break;
             }
         }
+    }
+
+    public final int getDamage(int dmg){
+        this.health -= dmg;
+        return this.health;
     }
 
     /**

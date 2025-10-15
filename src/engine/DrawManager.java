@@ -76,7 +76,11 @@ public final class DrawManager {
         /** Bonus ship. */
         EnemyShipSpecial,
         /** Destroyed enemy ship. */
-        Explosion
+        Explosion,
+        /** Item Graphics Temp */
+        ItemScore,
+        ItemCoin,
+        ItemHeal
     };
 
     /**
@@ -102,6 +106,11 @@ public final class DrawManager {
             spriteMap.put(SpriteType.EnemyShipC2, new boolean[12][8]);
             spriteMap.put(SpriteType.EnemyShipSpecial, new boolean[16][7]);
             spriteMap.put(SpriteType.Explosion, new boolean[13][7]);
+
+            // Item sprite placeholder
+            spriteMap.put(SpriteType.ItemScore, new boolean[5][5]);
+            spriteMap.put(SpriteType.ItemCoin, new boolean[5][5]);
+            spriteMap.put(SpriteType.ItemHeal, new boolean[5][5]);
 
             fileManager.loadSprite(spriteMap);
             logger.info("Finished loading the sprites.");
@@ -596,7 +605,7 @@ public final class DrawManager {
      *                   List of high scores.
      */
     public void drawHighScores(final Screen screen,
-                               final List<Score> highScores) {
+                               final List<Score> highScores, final String mode) { // add mode to parameter
         backBufferGraphics.setColor(Color.WHITE);
         int i = 0;
         String scoreString = "";
@@ -605,18 +614,18 @@ public final class DrawManager {
         int startY = screen.getHeight() / 3 + fontBigMetrics.getHeight() + 20;
         int lineHeight = fontRegularMetrics.getHeight() + 5;
 
-        backBufferGraphics.setColor(Color.WHITE);
         for (Score score : highScores) {
             scoreString = String.format("%s        %04d", score.getName(), score.getScore());
-            backBufferGraphics.drawString(scoreString,
-                    midX / 2 - fontRegularMetrics.stringWidth(scoreString) / 2,
-                    startY + lineHeight * i);
-
-            backBufferGraphics.drawString(scoreString,
-                    midX + midX / 2 - fontRegularMetrics.stringWidth(scoreString) / 2,
-                    startY + lineHeight * i);
+            int x;
+            if (mode.equals("1P")) {
+                // Left column(1P)
+                x = midX / 2 - fontRegularMetrics.stringWidth(scoreString) / 2;
+            } else {
+                // Right column(2P)
+                x = midX + midX / 2 - fontRegularMetrics.stringWidth(scoreString) / 2;
+            }
+            backBufferGraphics.drawString(scoreString, x, startY + lineHeight * i);
             i++;
-
         }
     }
 
