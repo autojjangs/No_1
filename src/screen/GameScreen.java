@@ -275,6 +275,8 @@ public class GameScreen extends Screen {
 
 			manageCollisions();
 			cleanBullets();
+			manageItemPickups();
+			cleanItems();
 
 		// End condition: formation cleared or TEAM lives exhausted.
 		if ((this.enemyShipFormation.isEmpty() || !state.teamAlive()) && !this.levelFinished) {
