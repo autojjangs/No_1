@@ -3,6 +3,7 @@ package engine;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * Manages the list of achievements for a player,
@@ -11,9 +12,11 @@ import java.util.List;
 public class AchievementManager {
 
     private List<Achievement> achievements;
+    private static Logger logger;
 
     public AchievementManager() {
         this.achievements = createDefaultAchievements();
+        logger = Core.getLogger();
     }
 
     /** Defines the default achievements available in the game. */
@@ -22,6 +25,7 @@ public class AchievementManager {
         list.add(new Achievement("First Blood", "Defeat your first enemy."));
         list.add(new Achievement("Survivor", "Clear a round without losing a life."));
         list.add(new Achievement("Clear", "Clear 5 levels."));
+
         return list;
     }
 
@@ -61,7 +65,7 @@ public class AchievementManager {
         for (Achievement a : achievements) {
             if (a.getName().equals(name) && !a.isUnlocked()) {
                 a.unlock();
-                System.out.println("Achievement unlocked: " + a);
+                logger.info("Achievement unlocked: " + a);
             }
         }
     }

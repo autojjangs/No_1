@@ -1,10 +1,6 @@
 package engine;
 
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.FontFormatException;
-import java.awt.FontMetrics;
-import java.awt.Graphics;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.LinkedHashMap;
@@ -12,6 +8,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import Animations.BasicGameSpace;
+import Animations.MenuSpace;
 import screen.Screen;
 import entity.Entity;
 import entity.Ship;
@@ -25,58 +23,66 @@ import entity.Bullet;
  */
 public final class DrawManager {
 
-    /** Singleton instance of the class. */
-    private static DrawManager instance;
-    /** Current frame. */
-    private static Frame frame;
-    /** FileManager instance. */
-    private static FileManager fileManager;
-    /** Application logger. */
-    private static Logger logger;
-    /** Graphics context. */
-    private static Graphics graphics;
-    /** Buffer Graphics. */
-    private static Graphics backBufferGraphics;
-    /** Buffer image. */
-    private static BufferedImage backBuffer;
-    /** Normal sized font. */
-    private static Font fontRegular;
-    /** Normal sized font properties. */
-    private static FontMetrics fontRegularMetrics;
-    /** Big sized font. */
-    private static Font fontBig;
-    /** Big sized font properties. */
-    private static FontMetrics fontBigMetrics;
+	/** Singleton instance of the class. */
+	private static DrawManager instance;
+	/** Current frame. */
+	private static Frame frame;
+	/** FileManager instance. */
+	private static FileManager fileManager;
+	/** Application logger. */
+	private static Logger logger;
+	/** Graphics context. */
+	private static Graphics graphics;
+	/** Buffer Graphics. */
+	private static Graphics backBufferGraphics;
+	/** Buffer image. */
+	private static BufferedImage backBuffer;
+	/** Normal sized font. */
+	private static Font fontRegular;
+	/** Normal sized font properties. */
+	private static FontMetrics fontRegularMetrics;
+	/** Big sized font. */
+	private static Font fontBig;
+	/** Big sized font properties. */
+	private static FontMetrics fontBigMetrics;
 
-    /** Sprite types mapped to their images. */
-    private static Map<SpriteType, boolean[][]> spriteMap;
+	/** Sprite types mapped to their images. */
+	private static Map<SpriteType, boolean[][]> spriteMap;
 
-    /** Sprite types. */
-    public static enum SpriteType {
-        /** Player ship. */
-        Ship,
-        /** Destroyed player ship. */
-        ShipDestroyed,
-        /** Player bullet. */
-        Bullet,
-        /** Enemy bullet. */
-        EnemyBullet,
-        /** First enemy ship - first form. */
-        EnemyShipA1,
-        /** First enemy ship - second form. */
-        EnemyShipA2,
-        /** Second enemy ship - first form. */
-        EnemyShipB1,
-        /** Second enemy ship - second form. */
-        EnemyShipB2,
-        /** Third enemy ship - first form. */
-        EnemyShipC1,
-        /** Third enemy ship - second form. */
-        EnemyShipC2,
-        /** Bonus ship. */
-        EnemyShipSpecial,
-        /** Destroyed enemy ship. */
-        Explosion,
+    /**
+     * Stars background animations for both game and main menu
+     * Star density specified as argument.
+     * */
+    BasicGameSpace basicGameSpace = new BasicGameSpace(100);
+    MenuSpace menuSpace = new MenuSpace(50);
+
+	/** Sprite types. */
+	public static enum SpriteType {
+		/** Player ship. */
+		Ship,
+		/** Destroyed player ship. */
+		ShipDestroyed,
+		/** Player bullet. */
+		Bullet,
+		/** Enemy bullet. */
+		EnemyBullet,
+		/** First enemy ship - first form. */
+		EnemyShipA1,
+		/** First enemy ship - second form. */
+		EnemyShipA2,
+		/** Second enemy ship - first form. */
+		EnemyShipB1,
+		/** Second enemy ship - second form. */
+		EnemyShipB2,
+		/** Third enemy ship - first form. */
+		EnemyShipC1,
+		/** Third enemy ship - second form. */
+		EnemyShipC2,
+		/** Bonus ship. */
+		EnemyShipSpecial,
+		/** Destroyed enemy ship. */
+		Explosion,
+
         /** Item Graphics Temp */
         ItemScore,
         ItemCoin,
@@ -715,5 +721,79 @@ public final class DrawManager {
         else
             drawCenteredBigString(screen, "GO!", screen.getHeight() / 2
                     + fontBigMetrics.getHeight() / 3);
+    }
+  
+  
+      /**
+     * Draws the main menu stars background animation
+     */
+    public void updateMenuSpace(){
+        menuSpace.updateStars();
+
+        Graphics2D g2d = (Graphics2D) backBufferGraphics;
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+        backBufferGraphics.setColor(Color.WHITE);
+        int[][] positions = menuSpace.getStarLocations();
+
+        for(int i = 0; i < menuSpace.getNumStars(); i++){
+
+            int size = 1;
+            int radius = size * 2;
+
+            float[] dist = {0.0f, 1.0f};
+            Color[] colors = {
+                    new Color(255, 255, 200, 255),
+                    new Color(255, 255, 200, 0)
+            };
+
+            RadialGradientPaint paint = new RadialGradientPaint(
+                    new Point(positions[i][0], positions[i][1]),
+                    radius,
+                    dist,
+                    colors
+            );
+            g2d.setPaint(paint);
+            g2d.fillOval(positions[i][0] - radius / 2, positions[i][1] - radius / 2, radius, radius);
+
+
+            backBufferGraphics.fillOval(positions[i][0], positions[i][1], size, size);
+        }
+    }
+
+    /**
+     * Draws the stars background animation during the game
+     */
+    public void updateGameSpace(){
+        basicGameSpace.update();
+
+        Graphics2D g2d = (Graphics2D) backBufferGraphics;
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+        backBufferGraphics.setColor(Color.WHITE);
+        int[][] positions = basicGameSpace.getStarLocations();
+        for(int i = 0; i < basicGameSpace.getNumStars(); i++){
+
+            int size = (positions[i][2] < 2) ? 2 : 1;
+            int radius = size * 2;
+
+            float[] dist = {0.0f, 1.0f};
+            Color[] colors = {
+                    new Color(255, 255, 200, 50),
+                    new Color(255, 255, 200, 0)
+            };
+
+            RadialGradientPaint paint = new RadialGradientPaint(
+                    new Point(positions[i][0] + size / 2, positions[i][1] + size / 2),
+                    radius,
+                    dist,
+                    colors
+            );
+            g2d.setPaint(paint);
+            g2d.fillOval(positions[i][0] - radius / 2, positions[i][1] - radius / 2, radius, radius);
+
+
+            backBufferGraphics.fillOval(positions[i][0], positions[i][1], size, size);
+        }
     }
 }
