@@ -8,6 +8,7 @@ public class SettingScreen extends Screen {
     private static final int volumeMenu = 0;
     private static final int firstplayerMenu = 1;
     private static final int secondplayerMenu= 2;
+    private static final int back = -1;
     private final String[] menuItem = {"Volume", "1P Keyset", "2P Keyset"};
     private int selectMenuItem;
     private Cooldown inputCooldown;
@@ -49,14 +50,28 @@ public class SettingScreen extends Screen {
     protected final void update() {
         super.update();
 
-        if(inputManager.isKeyDown(KeyEvent.VK_UP)&&this.inputCooldown.checkFinished()&&this.selectMenuItem>0) {
-            this.selectMenuItem--;
-            this.inputCooldown.reset();
+        if(inputManager.isKeyDown(KeyEvent.VK_UP)&&this.inputCooldown.checkFinished()) {
+          if(this.selectMenuItem == back) {
+              this.selectMenuItem = menuItem.length - 1;
+          } else if(this.selectMenuItem == 0){
+              this.selectMenuItem = back;
+          } else {
+              this.selectMenuItem --;
+          }
+          this.inputCooldown.reset();
         }
-        if(inputManager.isKeyDown(KeyEvent.VK_DOWN)&&this.inputCooldown.checkFinished()&&this.selectMenuItem<menuItem.length-1) {
-            this.selectMenuItem++;
-            this.inputCooldown.reset();
+
+        if(inputManager.isKeyDown(KeyEvent.VK_DOWN)&&this.inputCooldown.checkFinished()) {
+         if(this.selectMenuItem == back){
+             this.selectMenuItem = 0;
+         }else if (this.selectMenuItem == menuItem.length - 1) {
+             this.selectMenuItem = back;
+         }else {
+             this.selectMenuItem ++;
+         }
+         this.inputCooldown.reset();
         }
+
         if(this.selectMenuItem == volumeMenu) {
              if(this.inputCooldown.checkFinished()){
                  if(inputManager.isKeyDown(KeyEvent.VK_LEFT)&&volumelevel > 0){
@@ -70,12 +85,14 @@ public class SettingScreen extends Screen {
         }
         }
         if (inputManager.isKeyDown(KeyEvent.VK_SPACE) && this.inputCooldown.checkFinished()) {
-            this.isRunning = false;
-
-        // back button click event
-
+            if(this.selectMenuItem == back) {
+                this.returnCode = 1;
+                this.isRunning = false;
+            }
             this.inputCooldown.reset();
         }
+
+        // back button click event
         if (inputManager.isMouseClicked()) {
             int mx = inputManager.getMouseX();
             int my = inputManager.getMouseY();
