@@ -31,7 +31,7 @@ public class SettingScreen extends Screen {
      */
     public final void initialize(){
         super.initialize();
-        this.inputCooldown = Core.getCooldown(100);
+        this.inputCooldown = Core.getCooldown(200);
         this.inputCooldown.reset();
         this.selectMenuItem = volumeMenu;
         this.volumelevel = 50;
