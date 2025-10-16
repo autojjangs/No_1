@@ -15,7 +15,6 @@ import entity.Ship;
 // NEW Item code
 import entity.Item;
 import entity.ItemPool;
-import engine.ItemManager;
 
 /**
  * Implements the game screen, where the action happens.(supports co-op with
@@ -150,16 +149,19 @@ public class GameScreen extends Screen {
     public final void initialize() {
         super.initialize();
 
+        state.clearAllEffects();
+
         enemyShipFormation = new EnemyShipFormation(this.gameSettings);
         enemyShipFormation.attach(this);
 
         // 2P mode: create both ships, tagged to their respective teams
-        this.ships[0] = new Ship(this.width / 2 - 60, this.height - 30, Entity.Team.PLAYER1, shipTypeP1); // P1
+        this.ships[0] = new Ship(this.width / 2 - 60, this.height - 30, Entity.Team.PLAYER1, shipTypeP1, this.state); // P1
         this.ships[0].setPlayerId(1);
 
         // only allowing second ship to spawn when 2P mode is chosen
         if (state.isCoop()) {
-            this.ships[1] = new Ship(this.width / 2 + 60, this.height - 30, Entity.Team.PLAYER2, shipTypeP2); // P2
+            this.ships[1] = new Ship(this.width / 2 + 60, this.height - 30, Entity.Team.PLAYER2, shipTypeP2, this.state); // P2
+
             this.ships[1].setPlayerId(2);
         } else {
             this.ships[1] = null; // ensuring there's no P2 ship in 1P mode
@@ -171,8 +173,8 @@ public class GameScreen extends Screen {
 		this.screenFinishedCooldown = Core.getCooldown(SCREEN_CHANGE_INTERVAL);
 		this.bullets = new HashSet<Bullet>();
 
-    // New Item Code
-    this.items = new HashSet<Item>();
+        // New Item Code
+        this.items = new HashSet<Item>();
 
 		// Special input delay / countdown.
 		this.gameStartTime = System.currentTimeMillis();
@@ -215,6 +217,7 @@ public class GameScreen extends Screen {
             returnCode = 1;
             this.isRunning = false;
         }
+
         if (!this.isPaused) {
             if (this.inputDelay.checkFinished() && !this.levelFinished) {
 
@@ -225,100 +228,107 @@ public class GameScreen extends Screen {
                     if (ship == null || ship.isDestroyed())
                         continue;
 
-                    boolean moveRight, moveLeft, fire;
-                    // Get player key input status
-                    if (p == 0) {
-                        moveRight = inputManager.isP1RightPressed();
-                        moveLeft = inputManager.isP1LeftPressed();
-                        fire = inputManager.isP1ShootPressed();
-                    } else {
-                        moveRight = inputManager.isP2RightPressed();
-                        moveLeft = inputManager.isP2LeftPressed();
-                        fire = inputManager.isP2ShootPressed();
-                    }
+                        boolean moveRight, moveLeft, fire;
+                        // Get player key input status
+                        if (p == 0) {
+                            moveRight = inputManager.isP1RightPressed();
+                            moveLeft = inputManager.isP1LeftPressed();
+                            fire = inputManager.isP1ShootPressed();
+                        } else {
+                            moveRight = inputManager.isP2RightPressed();
+                            moveLeft = inputManager.isP2LeftPressed();
+                            fire = inputManager.isP2ShootPressed();
+                        }
 
-                    boolean isRightBorder = ship.getPositionX() + ship.getWidth() + ship.getSpeed() > this.width - 1;
+                        boolean isRightBorder = ship.getPositionX() + ship.getWidth() + ship.getSpeed() > this.width - 1;
 
-                    boolean isLeftBorder = ship.getPositionX() - ship.getSpeed() < 1;
+                        boolean isLeftBorder = ship.getPositionX() - ship.getSpeed() < 1;
 
-                    if (moveRight && !isRightBorder)
-                        ship.moveRight();
-                    if (moveLeft && !isLeftBorder)
-                        ship.moveLeft();
+                        if (moveRight && !isRightBorder)
+                            ship.moveRight();
+                        if (moveLeft && !isLeftBorder)
+                            ship.moveLeft();
 
-                    if (fire && ship.shoot(this.bullets)) {
+                        fire = (p == 0)
+                            ? inputManager.isKeyDown(KeyEvent.VK_SPACE)
+                            : inputManager.isKeyDown(KeyEvent.VK_ENTER);
+
+                        if (fire && ship.shoot(this.bullets)) {
 
                         state.incBulletsShot(p); // 2P mode: increments per-player bullet shots
 
+                        }
+                    }
+
+                    // Special ship lifecycle
+                    if (this.enemyShipSpecial != null) {
+                        if (!this.enemyShipSpecial.isDestroyed())
+                            this.enemyShipSpecial.move(2, 0);
+                        else if (this.enemyShipSpecialExplosionCooldown.checkFinished())
+                            this.enemyShipSpecial = null;
+                    }
+                    if (this.enemyShipSpecial == null && this.enemyShipSpecialCooldown.checkFinished()) {
+                        this.enemyShipSpecial = new EnemyShip();
+                        this.enemyShipSpecialCooldown.reset();
+                        this.logger.info("A special ship appears");
+                    }
+                    if (this.enemyShipSpecial != null && this.enemyShipSpecial.getPositionX() > this.width) {
+                        this.enemyShipSpecial = null;
+                        this.logger.info("The special ship has escaped");
+                    }
+
+                    // Update ships & enemies
+                    for (Ship s : this.ships)
+                        if (s != null)
+                            s.update();
+
+                    this.enemyShipFormation.update();
+                    this.enemyShipFormation.shoot(this.bullets);
+                }
+
+                manageCollisions();
+                cleanBullets();
+
+                // Item Entity Code
+                cleanItems();
+                manageItemPickups();
+
+                // check active item affects
+                state.updateEffects();
+
+                draw();
+
+                // End condition: formation cleared or TEAM lives exhausted.
+                if ((this.enemyShipFormation.isEmpty() || !state.teamAlive()) && !this.levelFinished) {
+                    // The object managed by the object pool pattern must be recycled at the end of the level.
+                    BulletPool.recycle(this.bullets);
+                    this.bullets.removeAll(this.bullets);
+                    ItemPool.recycle(items);
+                    this.items.removeAll(this.items);
+
+                    this.levelFinished = true;
+                    this.screenFinishedCooldown.reset();
+
+                    /*
+                              check of achievement release
+                              2025-10-02 add three 'if'statements
+                          */
+                    // Survivor
+                    if (!this.tookDamageThisLevel && this.level == Core.getNumLevels()) {
+                        achievementManager.unlock("Survivor");
+                    }
+                    // Clear
+                    if (this.level == Core.getNumLevels()) {
+                        achievementManager.unlock("Clear");
+                    }
+                    //Perfect Shooter
+                    if (this.bulletsShot > 0 && this.bulletsShot == this.shipsDestroyed) {
+                        achievementManager.unlock("Perfect Shooter");
                     }
                 }
 
-                // Special ship lifecycle
-                if (this.enemyShipSpecial != null) {
-                    if (!this.enemyShipSpecial.isDestroyed())
-                        this.enemyShipSpecial.move(2, 0);
-                    else if (this.enemyShipSpecialExplosionCooldown.checkFinished())
-                        this.enemyShipSpecial = null;
-                }
-                if (this.enemyShipSpecial == null && this.enemyShipSpecialCooldown.checkFinished()) {
-                    this.enemyShipSpecial = new EnemyShip();
-                    this.enemyShipSpecialCooldown.reset();
-                    this.logger.info("A special ship appears");
-                }
-                if (this.enemyShipSpecial != null && this.enemyShipSpecial.getPositionX() > this.width) {
-                    this.enemyShipSpecial = null;
-                    this.logger.info("The special ship has escaped");
-                }
-
-                // Update ships & enemies
-                for (Ship s : this.ships)
-                    if (s != null)
-                        s.update();
-
-                this.enemyShipFormation.update();
-                this.enemyShipFormation.shoot(this.bullets);
-            }
-
-            manageCollisions();
-            cleanBullets();
-
-            // New Item Code
-            cleanItems();
-            manageItemPickups();
-
-            draw();
-
-            // End condition: formation cleared or TEAM lives exhausted.
-            if ((this.enemyShipFormation.isEmpty() || !state.teamAlive()) && !this.levelFinished) {
-                // The object managed by the object pool pattern must be recycled at the end of the level.
-                BulletPool.recycle(this.bullets);
-                this.bullets.removeAll(this.bullets);
-                ItemPool.recycle(items);
-                this.items.removeAll(this.items);
-
-                this.levelFinished = true;
-                this.screenFinishedCooldown.reset();
-
-                /*
-                          check of achievement release
-                          2025-10-02 add three 'if'statements
-                      */
-                // Survivor
-                if (!this.tookDamageThisLevel && this.level == Core.getNumLevels()) {
-                    achievementManager.unlock("Survivor");
-                }
-                // Clear
-                if (this.level == Core.getNumLevels()) {
-                    achievementManager.unlock("Clear");
-                }
-                //Perfect Shooter
-                if (this.bulletsShot > 0 && this.bulletsShot == this.shipsDestroyed) {
-                    achievementManager.unlock("Perfect Shooter");
-                }
-            }
-
-            if (this.levelFinished && this.screenFinishedCooldown.checkFinished())
-                this.isRunning = false;
+                if (this.levelFinished && this.screenFinishedCooldown.checkFinished())
+                    this.isRunning = false;
         }
         draw();
     }
@@ -365,7 +375,11 @@ public class GameScreen extends Screen {
                     state.getScore(1), state.getShipsDestroyed(1),
                     state.getBulletsShot(1), state.getCoins(1));
 
+            drawManager.drawCenteredRegularString(this, p1, 40);
+            drawManager.drawCenteredRegularString(this, p2, 60);
+
             // remove the unnecessary "P1 S: K: B: C:" and "P2 S: K: B: C:" lines from the game screen
+
         }
 
         drawManager.drawHorizontalLine(this, SEPARATION_LINE_HEIGHT - 1);
@@ -418,12 +432,13 @@ public class GameScreen extends Screen {
     private void manageItemPickups() {
         Set<Item> collected = new HashSet<Item>();
         for (Item item : this.items) {
+
             for(Ship ship: this.ships) {
                 if(ship == null) continue;
                 if (checkCollision(item, ship) && !collected.contains(item)) {
                     collected.add(item);
-                    item.applyEffect();
                     this.logger.info("Player " + ship.getPlayerId() + " picked up item: " + item.getType());
+                    item.applyEffect(getGameState(), ship.getPlayerId());
                 }
             }
         }
@@ -515,9 +530,9 @@ public class GameScreen extends Screen {
      * Checks if two entities are colliding.
      *
      * @param a
-     *          First entity, the bullet.
+     *            First entity, the bullet.
      * @param b
-     *          Second entity, the ship.
+     *            Second entity, the ship.
      * @return Result of the collision test.
      */
     private boolean checkCollision(final Entity a, final Entity b) {

@@ -44,20 +44,19 @@ public final class Core {
 	 * @param args
 	 *             Program args, ignored.
 	 */
-
-    public static void main(final String[] args) throws IOException {
-        try {
-            LOGGER.setUseParentHandlers(false);
-            fileHandler = new FileHandler("log");
-            fileHandler.setFormatter(new MinimalFormatter());
-            consoleHandler = new ConsoleHandler();
-            consoleHandler.setFormatter(new MinimalFormatter());
-            LOGGER.addHandler(fileHandler);
-            LOGGER.addHandler(consoleHandler);
-            LOGGER.setLevel(Level.ALL);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+	public static void main(final String[] args) throws IOException {
+		try {
+			LOGGER.setUseParentHandlers(false);
+			fileHandler = new FileHandler("log");
+			fileHandler.setFormatter(new MinimalFormatter());
+			consoleHandler = new ConsoleHandler();
+			consoleHandler.setFormatter(new MinimalFormatter());
+			LOGGER.addHandler(fileHandler);
+			LOGGER.addHandler(consoleHandler);
+			LOGGER.setLevel(Level.ALL);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 
         frame = new Frame(WIDTH, HEIGHT);
         InputManager input = InputManager.getInstance();
@@ -66,13 +65,13 @@ public final class Core {
         int width = frame.getWidth();
         int height = frame.getHeight();
 
-        gameSettings = GameSettings.getGameSettings();
-        NUM_LEVELS = gameSettings.size(); // Initialize total number of levels
+		gameSettings = GameSettings.getGameSettings();
+		NUM_LEVELS = gameSettings.size(); // Initialize total number of levels
 
 
-        // 2P mode: modified to null to allow for switch between 2 modes
-        GameState gameState = null;
-        boolean coopSelected = false; // false = 1P, true = 2P
+		// 2P mode: modified to null to allow for switch between 2 modes
+		GameState gameState = null;
+		boolean coopSelected = false; // false = 1P, true = 2P
 
         int returnCode = 1;
 
@@ -103,7 +102,7 @@ public final class Core {
 
                 case 2:
                     // 2P mode: building gameState now using user choice
-                    gameState = new GameState(1, MAX_LIVES, coopSelected);
+                    gameState = new GameState(1, MAX_LIVES, coopSelected, FileManager.getInstance().loadCoins());
 
                     do {
                         // Extra life this level? Give it if team pool is below cap.
@@ -152,16 +151,16 @@ public final class Core {
 					LOGGER.info("Closing achievement screen.");
 					break;
 
-          case 4:
-              // settings screen
-              currentScreen = new SettingScreen(width, height, FPS);
-              LOGGER.info("Starting " + WIDTH + "x" + HEIGHT
-                      + " setting screen at " + FPS + " fps.");
-              returnCode = frame.setScreen(currentScreen);
-              LOGGER.info("Closing setting screen.");
-              frame.removeKeyListener(InputManager.getInstance());
-              frame.addKeyListener(InputManager.getInstance()); // Remove and re-register the input manager, forcing the key setting of the frame to be updated
-              break;
+              case 4:
+                  // settings screen
+                  currentScreen = new SettingScreen(width, height, FPS);
+                  LOGGER.info("Starting " + WIDTH + "x" + HEIGHT
+                          + " setting screen at " + FPS + " fps.");
+                  returnCode = frame.setScreen(currentScreen);
+                  LOGGER.info("Closing setting screen.");
+                  frame.removeKeyListener(InputManager.getInstance());
+                  frame.addKeyListener(InputManager.getInstance()); // Remove and re-register the input manager, forcing the key setting of the frame to be updated
+                  break;
 
                 case 5:
                     // Play : Use the play to decide 1p and 2p
@@ -225,7 +224,7 @@ public final class Core {
 
     /**
      * Controls access to the logger.
-     * sh
+     *
      *
      * @return Application logger.
      */
@@ -280,8 +279,7 @@ public final class Core {
      *                     Variation in the cooldown duration.
      * @return A new cooldown with variance.
      */
-    public static Cooldown getVariableCooldown(final int milliseconds,
-                                               final int variance) {
+    public static Cooldown getVariableCooldown(final int milliseconds, final int variance) {
         return new Cooldown(milliseconds, variance);
     }
 
