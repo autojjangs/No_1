@@ -37,7 +37,7 @@ public final class ItemManager {
 
     /** ITEM WEIGHT **/
     public static enum DropTier {
-        DEBUG    (500.0),
+        //DEBUG    (500.0),
         NONE     (60.0),
         COMMON   (25.0),
         UNCOMMON (15.0),
@@ -125,8 +125,9 @@ public final class ItemManager {
         int centerX = enemy.getPositionX() + enemy.getWidth() / 2;
         int centerY = enemy.getPositionY() + enemy.getHeight() / 2;
 
-// Pass ItemData directly to ItemPool
-        Item drop = ItemPool.getItem(chosenData, centerX, centerY, 2);
+        // Pass ItemData directly to ItemPool
+        int itemSpeed = 2;
+        Item drop = ItemPool.getItem(chosenData, centerX, centerY, itemSpeed);
 
         if (drop == null) {
             logger.warning("[ItemManager]: Failed to create item: " + chosenData.getType());

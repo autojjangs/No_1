@@ -25,7 +25,6 @@ public class Ship extends Entity {
     private static final int BASE_BULLET_WIDTH = 6;  // 3 * 2
     private static final int BASE_BULLET_HEIGHT = 10;
     // special bullet variables
-    private static final int TRIPLE_SHOT_OFFSET = 50;
     private static final int DOUBLE_SHOT_OFFSET = 6;
 
     /** Ship Variables **/
@@ -246,7 +245,11 @@ public class Ship extends Entity {
         if (gameState == null) return 1;
 
         Integer effectValue = gameState.getEffectValue(playerIndex, BULLETSPEEDUP);
-        return (effectValue != null) ? effectValue : 1;
+        if (effectValue != null) {
+            Core.getLogger().info("[Ship] Item effect: Faster Bullets");
+            return effectValue;
+        }
+        return 1;
     }
 
     /**
@@ -254,6 +257,7 @@ public class Ship extends Entity {
      */
     private void shootTripleShot(final Set<Bullet> bullets, final int centerX, final int bulletY) {
         Core.getLogger().info("[Ship] Item effect: TRIPLESHOT");
+        Integer TRIPLE_SHOT_OFFSET = gameState.getEffectValue(playerIndex, TRIPLESHOT);
 
         addBullet(bullets, centerX, bulletY);
         addBullet(bullets, centerX - TRIPLE_SHOT_OFFSET, bulletY);

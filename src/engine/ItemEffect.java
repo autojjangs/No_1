@@ -97,12 +97,12 @@ public class ItemEffect {
     /**
      * Applies the TripleShot timed effect to the specified player.
      */
-    public static void applyTripleShot(final GameState gameState, final int playerId, int duration) {
+    public static void applyTripleShot(final GameState gameState, final int playerId, int effectValue, int duration) {
         if (gameState == null) return;
         int playerIndex = getPlayerIndex(playerId);
 
         // apply duration
-        gameState.addEffect(playerIndex, ItemEffectType.TRIPLESHOT, null, duration);
+        gameState.addEffect(playerIndex, ItemEffectType.TRIPLESHOT, effectValue, duration);
     }
 
     public static void applyScoreBoost(final GameState gameState, final int playerId, int effectValue, int duration){

@@ -105,7 +105,7 @@ public class Item extends Entity {
                 ItemEffect.applyScoreItem(gameState, playerId, value);
                 break;
             case "TRIPLESHOT":
-                ItemEffect.applyTripleShot(gameState, playerId, duration);
+                ItemEffect.applyTripleShot(gameState, playerId, value, duration);
                 break;
             case "SCOREBOOST":
                 ItemEffect.applyScoreBoost(gameState, playerId, value, duration);
