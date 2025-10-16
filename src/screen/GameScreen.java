@@ -15,7 +15,6 @@ import entity.Ship;
 // NEW Item code
 import entity.Item;
 import entity.ItemPool;
-import engine.ItemManager;
 
 /**
  * Implements the game screen, where the action happens.(supports co-op with
@@ -146,16 +145,19 @@ public class GameScreen extends Screen {
     public final void initialize() {
         super.initialize();
 
+        state.clearAllEffects();
+
         enemyShipFormation = new EnemyShipFormation(this.gameSettings);
         enemyShipFormation.attach(this);
 
         // 2P mode: create both ships, tagged to their respective teams
-        this.ships[0] = new Ship(this.width / 2 - 60, this.height - 30, Entity.Team.PLAYER1, shipTypeP1); // P1
+        this.ships[0] = new Ship(this.width / 2 - 60, this.height - 30, Entity.Team.PLAYER1, shipTypeP1, this.state); // P1
         this.ships[0].setPlayerId(1);
 
         // only allowing second ship to spawn when 2P mode is chosen
         if (state.isCoop()) {
-            this.ships[1] = new Ship(this.width / 2 + 60, this.height - 30, Entity.Team.PLAYER2, shipTypeP2); // P2
+            this.ships[1] = new Ship(this.width / 2 + 60, this.height - 30, Entity.Team.PLAYER2, shipTypeP2, this.state); // P2
+
             this.ships[1].setPlayerId(2);
         } else {
             this.ships[1] = null; // ensuring there's no P2 ship in 1P mode
@@ -183,6 +185,7 @@ public class GameScreen extends Screen {
      */
     public final int run() {
         super.run();
+
 
         // 2P mode: award bonus score for remaining TEAM lives
         state.addScore(0, LIFE_SCORE * state.getLivesRemaining());
@@ -263,9 +266,12 @@ public class GameScreen extends Screen {
         manageCollisions();
         cleanBullets();
 
-        // New Item Code
+        // Item Entity Code
         cleanItems();
         manageItemPickups();
+
+        // check active item affects
+        state.updateEffects();
 
         draw();
 
@@ -344,7 +350,11 @@ public class GameScreen extends Screen {
                     state.getScore(1), state.getShipsDestroyed(1),
                     state.getBulletsShot(1), state.getCoins(1));
 
+            drawManager.drawCenteredRegularString(this, p1, 40);
+            drawManager.drawCenteredRegularString(this, p2, 60);
+
             // remove the unnecessary "P1 S: K: B: C:" and "P2 S: K: B: C:" lines from the game screen
+
         }
 
         drawManager.drawHorizontalLine(this, SEPARATION_LINE_HEIGHT - 1);
@@ -395,12 +405,13 @@ public class GameScreen extends Screen {
     private void manageItemPickups() {
         Set<Item> collected = new HashSet<Item>();
         for (Item item : this.items) {
+
             for(Ship ship: this.ships) {
                 if(ship == null) continue;
                 if (checkCollision(item, ship) && !collected.contains(item)) {
                     collected.add(item);
-                    item.applyEffect();
                     this.logger.info("Player " + ship.getPlayerId() + " picked up item: " + item.getType());
+                    item.applyEffect(getGameState(), ship.getPlayerId());
                 }
             }
         }
@@ -492,9 +503,9 @@ public class GameScreen extends Screen {
      * Checks if two entities are colliding.
      *
      * @param a
-     *          First entity, the bullet.
+     *            First entity, the bullet.
      * @param b
-     *          Second entity, the ship.
+     *            Second entity, the ship.
      * @return Result of the collision test.
      */
     private boolean checkCollision(final Entity a, final Entity b) {
