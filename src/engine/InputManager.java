@@ -222,4 +222,8 @@ public final class InputManager implements KeyListener, MouseListener, MouseMoti
 		mouseY = e.getY();
 	}
 
+	public boolean isMousePressed(){
+		return mousePressed;
+	}
+
 }

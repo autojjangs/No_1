@@ -41,7 +41,7 @@ public final class DrawManager {
 	/** Normal sized font. */
 	private static Font fontRegular;
 	/** Normal sized font properties. */
-	private static FontMetrics fontRegularMetrics; // add this line
+	private static FontMetrics fontRegularMetrics;
 	/** Big sized font. */
 	private static Font fontBig;
 	/** Big sized font properties. */
@@ -456,7 +456,38 @@ public final class DrawManager {
             backBufferGraphics.setColor(highlight ? Color.GREEN : Color.WHITE);
             drawCenteredRegularString(screen, items[i], (int) (baseY + fontRegularMetrics.getHeight() * 1.5 * i));
         }
-	}
+
+        /** String playString = "1-Player Mode";
+         String play2String = "2-Player Mode";
+         String highScoresString = "High scores";
+         String exitString = "exit";
+         int spacing = fontRegularMetrics.getHeight() + 10;
+
+         if (option == 2)
+         backBufferGraphics.setColor(Color.GREEN);
+         else
+         backBufferGraphics.setColor(Color.WHITE);
+         drawCenteredRegularString(screen, playString,
+         screen.getHeight() / 3 * 2);
+         if (option == 1)
+         backBufferGraphics.setColor(Color.GREEN);
+         else
+         backBufferGraphics.setColor(Color.WHITE);
+         drawCenteredRegularString(screen, play2String,
+         screen.getHeight() / 3 * 2 + spacing);
+         if (option == 3)
+         backBufferGraphics.setColor(Color.GREEN);
+         else
+         backBufferGraphics.setColor(Color.WHITE);
+         drawCenteredRegularString(screen, highScoresString, screen.getHeight()
+         / 3 * 2 + spacing * 2);
+         if (option == 0)
+         backBufferGraphics.setColor(Color.GREEN);
+         else
+         backBufferGraphics.setColor(Color.WHITE);
+         drawCenteredRegularString(screen, exitString, screen.getHeight() / 3
+         * 2 + spacing * 3); */
+    }
 
     /**
      * Draws game results.
@@ -642,13 +673,13 @@ public final class DrawManager {
 
     public void drawSettingMenu(final Screen screen) {
         String settingsString = "Settings";
-        String instructionsString = "Press Space to return";
+
 
         backBufferGraphics.setColor(Color.GREEN);
         drawCenteredBigString(screen, settingsString, screen.getHeight() / 8);
 
         backBufferGraphics.setColor(Color.GRAY);
-        drawCenteredRegularString(screen, instructionsString,
+        drawCenteredRegularString(screen, "",
                 screen.getHeight() / 5);
 
         // draw back button at top-left
@@ -856,4 +887,83 @@ public final class DrawManager {
 
         return new Rectangle(x, y, textWidth, h);
     }
+
+	public void drawVolumeBar(final Screen screen, final int volumlevel, final boolean dragging){
+		int bar_startWidth = screen.getWidth() / 2;
+		int bar_endWidth = screen.getWidth()-40;
+		int barHeight = screen.getHeight()*3/10;
+
+		String volumelabel = "Volume";
+		backBufferGraphics.setFont(fontRegular);
+		backBufferGraphics.setColor(Color.WHITE);
+		backBufferGraphics.drawLine(bar_startWidth, barHeight, bar_endWidth, barHeight);
+
+		backBufferGraphics.setColor(Color.WHITE);
+		backBufferGraphics.drawString(volumelabel, bar_startWidth-80, barHeight+7);
+
+//		change this line to get indicator center position
+		int size = 14;
+		double ratio = volumlevel / 100.0;
+		int centerX = bar_startWidth + (int) ((bar_endWidth - bar_startWidth) * ratio);
+		int indicatorX = centerX - size / 2 - 3;
+		int indicatorY = barHeight - size / 2 ;
+
+		int rawX = Core.getInputManager().getMouseX();
+		int rawY = Core.getInputManager().getMouseY();
+		Insets insets = frame.getInsets();
+		int mouseX = rawX - insets.left;
+		int mouseY = rawY - insets.top;
+
+		boolean hoverIndicator = mouseX >= indicatorX && mouseX <= indicatorX + size &&
+				mouseY >= indicatorY && mouseY <= indicatorY + size;
+
+		if (hoverIndicator || dragging) {
+			backBufferGraphics.setColor(Color.GREEN);
+		} else {
+			backBufferGraphics.setColor(Color.WHITE);
+		}
+
+		backBufferGraphics.fillRect(indicatorX, indicatorY, size, size);
+
+		backBufferGraphics.setColor(Color.WHITE);
+		String volumeText = Integer.toString(volumlevel);
+		backBufferGraphics.drawString(volumeText, bar_endWidth+10, barHeight +7);
+
+	}
+
+	public void drawSettingLayout(final Screen screen, final String[] menuItems, final int selectedmenuItems) {
+		int splitPointX = screen.getWidth() *3/10;
+		backBufferGraphics.setFont(fontRegular);
+		int menuY = screen.getHeight()*3/10;
+		for (int i = 0; i < menuItems.length; i++) {
+			if (i == selectedmenuItems) {
+				backBufferGraphics.setColor(Color.GREEN);
+			}
+			else {
+				backBufferGraphics.setColor(Color.WHITE);
+			}
+			backBufferGraphics.drawString(menuItems[i], 30, menuY+(i*60));
+			backBufferGraphics.setColor(Color.GREEN);
+		}
+		backBufferGraphics.drawLine(splitPointX, screen.getHeight()/4, splitPointX,(menuY+menuItems.length*60));
+	}
+//	int for adjust volume hitbox
+	private int volumeHitBoxOffset = 20;
+
+	public Rectangle getVolumeBarHitbox(final Screen screen){
+		int bar_startWidth = screen.getWidth() / 2;
+		int bar_endWidth = screen.getWidth() - 40;
+		int barHeight = screen.getHeight() * 3 / 10;
+
+		int barThickness = 20;
+
+		int centerY = barHeight + volumeHitBoxOffset;
+
+		int x = bar_startWidth;
+		int y = centerY - barThickness;
+		int width = bar_endWidth - bar_startWidth;
+		int height = barThickness * 2;
+
+		return new Rectangle(x, y, width, height);
+	}
 }
