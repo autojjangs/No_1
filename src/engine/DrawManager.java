@@ -1,6 +1,12 @@
 package engine;
 
 import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.FontFormatException;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.awt.Rectangle; // add this line
 import java.io.IOException;
@@ -645,54 +651,105 @@ public final class DrawManager {
             i++;
         }
     }
+	// Made it to check if the Achievement button works temporarily.
+	public void drawAchievementMenu(final Screen screen) {
+		String AchievementsString = "Achievements";
+		String instructionsString = "Press Space to return";
+		backBufferGraphics.setColor(Color.GREEN);
+		drawCenteredBigString(screen, AchievementsString, screen.getHeight() / 8);
+
+		backBufferGraphics.setColor(Color.GRAY);
+		drawCenteredRegularString(screen, instructionsString,
+				screen.getHeight() / 5);
+
+        // draw back button at top-left
+        drawBackButton(screen, false);
+	}
 
     public void drawSettingMenu(final Screen screen) {
         String settingsString = "Settings";
-
+        String instructionsString = "Press ESC to return";
 
         backBufferGraphics.setColor(Color.GREEN);
         drawCenteredBigString(screen, settingsString, screen.getHeight() / 8);
-
+		backBufferGraphics.setFont(fontRegular);
         backBufferGraphics.setColor(Color.GRAY);
-        drawCenteredRegularString(screen, "",
-                screen.getHeight() / 5);
-
-        // draw back button at top-left
-        drawBackButton(screen, false);
+        drawCenteredRegularString(screen, instructionsString, screen.getHeight() / 6);
     }
 
-    // Made it to check if the Achievement button works temporarily.
-    public void drawAchievementMenu(final Screen screen) {
-        String AchievementsString = "Achievements";
-        String instructionsString = "Press Space to return";
+	public void drawVolumeBar(final Screen screen, final int volumlevel){
+		int bar_startWidth = screen.getWidth() / 2;
+		int bar_endWidth = screen.getWidth()-40;
+		int barHeight = screen.getHeight()*3/10;
 
-        backBufferGraphics.setColor(Color.GREEN);
-        drawCenteredBigString(screen, AchievementsString, screen.getHeight() / 8);
+		String volumelabel = "Volume";
+		backBufferGraphics.setFont(fontRegular);
+		backBufferGraphics.setColor(Color.WHITE);
+		backBufferGraphics.drawLine(bar_startWidth, barHeight, bar_endWidth, barHeight);
 
-        backBufferGraphics.setColor(Color.GRAY);
-        drawCenteredRegularString(screen, instructionsString,
-                screen.getHeight() / 5);
+		backBufferGraphics.setColor(Color.WHITE);
+		backBufferGraphics.drawString(volumelabel, bar_startWidth-80, barHeight+7);
 
-        // draw back button at top-left
-        drawBackButton(screen, false);
+		int indicatorX = bar_startWidth + (int)((bar_endWidth-bar_startWidth)*(volumlevel/100.0));
+		int indicatorY = barHeight+7;
+		backBufferGraphics.fillRect(indicatorX, indicatorY-13, 14, 14);
+		backBufferGraphics.setColor(Color.WHITE);
+		String volumeText = Integer.toString(volumlevel);
+		backBufferGraphics.drawString(volumeText, bar_endWidth+10, indicatorY);
+
+	}
+
+
+    public void drawKeysettings(final Screen screen, int playerNum, int selectedSection, int selectedKeyIndex, boolean[] keySelected,int[] currentKeys) {
+        int panelWidth = 220;
+        int panelHeight = 180;
+        int x = screen.getWidth() - panelWidth - 50;
+        int y = screen.getHeight() / 4;
+
+        String[] labels = {"MOVE LEFT :", "MOVE RIGHT:", "ATTACK :"};
+        String[] keys = new String[3];
+
+        for (int i = 0; i < labels.length; i++) {
+            int textY = y + 70 + (i * 50);
+            keys[i] = KeyEvent.getKeyText(currentKeys[i]); // Convert set key codes to characters
+            // draw the dividing line
+            if (i < labels.length - 1) {
+                backBufferGraphics.setColor(Color.DARK_GRAY);
+                backBufferGraphics.drawLine(x + 20, textY + 20, x + panelWidth - 20, textY + 20);
+            }
+
+            // Verify that the current item is in key selection (waiting) status and select color
+            if (keySelected[i]) {
+                backBufferGraphics.setColor(Color.YELLOW);
+            } else if (selectedSection == 1 && selectedKeyIndex == i) {
+                backBufferGraphics.setColor(Color.GREEN);
+            } else {
+                backBufferGraphics.setColor(Color.LIGHT_GRAY);
+            }
+            // draw key
+            backBufferGraphics.drawString(labels[i], x + 30, textY);
+            backBufferGraphics.setColor(Color.WHITE);
+            backBufferGraphics.drawString(keys[i], x + 150, textY);
+        }
+
     }
 
-    /**
-     * Draws a centered string on regular font.
-     *
-     * @param screen
-     *               Screen to draw on.
-     * @param string
-     *               String to draw.
-     * @param height
-     *               Height of the drawing.
-     */
-    public void drawCenteredRegularString(final Screen screen,
-                                          final String string, final int height) {
-        backBufferGraphics.setFont(fontRegular);
-        backBufferGraphics.drawString(string, screen.getWidth() / 2
-                - fontRegularMetrics.stringWidth(string) / 2, height);
-    }
+	/**
+	 * Draws a centered string on regular font.
+	 *
+	 * @param screen
+	 *               Screen to draw on.
+	 * @param string
+	 *               String to draw.
+	 * @param height
+	 *               Height of the drawing.
+	 */
+	public void drawCenteredRegularString(final Screen screen,
+			final String string, final int height) {
+		backBufferGraphics.setFont(fontRegular);
+		backBufferGraphics.drawString(string, screen.getWidth() / 2
+				- fontRegularMetrics.stringWidth(string) / 2, height);
+	}
 
     /**
      * Draws a centered string on regular font at a specific coordinate.
@@ -937,6 +994,7 @@ public final class DrawManager {
 		}
 		backBufferGraphics.drawLine(splitPointX, screen.getHeight()/4, splitPointX,(menuY+menuItems.length*60));
 	}
+
 //	int for adjust volume hitbox
 	private int volumeHitBoxOffset = 20;
 

@@ -21,29 +21,30 @@ import screen.*;
  */
 public final class Core {
 
-    private static final int WIDTH = 448;
-    private static final int HEIGHT = 520;
-    private static final int FPS = 60;
+	private static final int WIDTH = 448;
+	private static final int HEIGHT = 520;
+	private static final int FPS = 60;
 
-    /** Lives per player (used to compute team pool in shared mode). */
-    private static final int MAX_LIVES = 3;
-    private static final int EXTRA_LIFE_FRECUENCY = 3;
-    private static int NUM_LEVELS; // Total number of levels
+	/** Lives per player (used to compute team pool in shared mode). */
+	private static final int MAX_LIVES = 3;
+	private static final int EXTRA_LIFE_FRECUENCY = 3;
 
-    /** Frame to draw the screen on. */
-    private static Frame frame;
-    private static Screen currentScreen;
-    private static List<GameSettings> gameSettings;
-    private static final Logger LOGGER = Logger.getLogger(Core.class.getSimpleName());
-    private static Handler fileHandler;
-    private static ConsoleHandler consoleHandler;
+	/** Frame to draw the screen on. */
+	private static Frame frame;
+	private static Screen currentScreen;
+	private static List<GameSettings> gameSettings;
+	private static final Logger LOGGER = Logger.getLogger(Core.class.getSimpleName());
+	private static Handler fileHandler;
+	private static ConsoleHandler consoleHandler;
+	private static int NUM_LEVELS; // Total number of levels
 
-    /**
-     * Test implementation.
-     *
-     * @param args
-     *             Program args, ignored.
-     */
+	/**
+	 * Test implementation.
+	 *
+	 * @param args
+	 *             Program args, ignored.
+	 */
+
     public static void main(final String[] args) throws IOException {
         try {
             LOGGER.setUseParentHandlers(false);
@@ -149,14 +150,16 @@ public final class Core {
 					LOGGER.info("Closing achievement screen.");
 					break;
 
-                case 4:
-                    // settings screen
-                    currentScreen = new SettingScreen(width, height, FPS);
-                    LOGGER.info("Starting " + WIDTH + "x" + HEIGHT
-                            + " setting screen at " + FPS + " fps.");
-                    returnCode = frame.setScreen(currentScreen);
-                    LOGGER.info("Closing setting screen.");
-                    break;
+          case 4:
+              // settings screen
+              currentScreen = new SettingScreen(width, height, FPS);
+              LOGGER.info("Starting " + WIDTH + "x" + HEIGHT
+                      + " setting screen at " + FPS + " fps.");
+              returnCode = frame.setScreen(currentScreen);
+              LOGGER.info("Closing setting screen.");
+              frame.removeKeyListener(InputManager.getInstance());
+              frame.addKeyListener(InputManager.getInstance()); // Remove and re-register the input manager, forcing the key setting of the frame to be updated
+              break;
 
                 case 5:
                     // Play : Use the play to decide 1p and 2p
