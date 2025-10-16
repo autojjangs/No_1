@@ -1,6 +1,7 @@
 package engine;
 
 import java.awt.*;
+import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.LinkedHashMap;
@@ -674,7 +675,7 @@ public final class DrawManager {
 
     public void drawSettingMenu(final Screen screen) {
         String settingsString = "Settings";
-        String instructionsString = "Press Space to return";
+        String instructionsString = "Press ESC to return";
 
         backBufferGraphics.setColor(Color.GREEN);
         drawCenteredBigString(screen, settingsString, screen.getHeight() / 8);
@@ -719,6 +720,40 @@ public final class DrawManager {
 		backBufferGraphics.drawString(volumeText, bar_endWidth+10, indicatorY);
 
 	}
+
+    public void drawKeysettings(final Screen screen, int playerNum, int selectedSection, int selectedKeyIndex, boolean[] keySelected,int[] currentKeys) {
+        int panelWidth = 220;
+        int panelHeight = 180;
+        int x = screen.getWidth() - panelWidth - 50;
+        int y = screen.getHeight() / 4;
+
+        String[] labels = {"MOVE LEFT :", "MOVE RIGHT:", "ATTACK :"};
+        String[] keys = new String[3];
+
+        for (int i = 0; i < labels.length; i++) {
+            int textY = y + 70 + (i * 50);
+            keys[i] = KeyEvent.getKeyText(currentKeys[i]); // Convert set key codes to characters
+            // draw the dividing line
+            if (i < labels.length - 1) {
+                backBufferGraphics.setColor(Color.DARK_GRAY);
+                backBufferGraphics.drawLine(x + 20, textY + 20, x + panelWidth - 20, textY + 20);
+            }
+
+            // Verify that the current item is in key selection (waiting) status and select color
+            if (keySelected[i]) {
+                backBufferGraphics.setColor(Color.YELLOW);
+            } else if (selectedSection == 1 && selectedKeyIndex == i) {
+                backBufferGraphics.setColor(Color.GREEN);
+            } else {
+                backBufferGraphics.setColor(Color.LIGHT_GRAY);
+            }
+            // draw key
+            backBufferGraphics.drawString(labels[i], x + 30, textY);
+            backBufferGraphics.setColor(Color.WHITE);
+            backBufferGraphics.drawString(keys[i], x + 150, textY);
+        }
+
+    }
 
 	/**
 	 * Draws a centered string on regular font.
