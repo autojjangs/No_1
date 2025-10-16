@@ -2,10 +2,8 @@ package screen;
 
 import java.awt.event.KeyEvent;
 import java.io.IOException;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Objects;
+import java.sql.Array;
+import java.util.*;
 
 import engine.*;
 
@@ -23,6 +21,8 @@ public class ScoreScreen extends Screen {
 	private static final int FIRST_CHAR = 65;
 	/** Code of last mayus character. */
 	private static final int LAST_CHAR = 90;
+    /** Code of max high score. */
+    private static final int MAX_HIGH_SCORE_NUM = 7;
 
 	// Added for persist per-player breakdown
 	private final GameState gameState;
@@ -48,7 +48,7 @@ public class ScoreScreen extends Screen {
 	/** manages achievements.*/
 	private AchievementManager achievementManager;
 	/** Total coins earned in the game. */
-	private int[] totalCoins;
+	private int[] totalCoins = new int[2];
     /** check 1P/2P mode; */
     private String mode;
 
@@ -87,7 +87,7 @@ public class ScoreScreen extends Screen {
 
         Core.getFileManager().saveCoins(totalCoins);
 		try {
-			this.highScores = Core.getFileManager().loadHighScores();
+			this.highScores = Core.getFileManager().loadHighScores(this.mode);
 			if (highScores.size() < MAX_HIGH_SCORE_NUM
 					|| highScores.get(highScores.size() - 1).getScore() < this.score)
 				this.isNewRecord = true;

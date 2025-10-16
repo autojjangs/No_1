@@ -150,7 +150,7 @@ public class GameState {
 
 	// 2P mode: per-player coin tracking
     public int getCoins(final int p) { return (p >= 0 && p < NUM_PLAYERS) ? coins[p] : 0; }
-    public int getCoins() { return coins[0] + coins[1]; } // legacy total for ScoreScreen
+    public int getCoins() { return coins[0]; } // legacy total for ScoreScreen
 
     public void addCoins(final int p, final int delta) {
         if (p >= 0 && p < NUM_PLAYERS && delta > 0)
