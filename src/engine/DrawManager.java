@@ -241,16 +241,6 @@ public final class DrawManager {
             }
         }
 
-        // Set the drawing color for the entity
-        backBufferGraphics.setColor(color);
-
-        // Draw the original sprite pixels (pre-scaling)
-        for (int i = 0; i < image.length; i++)
-            for (int j = 0; j < image[i].length; j++)
-                if (image[i][j])
-                    backBufferGraphics.drawRect(positionX + i * 2, positionY
-                            + j * 2, 1, 1);
-
         // --- Scaling logic ---
         // Original sprite dimensions
         int spriteWidth = image.length;
