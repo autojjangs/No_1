@@ -132,8 +132,7 @@ public final class Core {
 				case 3:
 					// High scores.
 					currentScreen = new HighScoreScreen(width, height, FPS);
-					LOGGER.info("Starting " + WIDTH + "x" + HEIGHT
-							+ " high score screen at " + FPS + " fps.");
+					LOGGER.info("Starting " + WIDTH + "x" + HEIGHT + " high score screen at " + FPS + " fps.");
 					returnCode = frame.setScreen(currentScreen);
 					LOGGER.info("Closing high score screen.");
 					break;
@@ -158,7 +157,7 @@ public final class Core {
 
 	/**
 	 * Controls access to the logger.
-	 * sh
+	 *
 	 *
 	 * @return Application logger.
 	 */

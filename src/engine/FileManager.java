@@ -13,8 +13,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.net.URLDecoder;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -38,10 +37,6 @@ public final class FileManager {
      * Application logger.
      */
     private static Logger logger;
-    /**
-     * Max number of high scores.
-     */
-    private static final int MAX_SCORES = 7;
 
     // coins.csv file to save changes about coin content
     private static final String COIN_FILENAME = "coins.csv";
@@ -145,7 +140,7 @@ public final class FileManager {
      * @throws IOException
      *      In case of loading problems
      * */
-    private String getFilePath(String fileName) throws IOException {
+    private static String getFilePath(String fileName) throws IOException {
         String filePath = System.getProperty("user.dir");
         filePath += File.separator + "res" + File.separator + fileName;
         return filePath;
@@ -160,13 +155,12 @@ public final class FileManager {
      *             In case of loading problems.
      */
     private List<Score> loadDefaultHighScores() throws IOException {
-        List<Score> highScores = new ArrayList<Score>();
+        List<Score> highScores = new ArrayList<>();
         InputStream inputStream = null;
-        BufferedReader reader = null;
+        BufferedReader reader;
 
         try {
-            inputStream = FileManager.class.getClassLoader()
-                    .getResourceAsStream("scores.csv");
+            inputStream = FileManager.class.getClassLoader().getResourceAsStream("1Pscores.csv");
             reader = new BufferedReader(new InputStreamReader(inputStream));
 
             // except first line
@@ -190,49 +184,30 @@ public final class FileManager {
     /**
      * Loads high scores from file, and returns a sorted list of pairs score -
      * value.
-     *
+     * @param mode
+     *      get game mode 1P/2P.
      * @return Sorted list of scores - players.
      * @throws IOException
      *             In case of loading problems.
      */
-    public List<Score> loadHighScores() throws IOException {
-        List<Score> highScores = new ArrayList<Score>();
+    public List<Score> loadHighScores(String mode) throws IOException {
+        List<Score> highScores = new ArrayList<>();
         InputStream inputStream = null;
         BufferedReader bufferedReader = null;
 
         try {
-            String jarPath = FileManager.class.getProtectionDomain()
-                    .getCodeSource().getLocation().getPath();
-            jarPath = URLDecoder.decode(jarPath, "UTF-8");
-
-            String scoresPath = new File(jarPath).getParent();
-            scoresPath += File.separator;
-            scoresPath += "scores.csv";
+            String scoresPath = getFilePath(mode+"scores.csv");
 
             File scoresFile = new File(scoresPath);
             inputStream = new FileInputStream(scoresFile);
-            bufferedReader = new BufferedReader(new InputStreamReader(inputStream, Charset.forName("UTF-8")));
+            bufferedReader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
             logger.info("Loading user high scores.");
             // except first line
-            //bufferedReader.readLine();
-
-            String line = bufferedReader.readLine();
-            if (line != null && !line.contains(",")) {
-                // skip header
-                // do nothing;
-            } else if (line != null) {
-                // First line is a valid score, process it
-                String[] pair = line.split(",");
-                String name = pair[0];
-                String score = pair[1];
-                String mode = pair[2];
-                highScores.add(new Score(name, Integer.parseInt(score), mode));
-            }
+            bufferedReader.readLine();
             String input;
             while ((input = bufferedReader.readLine()) != null) {
                 String[] pair = input.split(",");
                 String name = pair[0], score = pair[1];
-                String mode = pair[2];
                 Score highScore = new Score(name, Integer.parseInt(score), mode);
                 highScores.add(highScore);
             }
@@ -254,23 +229,18 @@ public final class FileManager {
      *
      * @param highScores
      *            High scores to save.
+     * @param mode
+     *            get game mode 1P/2P.
      *
      * @throws IOException
      *             In case of loading problems.
      */
-    public void saveHighScores(final List<Score> highScores)
-            throws IOException {
+    public void saveHighScores(final List<Score> highScores, String mode) throws IOException {
         OutputStream outputStream = null;
         BufferedWriter bufferedWriter = null;
 
         try {
-            String jarPath = FileManager.class.getProtectionDomain()
-                    .getCodeSource().getLocation().getPath();
-            jarPath = URLDecoder.decode(jarPath, "UTF-8");
-
-            String scoresPath = new File(jarPath).getParent();
-            scoresPath += File.separator;
-            scoresPath += "scores.csv";
+            String scoresPath = getFilePath(mode+"scores.csv");
 
             File scoresFile = new File(scoresPath);
 
@@ -278,15 +248,14 @@ public final class FileManager {
                 scoresFile.createNewFile();
 
             outputStream = new FileOutputStream(scoresFile);
-            bufferedWriter = new BufferedWriter(new OutputStreamWriter(
-                    outputStream, Charset.forName("UTF-8")));
+            bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream, StandardCharsets.UTF_8));
 
             logger.info("Saving user high scores.");
+            bufferedWriter.write("player,score");
             bufferedWriter.newLine();
 
-            // Before this PR, we can save only 7 scores, but now we can more.
-            for (Score score : highScores) {
-                bufferedWriter.write(score.getName() + "," + score.getScore() + "," + score.getMode()); // add score.getMode()
+            for(Score score : highScores) {
+                bufferedWriter.write(score.getName() + "," + score.getScore());
                 bufferedWriter.newLine();
             }
 
@@ -302,50 +271,43 @@ public final class FileManager {
      * @return The saved coin count, or 0 if the file is not found or empty.
      * @throws IOException In case of loading problems.
      */
-    public int loadCoins() throws IOException {
-        InputStream inputStream = null;
+    public int[] loadCoins() throws IOException {
+        InputStream inputStream;
         BufferedReader bufferedReader = null;
-
+        // base coins are 0.
+        int[] result = {0, 0};
         try {
-            String jarPath = FileManager.class.getProtectionDomain()
-                    .getCodeSource().getLocation().getPath();
-            jarPath = URLDecoder.decode(jarPath, "UTF-8");
-
-            String coinsPath = new File(jarPath).getParent();
-            coinsPath += File.separator;
-            coinsPath += COIN_FILENAME; // coins.csv 사용
-
+            String coinsPath = getFilePath(COIN_FILENAME);
             File coinsFile = new File(coinsPath);
             inputStream = new FileInputStream(coinsFile);
-            bufferedReader = new BufferedReader(new InputStreamReader(inputStream, Charset.forName("UTF-8")));
-
+            bufferedReader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
             logger.info("Loading coin count from " + COIN_FILENAME + ".");
 
             // coins.csv Read the first line of the file to get the number of coins
             String line = bufferedReader.readLine();
-
             if (line != null && !line.trim().isEmpty()) {
                 try {
                     // Attempt to convert by extracting only numbers
-                    String rawCoin = line.trim().replaceAll("[^0-9]", "");
-                    if (!rawCoin.isEmpty()) {
-                        return Integer.parseInt(rawCoin);
-                    }
+                    String[] parse = line.split(",");
+                    result = new int[parse.length];
+                    for(int i = 0; i < parse.length; i++)
+                        result[i] = Integer.parseInt(parse[i].trim().replaceAll("[^0-9]", ""));
+                    return result;
                 } catch (NumberFormatException e) {
                     logger.warning("Coin count line is not a valid number. Returning 0.");
-                    return 0;
+                    return null;
                 }
             }
 
         } catch (FileNotFoundException e) {
             logger.info(COIN_FILENAME + " not found. Returning 0 coins.");
-            return 0;
+            return result;
         } finally {
             if (bufferedReader != null)
                 bufferedReader.close();
         }
 
-        return 0;
+        return result;
     }
 
     /**
@@ -354,33 +316,24 @@ public final class FileManager {
      * @param coins The total number of coins acquired.
      * @throws IOException In case of saving problems.
      */
-    public void saveCoins(final int coins) throws IOException {
+    public void saveCoins(final int[] coins) throws IOException {
         OutputStream outputStream = null;
         BufferedWriter bufferedWriter = null;
 
         try {
-            String jarPath = FileManager.class.getProtectionDomain()
-                    .getCodeSource().getLocation().getPath();
-            jarPath = URLDecoder.decode(jarPath, "UTF-8");
-
-            String coinsPath = new File(jarPath).getParent();
-            coinsPath += File.separator;
-            coinsPath += COIN_FILENAME; // Use coins.csv
-
+            String coinsPath = getFilePath(COIN_FILENAME);
             File coinsFile = new File(coinsPath);
 
             if (!coinsFile.exists())
                 coinsFile.createNewFile();
 
             outputStream = new FileOutputStream(coinsFile);
-            bufferedWriter = new BufferedWriter(new OutputStreamWriter(
-                    outputStream, Charset.forName("UTF-8")));
+            bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream, StandardCharsets.UTF_8));
 
             logger.info("Saving new coin count (" + coins + ") to " + COIN_FILENAME + ".");
 
-            // Save only one line of coin count to the coins.csv file.
-            bufferedWriter.write(Integer.toString(coins));
-            bufferedWriter.newLine();
+            for(int coin : coins)
+                bufferedWriter.write(Integer.toString(coin)+",");
 
         } finally {
             if (bufferedWriter != null)
@@ -394,22 +347,14 @@ public final class FileManager {
      * @param userName user's name to search.
      * @throws IOException In case of loading problems.
      */
-    public List<Boolean> searchAchievementsByName(String userName)
-            throws IOException {
+    public List<Boolean> searchAchievementsByName(String userName) throws IOException {
         List<Boolean> achievementList = new ArrayList<Boolean>();
 
         try {
-            String jarPath = FileManager.class.getProtectionDomain()
-                    .getCodeSource().getLocation().getPath();
-            jarPath = URLDecoder.decode(jarPath, "UTF-8");
-
-            String achievementPath = String.valueOf(new File(jarPath));
-            achievementPath += File.separator;
-            achievementPath += "achievement.csv";
+            String achievementPath = getFilePath("achievement.csv");
 
             InputStream iStream = new FileInputStream(achievementPath);
-            BufferedReader bReader = new BufferedReader(
-                    new InputStreamReader(iStream, Charset.forName("UTF-8")));
+            BufferedReader bReader = new BufferedReader(new InputStreamReader(iStream, StandardCharsets.UTF_8));
 
             bReader.readLine(); // Dump header
             String line;
@@ -420,7 +365,7 @@ public final class FileManager {
                     flag = true;
                     logger.info("Loading user achievements.");
                     for (int i = 1; i < playRecord.length; i++) {
-                        achievementList.add(playRecord[i].equals("1") ? true : false);
+                        achievementList.add(playRecord[i].equals("1"));
                     }
                     break;
                 }
@@ -446,21 +391,14 @@ public final class FileManager {
      * @param unlockedAchievement A list of booleans representing which achievements
      * @throws IOException In case of loading problems.
      */
-    public void unlockAchievement(String userName, List<Boolean> unlockedAchievement)
-            throws IOException {
+    public void unlockAchievement(String userName, List<Boolean> unlockedAchievement) throws IOException {
         List<String[]> records = new ArrayList<>();
         try {
-            String jarPath = FileManager.class.getProtectionDomain()
-                    .getCodeSource().getLocation().getPath();
-            jarPath = URLDecoder.decode(jarPath, "UTF-8");
-
-            String achievementPath = String.valueOf(new File(jarPath));
-            achievementPath += File.separator;
-            achievementPath += "achievement.csv";
+            String achievementPath = getFilePath("achievement.csv");
 
             InputStream iStream = new FileInputStream(achievementPath);
             BufferedReader bReader = new BufferedReader(
-                    new InputStreamReader(iStream, Charset.forName("UTF-8")));
+                    new InputStreamReader(iStream, StandardCharsets.UTF_8));
 
             String line;
             boolean flag = false;
@@ -489,7 +427,7 @@ public final class FileManager {
 
             OutputStream outStream = new FileOutputStream(achievementPath);
             BufferedWriter bWriter = new BufferedWriter(
-                    new OutputStreamWriter(outStream, Charset.forName("UTF-8")));
+                    new OutputStreamWriter(outStream, StandardCharsets.UTF_8));
 
             for (String[] record : recorder) {
                 bWriter.write(String.join(",", record));
@@ -511,21 +449,14 @@ public final class FileManager {
      *
      * [2025-10-09] Added in commit: feat: add method to retrieve achievement completer
      */
-    public List<String> getAchievementCompleter(Achievement achievement)
-            throws IOException {
+    public List<String> getAchievementCompleter(Achievement achievement) throws IOException {
         List<String> completer = new ArrayList<String>();
         try {
-                String jarPath = FileManager.class.getProtectionDomain()
-                        .getCodeSource().getLocation().getPath();
-                jarPath = URLDecoder.decode(jarPath, "UTF-8");
-
-                String achievementPath = String.valueOf(new File(jarPath));
-                achievementPath += File.separator;
-                achievementPath += "achievement.csv";
+                String achievementPath = getFilePath("achievement.csv");
 
                 InputStream iStream = new FileInputStream(achievementPath);
                 BufferedReader bReader = new BufferedReader(
-                        new InputStreamReader(iStream, Charset.forName("UTF-8")));
+                        new InputStreamReader(iStream, StandardCharsets.UTF_8));
 
                 String line;
                 String[] header = bReader.readLine().split(",");

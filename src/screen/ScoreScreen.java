@@ -3,7 +3,9 @@ package screen;
 import java.awt.event.KeyEvent;
 import java.io.IOException;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 
 import engine.*;
 
@@ -17,8 +19,6 @@ public class ScoreScreen extends Screen {
 
 	/** Milliseconds between changes in user selection. */
 	private static final int SELECTION_TIME = 200;
-	/** Maximum number of high scores. */
-	private static final int MAX_HIGH_SCORE_NUM = 7;
 	/** Code of first mayus character. */
 	private static final int FIRST_CHAR = 65;
 	/** Code of last mayus character. */
@@ -47,8 +47,10 @@ public class ScoreScreen extends Screen {
 	private Cooldown selectionCooldown;
 	/** manages achievements.*/
 	private AchievementManager achievementManager;
-	/** Total coins earned in the game. */ // ADD THIS LINE
-	private int totalCoins; // ADD THIS LINE
+	/** Total coins earned in the game. */
+	private int[] totalCoins;
+    /** check 1P/2P mode; */
+    private String mode;
 
 	/**
 	 * Constructor, establishes the properties of the screen.
@@ -66,7 +68,7 @@ public class ScoreScreen extends Screen {
 	 * 			  2025-10-03  add generator parameter and comment
 	 */
 	public ScoreScreen(final int width, final int height, final int fps,
-					   final GameState gameState, final AchievementManager achievementManager) {
+                       final GameState gameState, final AchievementManager achievementManager) throws IOException {
 		super(width, height, fps);
 		this.gameState = gameState; // Added
 
@@ -74,17 +76,19 @@ public class ScoreScreen extends Screen {
 		this.livesRemaining = gameState.getLivesRemaining();
 		this.bulletsShot = gameState.getBulletsShot();
 		this.shipsDestroyed = gameState.getShipsDestroyed();
-		this.totalCoins = gameState.getCoins(); // ADD THIS LINE
+		this.totalCoins[0] = gameState.getCoins(); // ADD THIS LINE
 		this.isNewRecord = false;
 		this.name = "AAA".toCharArray();
 		this.nameCharSelected = 0;
 		this.selectionCooldown = Core.getCooldown(SELECTION_TIME);
 		this.selectionCooldown.reset();
 		this.achievementManager = achievementManager;
+        this.mode = gameState.getCoop() ? "2P" : "1P";
 
+        Core.getFileManager().saveCoins(totalCoins);
 		try {
-			this.highScores = Core.getFileManager().loadHighScores();
-			if (highScores.getLast().getScore() < this.score)
+			this.highScores = Core.getFileManager().loadHighScores(mode);
+			if (highScores.getFirst().getScore() < this.score)
 				this.isNewRecord = true;
 		} catch (IOException e) {
 			logger.warning("Couldn't load high scores!");
@@ -165,7 +169,7 @@ public class ScoreScreen extends Screen {
 		Collections.sort(highScores);
 
         try {
-			Core.getFileManager().saveHighScores(highScores);
+			Core.getFileManager().saveHighScores(highScores, mode);
 		} catch (IOException e) {
 			logger.warning("Couldn't load high scores!");
 		}
