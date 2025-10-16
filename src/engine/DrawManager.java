@@ -80,7 +80,10 @@ public final class DrawManager {
         /** Item Graphics Temp */
         ItemScore,
         ItemCoin,
-        ItemHeal
+        ItemHeal,
+        ItemTripleShot,
+        ItemScoreBooster,
+        ItemBulletSpeedUp
     };
 
     /**
@@ -111,6 +114,9 @@ public final class DrawManager {
             spriteMap.put(SpriteType.ItemScore, new boolean[5][5]);
             spriteMap.put(SpriteType.ItemCoin, new boolean[5][5]);
             spriteMap.put(SpriteType.ItemHeal, new boolean[5][5]);
+            spriteMap.put(SpriteType.ItemTripleShot, new boolean[5][5]);
+            spriteMap.put(SpriteType.ItemScoreBooster, new boolean[5][5]);
+            spriteMap.put(SpriteType.ItemBulletSpeedUp, new boolean[5][5]);
 
             fileManager.loadSprite(spriteMap);
             logger.info("Finished loading the sprites.");
@@ -235,16 +241,6 @@ public final class DrawManager {
             }
         }
 
-        // Set the drawing color for the entity
-        backBufferGraphics.setColor(color);
-
-        // Draw the original sprite pixels (pre-scaling)
-        for (int i = 0; i < image.length; i++)
-            for (int j = 0; j < image[i].length; j++)
-                if (image[i][j])
-                    backBufferGraphics.drawRect(positionX + i * 2, positionY
-                            + j * 2, 1, 1);
-
         // --- Scaling logic ---
         // Original sprite dimensions
         int spriteWidth = image.length;
@@ -336,7 +332,7 @@ public final class DrawManager {
         backBufferGraphics.setFont(fontRegular);
         backBufferGraphics.setColor(Color.WHITE);
         backBufferGraphics.drawString(Integer.toString(lives), 20, 25);
-        Ship dummyShip = new Ship(0, 0);
+        Ship dummyShip = new Ship(0, 0, null, null, null);
         for (int i = 0; i < lives; i++)
             drawEntity(dummyShip, 40 + 35 * i, 10);
     }
