@@ -157,7 +157,13 @@ public class GameState {
 	}
 
 	public void addScore(final int p, final int delta) {
-		score[p] += delta;
+		int realDelta = delta;
+		// If ScoreBoost item active, score gain is doubled.
+		if (this.hasEffect(p, ItemEffect.ItemEffectType.SCOREBOOST)) {
+			realDelta = delta * 2;
+			logger.info("ScoreBoost item active. added score changed from " + delta + " to " + realDelta);
+		}
+		score[p] += realDelta;
 	}
 
 	public void incBulletsShot(final int p) {

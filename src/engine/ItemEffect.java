@@ -8,6 +8,7 @@ public class ItemEffect {
 
     public enum ItemEffectType {
         TRIPLESHOT,
+        SCOREBOOST,
     }
 
     /**=========================SINGLE USE=================================**/
@@ -101,6 +102,15 @@ public class ItemEffect {
 
         // apply duration
         gameState.addEffect(playerIndex, ItemEffectType.TRIPLESHOT, duration);
+    }
+
+    public static void applyScoreBoost(final GameState gameState, final int playerId, int duration){
+        if (gameState == null) return;
+        final int playerIndex = getPlayerIndex(playerId);
+
+        // apply duration
+        gameState.addEffect(playerIndex, ItemEffectType.SCOREBOOST, duration);
+        logger.info("[ItemEffect - SCOREBOOST] Player " + playerId + " applied for " + duration + " Score gain will be doubled.");
     }
 
     /**
