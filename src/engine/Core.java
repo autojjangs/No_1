@@ -60,6 +60,8 @@ public final class Core {
         }
 
         frame = new Frame(WIDTH, HEIGHT);
+        InputManager input = InputManager.getInstance();
+        frame.addKeyListener(input); // Register an instance to allow the window to receive keyboard event information
         DrawManager.getInstance().setFrame(frame);
         int width = frame.getWidth();
         int height = frame.getHeight();

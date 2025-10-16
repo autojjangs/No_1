@@ -225,13 +225,17 @@ public class GameScreen extends Screen {
                     if (ship == null || ship.isDestroyed())
                         continue;
 
-                    boolean moveRight = (p == 0)
-                            ? (inputManager.isKeyDown(KeyEvent.VK_D))
-                            : (inputManager.isKeyDown(KeyEvent.VK_RIGHT));
-
-                    boolean moveLeft = (p == 0)
-                            ? (inputManager.isKeyDown(KeyEvent.VK_A))
-                            : (inputManager.isKeyDown(KeyEvent.VK_LEFT));
+                    boolean moveRight, moveLeft, fire;
+                    // Get player key input status
+                    if (p == 0) {
+                        moveRight = inputManager.isP1RightPressed();
+                        moveLeft = inputManager.isP1LeftPressed();
+                        fire = inputManager.isP1ShootPressed();
+                    } else {
+                        moveRight = inputManager.isP2RightPressed();
+                        moveLeft = inputManager.isP2LeftPressed();
+                        fire = inputManager.isP2ShootPressed();
+                    }
 
                     boolean isRightBorder = ship.getPositionX() + ship.getWidth() + ship.getSpeed() > this.width - 1;
 
@@ -241,10 +245,6 @@ public class GameScreen extends Screen {
                         ship.moveRight();
                     if (moveLeft && !isLeftBorder)
                         ship.moveLeft();
-
-                    boolean fire = (p == 0)
-                            ? inputManager.isKeyDown(KeyEvent.VK_SPACE)
-                            : inputManager.isKeyDown(KeyEvent.VK_ENTER);
 
                     if (fire && ship.shoot(this.bullets)) {
 
