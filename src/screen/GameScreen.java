@@ -178,6 +178,10 @@ public class GameScreen extends Screen {
 		this.gameStartTime = System.currentTimeMillis();
 		this.inputDelay = Core.getCooldown(INPUT_DELAY);
 		this.inputDelay.reset();
+
+        this.isPaused = false;
+        this.pauseCooldown = Core.getCooldown(300);
+        this.returnMenuCooldown = Core.getCooldown(300);
 	}
 
 
