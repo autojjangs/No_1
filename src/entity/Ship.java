@@ -7,6 +7,7 @@ import engine.Cooldown;
 import engine.Core;
 import engine.GameState;
 import engine.DrawManager.SpriteType;
+import engine.ItemDB;
 
 import static engine.ItemEffect.ItemEffectType.*;
 
@@ -94,30 +95,42 @@ public class Ship extends Entity {
 
             /** Check Item Effect **/
             int bulletOffset = 20;
+            int bulletSpeed;
+
+            // BULLETSPEEDUP check
+            if (gameState.hasEffect(playerId - 1, BULLETSPEEDUP)) {
+                ItemDB itemDB = new ItemDB();
+                int itemEffectValue = itemDB.getItemData("BULLETSPEEDUP").getEffectValue();
+
+                bulletSpeed = BULLET_SPEED + itemEffectValue;
+            } else {
+                bulletSpeed = BULLET_SPEED;
+            }
+
             // TRIPLESHOT check
             if (gameState.hasEffect(playerId - 1, TRIPLESHOT)) {
                 // center bullet
-                Bullet center = (BulletPool.getBullet(bulletX, bulletY, BULLET_SPEED)); // shoots bullet and tags with shooter's team
+                Bullet center = (BulletPool.getBullet(bulletX, bulletY, bulletSpeed)); // shoots bullet and tags with shooter's team
 
                 center.setOwnerPlayerId(this.getPlayerId()); // 2P mode:owner tag for bullet
                 center.setTeam(this.getTeam()); // bullet inherits shooter's team
                 bullets.add(center);
 
                 // Left bullet
-                Bullet left = BulletPool.getBullet(bulletX - bulletOffset, bulletY, BULLET_SPEED);
+                Bullet left = BulletPool.getBullet(bulletX - bulletOffset, bulletY, bulletSpeed);
                 left.setOwnerPlayerId(this.getPlayerId());
                 left.setTeam(this.getTeam());
                 bullets.add(left);
 
                 // Right bullet
-                Bullet right = BulletPool.getBullet(bulletX + bulletOffset, bulletY, BULLET_SPEED);
+                Bullet right = BulletPool.getBullet(bulletX + bulletOffset, bulletY, bulletSpeed);
                 right.setOwnerPlayerId(this.getPlayerId());
                 right.setTeam(this.getTeam());
                 bullets.add(right);
             }
             else {
                 // default shooting
-                    Bullet b = (BulletPool.getBullet(bulletX, bulletY, BULLET_SPEED)); // shoots bullet and tags with shooter's team
+                    Bullet b = (BulletPool.getBullet(bulletX, bulletY, bulletSpeed)); // shoots bullet and tags with shooter's team
                     b.setOwnerPlayerId(this.getPlayerId()); // 2P mode:owner tag for bullet
                     b.setTeam(this.getTeam()); // bullet inherits shooter's team
                     bullets.add(b);
