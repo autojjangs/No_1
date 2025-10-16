@@ -120,6 +120,7 @@ public class GameState {
 
 	}
 
+
 	/* ----- Per-player getters (needed by Score.java) ----- */
 	public int getScore(final int p) {
 		return (p >= 0 && p < NUM_PLAYERS) ? score[p] : 0;

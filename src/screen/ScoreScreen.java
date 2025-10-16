@@ -87,9 +87,11 @@ public class ScoreScreen extends Screen {
 
         Core.getFileManager().saveCoins(totalCoins);
 		try {
-			this.highScores = Core.getFileManager().loadHighScores(mode);
-			if (highScores.getFirst().getScore() < this.score)
+			this.highScores = Core.getFileManager().loadHighScores();
+			if (highScores.size() < MAX_HIGH_SCORE_NUM
+					|| highScores.get(highScores.size() - 1).getScore() < this.score)
 				this.isNewRecord = true;
+
 		} catch (IOException e) {
 			logger.warning("Couldn't load high scores!");
 		}
@@ -167,6 +169,8 @@ public class ScoreScreen extends Screen {
 		String mode = (gameState != null && gameState.isCoop()) ? "2P" : "1P";
 		highScores.add(new Score(new String(this.name), this.gameState, mode)); // update mode
 		Collections.sort(highScores);
+		if (highScores.size() > MAX_HIGH_SCORE_NUM)
+			highScores.remove(highScores.size() - 1);
 
         try {
 			Core.getFileManager().saveHighScores(highScores, mode);
