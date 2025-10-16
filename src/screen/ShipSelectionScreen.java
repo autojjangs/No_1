@@ -15,6 +15,7 @@ public class ShipSelectionScreen extends Screen {
 
     private String screenTitle;
     private int player;
+    private boolean backSelected = false; // If current state is on the back button, can't select ship
 
     public ShipSelectionScreen(final int width, final int height, final int fps, final int player) {
         super(width, height, fps);
@@ -66,21 +67,33 @@ public class ShipSelectionScreen extends Screen {
         super.update();
         draw();
         if (this.selectionCooldown.checkFinished() && this.inputDelay.checkFinished()) {
-            if (inputManager.isKeyDown(KeyEvent.VK_LEFT) || inputManager.isKeyDown(KeyEvent.VK_A)) {
-                this.selectedShipIndex = this.selectedShipIndex - 1;
-                if (this.selectedShipIndex < 0) {
-                    this.selectedShipIndex += 4;
-                }
-                this.selectedShipIndex = this.selectedShipIndex % 4;
-                this.selectionCooldown.reset();
+            if (inputManager.isKeyDown(KeyEvent.VK_UP) || inputManager.isKeyDown(KeyEvent.VK_W)) {
+                backSelected = true;
+                selectionCooldown.reset();
             }
-            if (inputManager.isKeyDown(KeyEvent.VK_RIGHT) || inputManager.isKeyDown(KeyEvent.VK_D)) {
-                this.selectedShipIndex = (this.selectedShipIndex + 1) % 4;
-                this.selectionCooldown.reset();
+            if (inputManager.isKeyDown(KeyEvent.VK_DOWN) ||  inputManager.isKeyDown(KeyEvent.VK_S)) {
+                backSelected = false;
+                selectionCooldown.reset();
+            }
+            if (!backSelected) {
+                if (inputManager.isKeyDown(KeyEvent.VK_LEFT) || inputManager.isKeyDown(KeyEvent.VK_A)) {
+                    this.selectedShipIndex = this.selectedShipIndex - 1;
+                    if (this.selectedShipIndex < 0) {
+                        this.selectedShipIndex += 4;
+                    }
+                    this.selectedShipIndex = this.selectedShipIndex % 4;
+                    this.selectionCooldown.reset();
+                }
+                if (inputManager.isKeyDown(KeyEvent.VK_RIGHT) || inputManager.isKeyDown(KeyEvent.VK_D)) {
+                    this.selectedShipIndex = (this.selectedShipIndex + 1) % 4;
+                    this.selectionCooldown.reset();
+                }
             }
             if (inputManager.isKeyDown(KeyEvent.VK_SPACE)) {
-                if (player == 1) this.returnCode = 6;
-                else if (player == 2) this.returnCode = 2;
+                switch (player) {
+                    case 1 -> this.returnCode = backSelected ? 5 : 6;
+                    case 2 -> this.returnCode = backSelected ? 6 : 2;
+                }
                 this.isRunning = false;
             }
             int mx = inputManager.getMouseX();
@@ -129,7 +142,7 @@ public class ShipSelectionScreen extends Screen {
         int my = inputManager.getMouseY();
         java.awt.Rectangle backBox = drawManager.getBackButtonHitbox(this);
         boolean backHover = backBox.contains(mx, my);
-        drawManager.drawBackButton(this, backHover);
+        drawManager.drawBackButton(this, backHover || backSelected);
 
         drawManager.completeDrawing(this);
     }
