@@ -108,7 +108,10 @@ public class Item extends Entity {
                 ItemEffect.applyTripleShot(gameState, playerId, duration);
                 break;
             case "SCOREBOOST":
-                ItemEffect.applyScoreBoost(gameState, playerId, duration);
+                ItemEffect.applyScoreBoost(gameState, playerId, value, duration);
+                break;
+            case "BULLETSPEEDUP":
+                ItemEffect.applyBulletSpeedUp(gameState, playerId, value, duration);
                 break;
             default:
                 this.logger.warning("[Item]: No ItemEffect for type " + this.type);

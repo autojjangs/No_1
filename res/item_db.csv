@@ -4,3 +4,4 @@ COIN,ItemCoin,UNCOMMON,20,0
 HEAL,ItemHeal,RARE,1,0
 TRIPLESHOT, ItemTripleShot, RARE, 0, 3
 SCOREBOOST, ItemScoreBooster, UNCOMMON, 2, 5
+BULLETSPEEDUP, ItemBulletSpeedUp, RARE, -2, 3

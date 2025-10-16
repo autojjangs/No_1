@@ -39,10 +39,12 @@ public class GameState {
     private static class EffectState {
         Cooldown cooldown;
         boolean active;
+        Integer effectValue;
 
         EffectState() {
             this.cooldown = null;
             this.active = false;
+            this.effectValue = null;
         }
     }
 
@@ -159,10 +161,11 @@ public class GameState {
 	public void addScore(final int p, final int delta) {
 		int realDelta = delta;
 		// If ScoreBoost item active, score gain is doubled.
-		if (this.hasEffect(p, ItemEffect.ItemEffectType.SCOREBOOST)) {
-			realDelta = delta * 2;
-			logger.info("ScoreBoost item active. added score changed from " + delta + " to " + realDelta);
-		}
+        Integer multiplier = getEffectValue(p, ItemEffect.ItemEffectType.SCOREBOOST);
+        if (multiplier != null) {
+            realDelta = delta * multiplier;
+            logger.info("[GameState] Player " + (p + 1) + " ScoreBoost active (x" + multiplier + "). Score changed from " + delta + " to " + realDelta);
+        }
 		score[p] += realDelta;
 	}
 
@@ -269,7 +272,7 @@ public class GameState {
         }
     }
 
-    public void addEffect(int playerIndex, ItemEffectType type, int durationSeconds) {
+    public void addEffect(int playerIndex, ItemEffectType type, Integer effectValue, int durationSeconds) {
         if (playerIndex < 0 || playerIndex >= NUM_PLAYERS) return;
 
         Map<ItemEffectType, EffectState> effects = playerEffects.get(playerIndex);
@@ -278,18 +281,21 @@ public class GameState {
         EffectState state = effects.get(type);
         if (state == null) return;
 
+        String valueStr = (effectValue != null) ? " (value: " + effectValue + ")" : "";
+
         if (state.active && state.cooldown != null) {
             // Extend existing effect
             state.cooldown.addTime(durationSeconds * 1000);
+
             logger.info("[GameState] Player " + playerIndex + " extended " + type
-                    + " by " + durationSeconds + "s to " + state.cooldown.getDuration() );
+                    + valueStr + ") by " + durationSeconds + "s to " + state.cooldown.getDuration() );
         } else {
             // Start new effect
             state.cooldown = Core.getCooldown(durationSeconds * 1000);
             state.cooldown.reset();
             state.active = true;
             logger.info("[GameState] Player " + playerIndex + " started " + type
-                    + " for " + durationSeconds + "s");
+                    + valueStr + ") for " + durationSeconds + "s");
         }
     }
 
@@ -305,6 +311,33 @@ public class GameState {
         return !state.cooldown.checkFinished();
     }
 
+    /**
+     * Gets the effect value for a specific player and effect type
+     *
+     * @param playerIndex
+     *            Index of the player (0 or 1)
+     * @param type
+     *            Type of effect to check
+     * @return
+     *            Effect value if active, null otherwise
+     */
+    public Integer getEffectValue(int playerIndex, ItemEffectType type) {
+        if (playerIndex < 0 || playerIndex >= NUM_PLAYERS) return null;
+
+        Map<ItemEffectType, EffectState> effects = playerEffects.get(playerIndex);
+        if (effects == null) return null;
+
+        EffectState state = effects.get(type);
+        if (state == null || !state.active) return null;
+
+        // Check if effect is still valid (not expired)
+        if (state.cooldown != null && state.cooldown.checkFinished()) {
+            return null;
+        }
+
+        return state.effectValue;
+    }
+
     /** Call this each frame to clean up expired effects */
     public void updateEffects() {
         for (int p = 0; p < NUM_PLAYERS; p++) {
@@ -317,6 +350,7 @@ public class GameState {
                     logger.info("[GameState] Player " + p + " effect " + entry.getKey() + " expired.");
                     state.active = false;
                     state.cooldown = null;  // Release reference
+                    state.effectValue = null;
                 }
             }
         }
@@ -338,6 +372,7 @@ public class GameState {
             if (state.active) {
                 state.active = false;
                 state.cooldown = null;
+                state.effectValue = null;
             }
         }
         logger.info("[GameState] Player " + playerIndex + ": All effects cleared.");

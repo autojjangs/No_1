@@ -9,6 +9,7 @@ public class ItemEffect {
     public enum ItemEffectType {
         TRIPLESHOT,
         SCOREBOOST,
+        BULLETSPEEDUP
     }
 
     /**=========================SINGLE USE=================================**/
@@ -101,16 +102,27 @@ public class ItemEffect {
         int playerIndex = getPlayerIndex(playerId);
 
         // apply duration
-        gameState.addEffect(playerIndex, ItemEffectType.TRIPLESHOT, duration);
+        gameState.addEffect(playerIndex, ItemEffectType.TRIPLESHOT, null, duration);
     }
 
-    public static void applyScoreBoost(final GameState gameState, final int playerId, int duration){
+    public static void applyScoreBoost(final GameState gameState, final int playerId, int effectValue, int duration){
         if (gameState == null) return;
         final int playerIndex = getPlayerIndex(playerId);
 
         // apply duration
-        gameState.addEffect(playerIndex, ItemEffectType.SCOREBOOST, duration);
-        logger.info("[ItemEffect - SCOREBOOST] Player " + playerId + " applied for " + duration + " Score gain will be doubled.");
+        gameState.addEffect(playerIndex, ItemEffectType.SCOREBOOST, effectValue, duration);
+        logger.info("[ItemEffect - SCOREBOOST] Player " + playerId + " applied for " + duration + "s. Score gain will be multiplied by " + effectValue + ".");
+    }
+
+    /**
+     * Applies the BulletSpeedUp timed effect to the specified player.
+     */
+    public static void applyBulletSpeedUp(final GameState gameState, final int playerId, int effectValue, int duration) {
+        if (gameState == null) return;
+        int playerIndex = getPlayerIndex(playerId);
+
+        // apply duration
+        gameState.addEffect(playerIndex, ItemEffectType.BULLETSPEEDUP, effectValue, duration);
     }
 
     /**

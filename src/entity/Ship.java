@@ -221,13 +221,16 @@ public class Ship extends Entity {
      * Creates and adds a bullet to the game.
      */
     private void addBullet(final Set<Bullet> bullets, final int x, final int y) {
-        Bullet bullet = BulletPool.getBullet(x, y, this.bulletSpeed,
+        int speedMultiplier = getBulletSpeedMultiplier();
+        int currentBulletSpeed = this.bulletSpeed * speedMultiplier;
+
+        Bullet bullet = BulletPool.getBullet(x, y, currentBulletSpeed,
                 this.bulletWidth, this.bulletHeight, this.getTeam());
         bullet.setOwnerPlayerId(this.getPlayerId());
         bullets.add(bullet);
     }
 
-    /** Item Effect check **/
+    /** ========================= Item Effect check ========================= **/
 
     /**
      * Checks if player has effect active
@@ -237,6 +240,13 @@ public class Ship extends Entity {
      */
     private boolean hasTripleShotEffect() {
         return gameState != null && gameState.hasEffect(playerIndex, TRIPLESHOT);
+    }
+
+    private int getBulletSpeedMultiplier() {
+        if (gameState == null) return 1;
+
+        Integer effectValue = gameState.getEffectValue(playerIndex, BULLETSPEEDUP);
+        return (effectValue != null) ? effectValue : 1;
     }
 
     /**
