@@ -165,24 +165,22 @@ public class GameScreen extends Screen {
             this.ships[1] = null; // ensuring there's no P2 ship in 1P mode
         }
 
-        this.enemyShipSpecialCooldown = Core.getVariableCooldown(BONUS_SHIP_INTERVAL, BONUS_SHIP_VARIANCE);
-        this.enemyShipSpecialCooldown.reset();
-        this.enemyShipSpecialExplosionCooldown = Core.getCooldown(BONUS_SHIP_EXPLOSION);
-        this.screenFinishedCooldown = Core.getCooldown(SCREEN_CHANGE_INTERVAL);
-        this.bullets = new HashSet<Bullet>();
+		this.enemyShipSpecialCooldown = Core.getVariableCooldown(BONUS_SHIP_INTERVAL, BONUS_SHIP_VARIANCE);
+		this.enemyShipSpecialCooldown.reset();
+		this.enemyShipSpecialExplosionCooldown = Core.getCooldown(BONUS_SHIP_EXPLOSION);
+		this.screenFinishedCooldown = Core.getCooldown(SCREEN_CHANGE_INTERVAL);
+		this.bullets = new HashSet<Bullet>();
 
-        // New Item Code
-        this.items = new HashSet<Item>();
+    // New Item Code
+    this.items = new HashSet<Item>();
 
-        // Special input delay / countdown.
-        this.gameStartTime = System.currentTimeMillis();
-        this.inputDelay = Core.getCooldown(INPUT_DELAY);
-        this.inputDelay.reset();
+		// Special input delay / countdown.
+		this.gameStartTime = System.currentTimeMillis();
+		this.inputDelay = Core.getCooldown(INPUT_DELAY);
+		this.inputDelay.reset();
+	}
 
-        this.isPaused = false;
-        this.pauseCooldown = Core.getCooldown(300);
-        this.returnMenuCooldown = Core.getCooldown(300);
-    }
+
 
     /**
      * Starts the action.
