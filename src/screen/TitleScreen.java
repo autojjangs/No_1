@@ -105,9 +105,7 @@ public class TitleScreen extends Screen {
 	 * Shifts the focus to the next menu item. - modified for 2P mode selection
 	 */
 	private void nextMenuItem() {
-
         this.menuIndex = (this.menuIndex + 1) % 4;
-
 	}
 
 	/**
@@ -121,9 +119,6 @@ public class TitleScreen extends Screen {
 	 */
 	private void draw() {
 		drawManager.initDrawing(this);
-
-        // Main menu space animation
-        drawManager.updateMenuSpace();
 
 		drawManager.drawTitle(this);
 		drawManager.drawMenu(this, this.menuIndex); // 2P mode: using menu index for highlighting
