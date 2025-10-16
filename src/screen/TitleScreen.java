@@ -126,9 +126,7 @@ public class TitleScreen extends Screen {
 	 * Shifts the focus to the next menu item. - modified for 2P mode selection
 	 */
 	private void nextMenuItem() {
-
         this.menuIndex = (this.menuIndex + 1) % 4;
-
 	}
 
 	/**
@@ -144,9 +142,6 @@ public class TitleScreen extends Screen {
 	/** Check hover based on mouse position and menu hitbox. */
 	private void draw() {
 		drawManager.initDrawing(this);
-
-        // Main menu space animation
-        drawManager.updateMenuSpace();
 
 		int mx = inputManager.getMouseX();
 		int my = inputManager.getMouseY();

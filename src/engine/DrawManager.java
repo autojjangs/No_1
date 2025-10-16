@@ -9,8 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
-import Animations.BasicGameSpace;
-import Animations.MenuSpace;
 import screen.Screen;
 import entity.Entity;
 import entity.Ship;
@@ -50,46 +48,38 @@ public final class DrawManager {
 	/** Sprite types mapped to their images. */
 	private static Map<SpriteType, boolean[][]> spriteMap;
 
-    /**
-     * Stars background animations for both game and main menu
-     * Star density specified as argument.
-     * */
-    BasicGameSpace basicGameSpace = new BasicGameSpace(100);
-    MenuSpace menuSpace = new MenuSpace(50);
-
     // Variables for hitbox fine-tuning
     private int menuHitboxOffset = 20; // add this line
 
     // Label for back button
     private static final String BACK_LABEL = "< Back";
 
-	/** Sprite types. */
-	public static enum SpriteType {
-		/** Player ship. */
-		Ship,
-		/** Destroyed player ship. */
-		ShipDestroyed,
-		/** Player bullet. */
-		Bullet,
-		/** Enemy bullet. */
-		EnemyBullet,
-		/** First enemy ship - first form. */
-		EnemyShipA1,
-		/** First enemy ship - second form. */
-		EnemyShipA2,
-		/** Second enemy ship - first form. */
-		EnemyShipB1,
-		/** Second enemy ship - second form. */
-		EnemyShipB2,
-		/** Third enemy ship - first form. */
-		EnemyShipC1,
-		/** Third enemy ship - second form. */
-		EnemyShipC2,
-		/** Bonus ship. */
-		EnemyShipSpecial,
-		/** Destroyed enemy ship. */
-		Explosion,
-
+    /** Sprite types. */
+    public static enum SpriteType {
+        /** Player ship. */
+        Ship,
+        /** Destroyed player ship. */
+        ShipDestroyed,
+        /** Player bullet. */
+        Bullet,
+        /** Enemy bullet. */
+        EnemyBullet,
+        /** First enemy ship - first form. */
+        EnemyShipA1,
+        /** First enemy ship - second form. */
+        EnemyShipA2,
+        /** Second enemy ship - first form. */
+        EnemyShipB1,
+        /** Second enemy ship - second form. */
+        EnemyShipB2,
+        /** Third enemy ship - first form. */
+        EnemyShipC1,
+        /** Third enemy ship - second form. */
+        EnemyShipC2,
+        /** Bonus ship. */
+        EnemyShipSpecial,
+        /** Destroyed enemy ship. */
+        Explosion,
         /** Item Graphics Temp */
         ItemScore,
         ItemCoin,
@@ -125,8 +115,8 @@ public final class DrawManager {
             spriteMap.put(SpriteType.ItemCoin, new boolean[5][5]);
             spriteMap.put(SpriteType.ItemHeal, new boolean[5][5]);
 
-			fileManager.loadSprite(spriteMap);
-			logger.info("Finished loading the sprites.");
+            fileManager.loadSprite(spriteMap);
+            logger.info("Finished loading the sprites.");
 
 			// Font loading.
 			fontRegular = fileManager.loadFont(14f);
@@ -234,166 +224,140 @@ public final class DrawManager {
 			// enemy bullets will keep their default color from the entity
 		}
 
-		backBufferGraphics.setColor(color);
-		for (int i = 0; i < image.length; i++)
-			for (int j = 0; j < image[i].length; j++)
-				if (image[i][j])
-					backBufferGraphics.drawRect(positionX + i * 2, positionY
-							+ j * 2, 1, 1);
-	}
+        /**
+         * Makes A-type enemies semi-transparent when their health is 1.
+         * Checks if the entity is an EnemyShip of type A (EnemyShipA1 or A2),
+         * and sets its color alpha to 32 to indicate critical damage.
+         */
+        if (entity instanceof entity.EnemyShip) {
+            entity.EnemyShip enemy = (entity.EnemyShip) entity;
+            if ((enemy.getSpriteType() == SpriteType.EnemyShipA1
+                    || enemy.getSpriteType() == SpriteType.EnemyShipA2)
+                    && enemy.getHealth() == 1) {
+                color = new Color(color.getRed(), color.getGreen(), color.getBlue(), 32);
+            }
+        }
 
+        // Set the drawing color for the entity
+        backBufferGraphics.setColor(color);
 
-    /**
-     * Draws the main menu stars background animation
-     */
-    public void updateMenuSpace(){
-        menuSpace.updateStars();
+        // Draw the original sprite pixels (pre-scaling)
+        for (int i = 0; i < image.length; i++)
+            for (int j = 0; j < image[i].length; j++)
+                if (image[i][j])
+                    backBufferGraphics.drawRect(positionX + i * 2, positionY
+                            + j * 2, 1, 1);
 
-        Graphics2D g2d = (Graphics2D) backBufferGraphics;
-        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        // --- Scaling logic ---
+        // Original sprite dimensions
+        int spriteWidth = image.length;
+        int spriteHeight = image[0].length;
 
-        backBufferGraphics.setColor(Color.WHITE);
-        int[][] positions = menuSpace.getStarLocations();
+        // Entity dimensions (modified via Bullet constructor or other entities)
+        int entityWidth = entity.getWidth();
+        int entityHeight = entity.getHeight();
 
-        for(int i = 0; i < menuSpace.getNumStars(); i++){
+        // Calculate scaling ratios compared to original sprite
+        float widthRatio = (float) entityWidth / (spriteWidth * 2);
+        float heightRatio = (float) entityHeight / (spriteHeight * 2);
+        // --- End of scaling logic ---
 
-            int size = 1;
-            int radius = size * 2;
-
-            float[] dist = {0.0f, 1.0f};
-            Color[] colors = {
-                    new Color(255, 255, 200, 255),
-                    new Color(255, 255, 200, 0)
-            };
-
-            RadialGradientPaint paint = new RadialGradientPaint(
-                    new Point(positions[i][0], positions[i][1]),
-                    radius,
-                    dist,
-                    colors
-            );
-            g2d.setPaint(paint);
-            g2d.fillOval(positions[i][0] - radius / 2, positions[i][1] - radius / 2, radius, radius);
-
-
-            backBufferGraphics.fillOval(positions[i][0], positions[i][1], size, size);
+        // Set drawing color again
+        backBufferGraphics.setColor(color);
+        // Draw the sprite with scaling applied
+        for (int i = 0; i < spriteWidth; i++) {
+            for (int j = 0; j < spriteHeight; j++) {
+                if (image[i][j]) {
+                    // Apply calculated scaling ratio to pixel positions and size
+                    backBufferGraphics.fillRect(
+                            positionX + (int)(i * 2 * widthRatio),
+                            positionY + (int)(j * 2 * heightRatio),
+                            (int)Math.ceil(widthRatio * 2), // Adjust the width of the pixel
+                            (int)Math.ceil(heightRatio * 2) // Adjust the height of the pixel
+                    );
+                }
+            }
         }
     }
 
     /**
-     * Draws the stars background animation during the game
+     * For debugging purposes, draws the canvas borders.
+     *
+     * @param screen
+     *               Screen to draw in.
      */
-    public void updateGameSpace(){
-        basicGameSpace.update();
-
-        Graphics2D g2d = (Graphics2D) backBufferGraphics;
-        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-
-        backBufferGraphics.setColor(Color.WHITE);
-        int[][] positions = basicGameSpace.getStarLocations();
-        for(int i = 0; i < basicGameSpace.getNumStars(); i++){
-
-            int size = (positions[i][2] < 2) ? 2 : 1;
-            int radius = size * 2;
-
-            float[] dist = {0.0f, 1.0f};
-            Color[] colors = {
-                    new Color(255, 255, 200, 50),
-                    new Color(255, 255, 200, 0)
-            };
-
-            RadialGradientPaint paint = new RadialGradientPaint(
-                    new Point(positions[i][0] + size / 2, positions[i][1] + size / 2),
-                    radius,
-                    dist,
-                    colors
-            );
-            g2d.setPaint(paint);
-            g2d.fillOval(positions[i][0] - radius / 2, positions[i][1] - radius / 2, radius, radius);
-
-
-            backBufferGraphics.fillOval(positions[i][0], positions[i][1], size, size);
-        }
+    @SuppressWarnings("unused")
+    private void drawBorders(final Screen screen) {
+        backBufferGraphics.setColor(Color.GREEN);
+        backBufferGraphics.drawLine(0, 0, screen.getWidth() - 1, 0);
+        backBufferGraphics.drawLine(0, 0, 0, screen.getHeight() - 1);
+        backBufferGraphics.drawLine(screen.getWidth() - 1, 0,
+                screen.getWidth() - 1, screen.getHeight() - 1);
+        backBufferGraphics.drawLine(0, screen.getHeight() - 1,
+                screen.getWidth() - 1, screen.getHeight() - 1);
     }
 
-	/**
-	 * For debugging purposes, draws the canvas borders.
-	 *
-	 * @param screen
-	 *               Screen to draw in.
-	 */
-	@SuppressWarnings("unused")
-	private void drawBorders(final Screen screen) {
-		backBufferGraphics.setColor(Color.GREEN);
-		backBufferGraphics.drawLine(0, 0, screen.getWidth() - 1, 0);
-		backBufferGraphics.drawLine(0, 0, 0, screen.getHeight() - 1);
-		backBufferGraphics.drawLine(screen.getWidth() - 1, 0,
-				screen.getWidth() - 1, screen.getHeight() - 1);
-		backBufferGraphics.drawLine(0, screen.getHeight() - 1,
-				screen.getWidth() - 1, screen.getHeight() - 1);
-	}
+    /**
+     * For debugging purposes, draws a grid over the canvas.
+     *
+     * @param screen
+     *               Screen to draw in.
+     */
+    @SuppressWarnings("unused")
+    private void drawGrid(final Screen screen) {
+        backBufferGraphics.setColor(Color.DARK_GRAY);
+        for (int i = 0; i < screen.getHeight() - 1; i += 2)
+            backBufferGraphics.drawLine(0, i, screen.getWidth() - 1, i);
+        for (int j = 0; j < screen.getWidth() - 1; j += 2)
+            backBufferGraphics.drawLine(j, 0, j, screen.getHeight() - 1);
+    }
 
-	/**
-	 * For debugging purposes, draws a grid over the canvas.
-	 *
-	 * @param screen
-	 *               Screen to draw in.
-	 */
-	@SuppressWarnings("unused")
-	private void drawGrid(final Screen screen) {
-		backBufferGraphics.setColor(Color.DARK_GRAY);
-		for (int i = 0; i < screen.getHeight() - 1; i += 2)
-			backBufferGraphics.drawLine(0, i, screen.getWidth() - 1, i);
-		for (int j = 0; j < screen.getWidth() - 1; j += 2)
-			backBufferGraphics.drawLine(j, 0, j, screen.getHeight() - 1);
-	}
+    /**
+     * Draws current score on screen.
+     *
+     * @param screen
+     *               Screen to draw on.
+     * @param score
+     *               Current score.
+     */
+    public void drawScore(final Screen screen, final int score) {
+        backBufferGraphics.setFont(fontRegular);
+        backBufferGraphics.setColor(Color.WHITE);
+        String scoreString = String.format("%04d", score);
+        backBufferGraphics.drawString(scoreString, screen.getWidth() - 60, 25);
+    }
 
-	/**
-	 * Draws current score on screen.
-	 *
-	 * @param screen
-	 *               Screen to draw on.
-	 * @param score
-	 *               Current score.
-	 */
-	public void drawScore(final Screen screen, final int score) {
-		backBufferGraphics.setFont(fontRegular);
-		backBufferGraphics.setColor(Color.WHITE);
-		String scoreString = String.format("%04d", score);
-		backBufferGraphics.drawString(scoreString, screen.getWidth() - 60, 25);
-	}
+    /**
+     * Draws number of remaining lives on screen.
+     *
+     * @param screen
+     *               Screen to draw on.
+     * @param lives
+     *               Current lives.
+     */
+    public void drawLives(final Screen screen, final int lives) {
+        backBufferGraphics.setFont(fontRegular);
+        backBufferGraphics.setColor(Color.WHITE);
+        backBufferGraphics.drawString(Integer.toString(lives), 20, 25);
+        Ship dummyShip = new Ship(0, 0);
+        for (int i = 0; i < lives; i++)
+            drawEntity(dummyShip, 40 + 35 * i, 10);
+    }
 
-	/**
-	 * Draws number of remaining lives on screen.
-	 *
-	 * @param screen
-	 *               Screen to draw on.
-	 * @param lives
-	 *               Current lives.
-	 */
-	public void drawLives(final Screen screen, final int lives) {
-		backBufferGraphics.setFont(fontRegular);
-		backBufferGraphics.setColor(Color.WHITE);
-		backBufferGraphics.drawString(Integer.toString(lives), 20, 25);
-		Ship dummyShip = new Ship(0, 0);
-		for (int i = 0; i < lives; i++)
-			drawEntity(dummyShip, 40 + 35 * i, 10);
-	}
-
-	/**
-	 * Draws current coin count on screen.
-	 *
-	 * @param screen
-	 *               Screen to draw on.
-	 * @param coins
-	 *               Current coin count.
-	 */ // ADD THIS METHOD
-	public void drawCoins(final Screen screen, final int coins) { // ADD THIS METHOD
-		backBufferGraphics.setFont(fontRegular); // ADD THIS METHOD
-		backBufferGraphics.setColor(Color.YELLOW); // ADD THIS METHOD
-		String coinString = String.format("Coins: %04d", coins); // ADD THIS METHOD
-		backBufferGraphics.drawString(coinString, screen.getWidth() - 180, 25); // ADD THIS METHOD
-	} // ADD THIS METHOD
+    /**
+     * Draws current coin count on screen.
+     *
+     * @param screen
+     *               Screen to draw on.
+     * @param coins
+     *               Current coin count.
+     */ // ADD THIS METHOD
+    public void drawCoins(final Screen screen, final int coins) { // ADD THIS METHOD
+        backBufferGraphics.setFont(fontRegular); // ADD THIS METHOD
+        backBufferGraphics.setColor(Color.YELLOW); // ADD THIS METHOD
+        String coinString = String.format("Coins: %04d", coins); // ADD THIS METHOD
+        backBufferGraphics.drawString(coinString, screen.getWidth() - 180, 25); // ADD THIS METHOD
+    } // ADD THIS METHOD
 
     // 2P mode: drawCoins method but for both players, but separate coin counts
     public void drawCoinsP1P2(final Screen screen, final int coinsP1, final int coinsP2) {
@@ -446,8 +410,6 @@ public final class DrawManager {
 	 *               Option selected.
 	 */
 	public void drawMenu(final Screen screen, final int option, final Integer hoverOption, final int selectedIndex) {
-        // Return Code List
-        // 1. Play, 2. In-game, 3. High Scores, 4. Settings, 5. mode selection, 0. exit
         String[] items = {"Play", "Achievements", "Settings", "Exit"};
 
         int baseY = screen.getHeight() / 3 * 2; // same option choice, different formatting
@@ -609,7 +571,20 @@ public final class DrawManager {
         drawCenteredRegularString(screen, continueOrExitString,
                 screen.getHeight() / 2 + fontRegularMetrics.getHeight() * 10);
     }
+	public void drawPauseOverlay(final Screen screen){
+		backBufferGraphics.setColor(new Color(0,0,0,200));
+		backBufferGraphics.fillRect(0, 0, screen.getWidth(), screen.getHeight());
 
+		String pauseString = "PAUSED";
+		backBufferGraphics.setFont(fontBig);
+		backBufferGraphics.setColor(Color.WHITE);
+		drawCenteredBigString(screen, pauseString, screen.getHeight()/2);
+
+		String returnMenu = "PRESS BACKSPACE TO RETURN TO TITLE";
+		backBufferGraphics.setFont(fontRegular);
+		backBufferGraphics.setColor(Color.WHITE);
+		drawCenteredRegularString(screen, returnMenu, screen.getHeight()-50);
+	}//ADD This Screen
     /**
      * Draws high score screen title and instructions.
      *
@@ -717,6 +692,21 @@ public final class DrawManager {
         backBufferGraphics.setFont(fontRegular);
         backBufferGraphics.drawString(string, screen.getWidth() / 2
                 - fontRegularMetrics.stringWidth(string) / 2, height);
+    }
+
+    /**
+     * Draws a centered string on regular font at a specific coordinate.
+     *
+     * @param string
+     * String to draw.
+     * @param x
+     * X coordinate to center the string on.
+     * @param y
+     * Y coordinate of the drawing.
+     */
+    public void drawCenteredRegularString(final String string, final int x, final int y) {
+        backBufferGraphics.setFont(fontRegular);
+        backBufferGraphics.drawString(string, x - fontRegularMetrics.stringWidth(string) / 2, y);
     }
 
     /**
