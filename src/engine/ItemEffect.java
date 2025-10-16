@@ -8,6 +8,7 @@ public class ItemEffect {
 
     public enum ItemEffectType {
         TRIPLESHOT,
+        BULLETSPEEDUP
     }
 
     /**=========================SINGLE USE=================================**/
@@ -101,6 +102,17 @@ public class ItemEffect {
 
         // apply duration
         gameState.addEffect(playerIndex, ItemEffectType.TRIPLESHOT, duration);
+    }
+
+    /**
+     * Applies the BulletSpeedUp timed effect to the specified player.
+     */
+    public static void applyBulletSpeedUp(final GameState gameState, final int playerId, int duration) {
+        if (gameState == null) return;
+        int playerIndex = getPlayerIndex(playerId);
+
+        // apply duration
+        gameState.addEffect(playerIndex, ItemEffectType.BULLETSPEEDUP, duration);
     }
 
     /**
