@@ -585,11 +585,8 @@ public final class DrawManager {
                 screen.getHeight() / 5);
 
         backBufferGraphics.setColor(Color.GREEN);
-        backBufferGraphics.drawString("1-PLAYER MODE", midX / 2 - fontBigMetrics.stringWidth("1-PLAYER MODE") / 2 + 40,
-                startY);
-
-        backBufferGraphics.drawString("2-PLAYER MODE",
-                midX + midX / 2 - fontBigMetrics.stringWidth("2-PLAYER MODE") / 2 + 40, startY);
+        backBufferGraphics.drawString("1-PLAYER MODE", midX / 2 - fontBigMetrics.stringWidth("1-PLAYER MODE") / 2 + 40, startY);
+        backBufferGraphics.drawString("2-PLAYER MODE", midX + midX / 2 - fontBigMetrics.stringWidth("2-PLAYER MODE") / 2 + 40, startY);
     }
 
     /**
@@ -600,8 +597,7 @@ public final class DrawManager {
      * @param highScores
      *                   List of high scores.
      */
-    public void drawHighScores(final Screen screen,
-                               final List<Score> highScores, final String mode) { // add mode to parameter
+    public void drawHighScores(final Screen screen, final List<Score> highScores, final String mode) { // add mode to parameter
         backBufferGraphics.setColor(Color.WHITE);
         int i = 0;
         String scoreString = "";
