@@ -287,6 +287,8 @@ public class GameState {
             // Extend existing effect
             state.cooldown.addTime(durationSeconds * 1000);
 
+            state.effectValue = effectValue;
+
             logger.info("[GameState] Player " + playerIndex + " extended " + type
                     + valueStr + ") by " + durationSeconds + "s to " + state.cooldown.getDuration() );
         } else {
@@ -294,6 +296,9 @@ public class GameState {
             state.cooldown = Core.getCooldown(durationSeconds * 1000);
             state.cooldown.reset();
             state.active = true;
+
+            state.effectValue = effectValue;
+
             logger.info("[GameState] Player " + playerIndex + " started " + type
                     + valueStr + ") for " + durationSeconds + "s");
         }
