@@ -69,7 +69,7 @@ public class SettingScreen extends Screen {
     protected final void update() {
         super.update();
 
-        if(inputManager.isKeyDown(KeyEvent.VK_UP)&&this.inputCooldown.checkFinished()) {
+        if(inputManager.isKeyDown(KeyEvent.VK_UP)&&this.inputCooldown.checkFinished() && this.selectedSection == 0) {
             if(this.selectMenuItem == back) {
                 this.selectMenuItem = menuItem.length - 1;
             } else if(this.selectMenuItem == 0){
@@ -80,7 +80,7 @@ public class SettingScreen extends Screen {
             this.inputCooldown.reset();
         }
 
-        if(inputManager.isKeyDown(KeyEvent.VK_DOWN)&&this.inputCooldown.checkFinished()) {
+        if(inputManager.isKeyDown(KeyEvent.VK_DOWN)&&this.inputCooldown.checkFinished() && this.selectedSection == 0) {
             if(this.selectMenuItem == back){
                 this.selectMenuItem = 0;
             }else if (this.selectMenuItem == menuItem.length - 1) {
