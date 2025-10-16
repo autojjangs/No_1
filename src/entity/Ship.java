@@ -54,7 +54,7 @@ public class Ship extends Entity {
     public Ship(final int positionX, final int positionY) {
         super(positionX, positionY, 13 * 2, 8 * 2, Color.GREEN);
 
-        this.spriteType = SpriteType.Ship;
+        this.spriteType = SpriteType.Ship1;
         this.shootingCooldown = Core.getCooldown(this.shootingInterval);
         this.destructionCooldown = Core.getCooldown(1000);
     }
@@ -75,7 +75,6 @@ public class Ship extends Entity {
     public Ship(final int positionX, final int positionY, final Team team, final ShipType type) {
         super(positionX, positionY, 13 * 2, 8 * 2, Color.GREEN);
 
-        this.spriteType = SpriteType.Ship;
         this.type = type;
 
         switch (this.type) {
@@ -84,18 +83,21 @@ public class Ship extends Entity {
                 this.shootingInterval = 750; // Fire rate is normal.
                 this.bulletWidth = 3 * 3; // Bullet size is big.
                 this.bulletHeight = 5 * 3; // Bullet size is big.
+                this.spriteType = SpriteType.Ship2;
                 break;
             case DOUBLE_SHOT: // Double shot type
                 this.speed = 1; // Move slowly
                 this.shootingInterval = 750; // Fire rate is normal.
                 this.bulletWidth = 3 * 2; // Bullet size is normal.
                 this.bulletHeight = 5 * 2; // Bullet size is normal.
+                this.spriteType = SpriteType.Ship3;
                 break;
             case MOVE_FAST: // Move fast type
                 this.speed = 3; // Move Fast
                 this.shootingInterval = 900; // Fire rate is slow.
                 this.bulletWidth = 3 * 2; // Bullet size is normal.
                 this.bulletHeight = 5 * 2; // Bullet size is normal.
+                this.spriteType = SpriteType.Ship4;
                 break;
             case NORMAL: // Normal type
             default:
@@ -103,6 +105,7 @@ public class Ship extends Entity {
                 this.shootingInterval = 750; // Fire rate is normal.
                 this.bulletWidth = 3 * 2; // Bullet size is normal.
                 this.bulletHeight = 5 * 2; // Bullet size is normal.
+                this.spriteType = SpriteType.Ship1;
                 break;
         }
 
@@ -178,9 +181,19 @@ public class Ship extends Entity {
      */
     public final void update() {
         if (!this.destructionCooldown.checkFinished())
-            this.spriteType = SpriteType.ShipDestroyed;
+            switch (this.spriteType) {
+                case Ship1 -> this.spriteType = SpriteType.ShipDestroyed1;
+                case Ship2 -> this.spriteType = SpriteType.ShipDestroyed2;
+                case Ship3 -> this.spriteType = SpriteType.ShipDestroyed3;
+                case Ship4 -> this.spriteType = SpriteType.ShipDestroyed4;
+            }
         else
-            this.spriteType = SpriteType.Ship;
+            switch (this.spriteType) {
+                case ShipDestroyed1 -> this.spriteType = SpriteType.Ship1;
+                case ShipDestroyed2 -> this.spriteType = SpriteType.Ship2;
+                case ShipDestroyed3 -> this.spriteType = SpriteType.Ship3;
+                case ShipDestroyed4 -> this.spriteType = SpriteType.Ship4;
+        }
     }
 
     /**
