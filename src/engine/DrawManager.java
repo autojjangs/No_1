@@ -1,6 +1,10 @@
 package engine;
 
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.FontFormatException;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.LinkedHashMap;
@@ -8,8 +12,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
-import Animations.BasicGameSpace;
-import Animations.MenuSpace;
 import screen.Screen;
 import entity.Entity;
 import entity.Ship;
@@ -49,40 +51,32 @@ public final class DrawManager {
 	/** Sprite types mapped to their images. */
 	private static Map<SpriteType, boolean[][]> spriteMap;
 
-    /**
-     * Stars background animations for both game and main menu
-     * Star density specified as argument.
-     * */
-    BasicGameSpace basicGameSpace = new BasicGameSpace(100);
-    MenuSpace menuSpace = new MenuSpace(50);
-
-	/** Sprite types. */
-	public static enum SpriteType {
-		/** Player ship. */
-		Ship,
-		/** Destroyed player ship. */
-		ShipDestroyed,
-		/** Player bullet. */
-		Bullet,
-		/** Enemy bullet. */
-		EnemyBullet,
-		/** First enemy ship - first form. */
-		EnemyShipA1,
-		/** First enemy ship - second form. */
-		EnemyShipA2,
-		/** Second enemy ship - first form. */
-		EnemyShipB1,
-		/** Second enemy ship - second form. */
-		EnemyShipB2,
-		/** Third enemy ship - first form. */
-		EnemyShipC1,
-		/** Third enemy ship - second form. */
-		EnemyShipC2,
-		/** Bonus ship. */
-		EnemyShipSpecial,
-		/** Destroyed enemy ship. */
-		Explosion,
-
+    /** Sprite types. */
+    public static enum SpriteType {
+        /** Player ship. */
+        Ship,
+        /** Destroyed player ship. */
+        ShipDestroyed,
+        /** Player bullet. */
+        Bullet,
+        /** Enemy bullet. */
+        EnemyBullet,
+        /** First enemy ship - first form. */
+        EnemyShipA1,
+        /** First enemy ship - second form. */
+        EnemyShipA2,
+        /** Second enemy ship - first form. */
+        EnemyShipB1,
+        /** Second enemy ship - second form. */
+        EnemyShipB2,
+        /** Third enemy ship - first form. */
+        EnemyShipC1,
+        /** Third enemy ship - second form. */
+        EnemyShipC2,
+        /** Bonus ship. */
+        EnemyShipSpecial,
+        /** Destroyed enemy ship. */
+        Explosion,
         /** Item Graphics Temp */
         ItemScore,
         ItemCoin,
@@ -284,156 +278,83 @@ public final class DrawManager {
     }
 
     /**
-     * Draws the main menu stars background animation
+     * For debugging purposes, draws the canvas borders.
+     *
+     * @param screen
+     *               Screen to draw in.
      */
-    public void updateMenuSpace(){
-        menuSpace.updateStars();
-
-        Graphics2D g2d = (Graphics2D) backBufferGraphics;
-        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-
-        backBufferGraphics.setColor(Color.WHITE);
-        int[][] positions = menuSpace.getStarLocations();
-
-        for(int i = 0; i < menuSpace.getNumStars(); i++){
-
-            int size = 1;
-            int radius = size * 2;
-
-            float[] dist = {0.0f, 1.0f};
-            Color[] colors = {
-                    new Color(255, 255, 200, 255),
-                    new Color(255, 255, 200, 0)
-            };
-
-            RadialGradientPaint paint = new RadialGradientPaint(
-                    new Point(positions[i][0], positions[i][1]),
-                    radius,
-                    dist,
-                    colors
-            );
-            g2d.setPaint(paint);
-            g2d.fillOval(positions[i][0] - radius / 2, positions[i][1] - radius / 2, radius, radius);
-
-
-            backBufferGraphics.fillOval(positions[i][0], positions[i][1], size, size);
-        }
+    @SuppressWarnings("unused")
+    private void drawBorders(final Screen screen) {
+        backBufferGraphics.setColor(Color.GREEN);
+        backBufferGraphics.drawLine(0, 0, screen.getWidth() - 1, 0);
+        backBufferGraphics.drawLine(0, 0, 0, screen.getHeight() - 1);
+        backBufferGraphics.drawLine(screen.getWidth() - 1, 0,
+                screen.getWidth() - 1, screen.getHeight() - 1);
+        backBufferGraphics.drawLine(0, screen.getHeight() - 1,
+                screen.getWidth() - 1, screen.getHeight() - 1);
     }
 
     /**
-     * Draws the stars background animation during the game
+     * For debugging purposes, draws a grid over the canvas.
+     *
+     * @param screen
+     *               Screen to draw in.
      */
-    public void updateGameSpace(){
-        basicGameSpace.update();
-
-        Graphics2D g2d = (Graphics2D) backBufferGraphics;
-        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-
-        backBufferGraphics.setColor(Color.WHITE);
-        int[][] positions = basicGameSpace.getStarLocations();
-        for(int i = 0; i < basicGameSpace.getNumStars(); i++){
-
-            int size = (positions[i][2] < 2) ? 2 : 1;
-            int radius = size * 2;
-
-            float[] dist = {0.0f, 1.0f};
-            Color[] colors = {
-                    new Color(255, 255, 200, 50),
-                    new Color(255, 255, 200, 0)
-            };
-
-            RadialGradientPaint paint = new RadialGradientPaint(
-                    new Point(positions[i][0] + size / 2, positions[i][1] + size / 2),
-                    radius,
-                    dist,
-                    colors
-            );
-            g2d.setPaint(paint);
-            g2d.fillOval(positions[i][0] - radius / 2, positions[i][1] - radius / 2, radius, radius);
-
-
-            backBufferGraphics.fillOval(positions[i][0], positions[i][1], size, size);
-        }
+    @SuppressWarnings("unused")
+    private void drawGrid(final Screen screen) {
+        backBufferGraphics.setColor(Color.DARK_GRAY);
+        for (int i = 0; i < screen.getHeight() - 1; i += 2)
+            backBufferGraphics.drawLine(0, i, screen.getWidth() - 1, i);
+        for (int j = 0; j < screen.getWidth() - 1; j += 2)
+            backBufferGraphics.drawLine(j, 0, j, screen.getHeight() - 1);
     }
 
-	/**
-	 * For debugging purposes, draws the canvas borders.
-	 *
-	 * @param screen
-	 *               Screen to draw in.
-	 */
-	@SuppressWarnings("unused")
-	private void drawBorders(final Screen screen) {
-		backBufferGraphics.setColor(Color.GREEN);
-		backBufferGraphics.drawLine(0, 0, screen.getWidth() - 1, 0);
-		backBufferGraphics.drawLine(0, 0, 0, screen.getHeight() - 1);
-		backBufferGraphics.drawLine(screen.getWidth() - 1, 0,
-				screen.getWidth() - 1, screen.getHeight() - 1);
-		backBufferGraphics.drawLine(0, screen.getHeight() - 1,
-				screen.getWidth() - 1, screen.getHeight() - 1);
-	}
+    /**
+     * Draws current score on screen.
+     *
+     * @param screen
+     *               Screen to draw on.
+     * @param score
+     *               Current score.
+     */
+    public void drawScore(final Screen screen, final int score) {
+        backBufferGraphics.setFont(fontRegular);
+        backBufferGraphics.setColor(Color.WHITE);
+        String scoreString = String.format("%04d", score);
+        backBufferGraphics.drawString(scoreString, screen.getWidth() - 60, 25);
+    }
 
-	/**
-	 * For debugging purposes, draws a grid over the canvas.
-	 *
-	 * @param screen
-	 *               Screen to draw in.
-	 */
-	@SuppressWarnings("unused")
-	private void drawGrid(final Screen screen) {
-		backBufferGraphics.setColor(Color.DARK_GRAY);
-		for (int i = 0; i < screen.getHeight() - 1; i += 2)
-			backBufferGraphics.drawLine(0, i, screen.getWidth() - 1, i);
-		for (int j = 0; j < screen.getWidth() - 1; j += 2)
-			backBufferGraphics.drawLine(j, 0, j, screen.getHeight() - 1);
-	}
+    /**
+     * Draws number of remaining lives on screen.
+     *
+     * @param screen
+     *               Screen to draw on.
+     * @param lives
+     *               Current lives.
+     */
+    public void drawLives(final Screen screen, final int lives) {
+        backBufferGraphics.setFont(fontRegular);
+        backBufferGraphics.setColor(Color.WHITE);
+        backBufferGraphics.drawString(Integer.toString(lives), 20, 25);
+        Ship dummyShip = new Ship(0, 0);
+        for (int i = 0; i < lives; i++)
+            drawEntity(dummyShip, 40 + 35 * i, 10);
+    }
 
-	/**
-	 * Draws current score on screen.
-	 *
-	 * @param screen
-	 *               Screen to draw on.
-	 * @param score
-	 *               Current score.
-	 */
-	public void drawScore(final Screen screen, final int score) {
-		backBufferGraphics.setFont(fontRegular);
-		backBufferGraphics.setColor(Color.WHITE);
-		String scoreString = String.format("%04d", score);
-		backBufferGraphics.drawString(scoreString, screen.getWidth() - 60, 25);
-	}
-
-	/**
-	 * Draws number of remaining lives on screen.
-	 *
-	 * @param screen
-	 *               Screen to draw on.
-	 * @param lives
-	 *               Current lives.
-	 */
-	public void drawLives(final Screen screen, final int lives) {
-		backBufferGraphics.setFont(fontRegular);
-		backBufferGraphics.setColor(Color.WHITE);
-		backBufferGraphics.drawString(Integer.toString(lives), 20, 25);
-		Ship dummyShip = new Ship(0, 0);
-		for (int i = 0; i < lives; i++)
-			drawEntity(dummyShip, 40 + 35 * i, 10);
-	}
-
-	/**
-	 * Draws current coin count on screen.
-	 *
-	 * @param screen
-	 *               Screen to draw on.
-	 * @param coins
-	 *               Current coin count.
-	 */ // ADD THIS METHOD
-	public void drawCoins(final Screen screen, final int coins) { // ADD THIS METHOD
-		backBufferGraphics.setFont(fontRegular); // ADD THIS METHOD
-		backBufferGraphics.setColor(Color.YELLOW); // ADD THIS METHOD
-		String coinString = String.format("Coins: %04d", coins); // ADD THIS METHOD
-		backBufferGraphics.drawString(coinString, screen.getWidth() - 180, 25); // ADD THIS METHOD
-	} // ADD THIS METHOD
+    /**
+     * Draws current coin count on screen.
+     *
+     * @param screen
+     *               Screen to draw on.
+     * @param coins
+     *               Current coin count.
+     */ // ADD THIS METHOD
+    public void drawCoins(final Screen screen, final int coins) { // ADD THIS METHOD
+        backBufferGraphics.setFont(fontRegular); // ADD THIS METHOD
+        backBufferGraphics.setColor(Color.YELLOW); // ADD THIS METHOD
+        String coinString = String.format("Coins: %04d", coins); // ADD THIS METHOD
+        backBufferGraphics.drawString(coinString, screen.getWidth() - 180, 25); // ADD THIS METHOD
+    } // ADD THIS METHOD
 
     // 2P mode: drawCoins method but for both players, but separate coin counts
     public void drawCoinsP1P2(final Screen screen, final int coinsP1, final int coinsP2) {
@@ -617,6 +538,7 @@ public final class DrawManager {
                             * 14);
         }
     }
+
     /**
      * Draws basic content of game over screen.
      *
@@ -627,10 +549,10 @@ public final class DrawManager {
      * @param isNewRecord
      *                     If the score is a new high score.
      */
-	public void drawGameOver(final Screen screen, final boolean acceptsInput,
-			final boolean isNewRecord) {
-		String gameOverString = "Game Over";
-		String continueOrExitString = "Press Space to play again, Escape to exit";
+    public void drawGameOver(final Screen screen, final boolean acceptsInput,
+                             final boolean isNewRecord) {
+        String gameOverString = "Game Over";
+        String continueOrExitString = "Press Space to play again, Escape to exit";
 
         int height = isNewRecord ? 4 : 2;
 
@@ -779,22 +701,22 @@ public final class DrawManager {
 
 	}
 
-	/**
-	 * Draws a centered string on regular font.
-	 *
-	 * @param screen
-	 *               Screen to draw on.
-	 * @param string
-	 *               String to draw.
-	 * @param height
-	 *               Height of the drawing.
-	 */
-	public void drawCenteredRegularString(final Screen screen,
-			final String string, final int height) {
-		backBufferGraphics.setFont(fontRegular);
-		backBufferGraphics.drawString(string, screen.getWidth() / 2
-				- fontRegularMetrics.stringWidth(string) / 2, height);
-	}
+    /**
+     * Draws a centered string on regular font.
+     *
+     * @param screen
+     *               Screen to draw on.
+     * @param string
+     *               String to draw.
+     * @param height
+     *               Height of the drawing.
+     */
+    public void drawCenteredRegularString(final Screen screen,
+                                          final String string, final int height) {
+        backBufferGraphics.setFont(fontRegular);
+        backBufferGraphics.drawString(string, screen.getWidth() / 2
+                - fontRegularMetrics.stringWidth(string) / 2, height);
+    }
 
     /**
      * Draws a centered string on regular font at a specific coordinate.

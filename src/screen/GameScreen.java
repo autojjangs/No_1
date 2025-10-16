@@ -1,15 +1,10 @@
-// screen/GameScreen.java
 package screen;
 
 import java.awt.event.KeyEvent;
 import java.util.HashSet;
 import java.util.Set;
 
-import engine.Cooldown;
-import engine.Core;
-import engine.GameSettings;
-import engine.GameState;
-import engine.AchievementManager;
+import engine.*;
 import entity.Bullet;
 import entity.BulletPool;
 import entity.EnemyShip;
@@ -323,17 +318,16 @@ public class GameScreen extends Screen {
         }
         draw();
     }
+
     /**
      * Draws the elements associated with the screen.
      */
     private void draw() {
         drawManager.initDrawing(this);
 
-        drawManager.updateGameSpace();
-
-		for (Ship s : this.ships)
-			if (s != null)
-				drawManager.drawEntity(s, s.getPositionX(), s.getPositionY());
+        for (Ship s : this.ships)
+            if (s != null)
+                drawManager.drawEntity(s, s.getPositionX(), s.getPositionY());
 
         if (this.enemyShipSpecial != null)
             drawManager.drawEntity(this.enemyShipSpecial,
