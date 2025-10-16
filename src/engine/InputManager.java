@@ -4,24 +4,43 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.*;
 
+import java.awt.event.MouseEvent;//add this line
+import java.awt.event.MouseListener;//add this line
+import java.awt.event.MouseMotionListener;//add this line
+
+
+
 /**
  * Manages keyboard input for the provided screen.
  *
  * @author <a href="mailto:RobertoIA1987@gmail.com">Roberto Izquierdo Amo</a>
  *
  */
-public final class InputManager implements KeyListener {
+
+public final class InputManager implements KeyListener, MouseListener, MouseMotionListener { // add MouseListener, MouseMotionListener param
+
 
 	/** Number of recognised keys. */
 	private static final int NUM_KEYS = 256;
 	/** Array with the keys marked as pressed or not. */
 	private static boolean[] keys;
+
+    /** Mouse pressed state. */
+    private static  boolean mousePressed; // add this line
+
 	/** Singleton instance of the class. */
 	private static InputManager instance;
 
-    /**
+
+    // add three variable
+
+    private static int mouseX;
+    private static int mouseY;
+    private static boolean mouseClicked;
+
+	/**
      *  Declare variables to save and return input keys
-      */
+     */
     private int lastPressedKey = -1;
     private static final String KEY_CONFIG_FILE = "keyconfig.txt";
 
@@ -244,5 +263,64 @@ public final class InputManager implements KeyListener {
             keys[i] = false;
         }
     }
+
+
+    public int getMouseX() { return mouseX; } // add this function
+
+    public int getMouseY() { return mouseY; } // add this function
+
+    public boolean isMouseClicked() { // add this function
+        if (mouseClicked) {
+            mouseClicked = false;
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public void mouseClicked(final MouseEvent e) { // add this function
+        // Can be left empty or used if needed
+    }
+
+    @Override
+    public void mousePressed(final MouseEvent e) { // add this function
+        mousePressed = true;
+        mouseX = e.getX();
+        mouseY = e.getY();
+    }
+
+    @Override
+    public void mouseReleased(final MouseEvent e) { // add this function
+        mousePressed = false;
+        mouseX = e.getX();
+        mouseY = e.getY();
+        mouseClicked = true;
+    }
+
+    @Override
+    public void mouseEntered(final MouseEvent e) { // add this function
+
+    }
+
+    @Override
+    public void mouseExited(final MouseEvent e) { // add this function
+
+    }
+
+	/** Added mouse move/drag event to update mouse position right now */
+	@Override
+	public void mouseMoved(final MouseEvent e){
+		mouseX = e.getX();
+		mouseY = e.getY();
+	}
+	@Override
+	public void mouseDragged(final MouseEvent e){
+		mouseX = e.getX();
+		mouseY = e.getY();
+	}
+
+	public boolean isMousePressed(){
+		return mousePressed;
+	}
 
 }

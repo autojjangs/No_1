@@ -60,6 +60,8 @@ public final class Core {
         }
 
         frame = new Frame(WIDTH, HEIGHT);
+        InputManager input = InputManager.getInstance();
+        frame.addKeyListener(input); // Register an instance to allow the window to receive keyboard event information
         DrawManager.getInstance().setFrame(frame);
         int width = frame.getWidth();
         int height = frame.getHeight();
@@ -161,25 +163,28 @@ public final class Core {
               frame.addKeyListener(InputManager.getInstance()); // Remove and re-register the input manager, forcing the key setting of the frame to be updated
               break;
 
-          case 5:
-              // Play : Use the play to decide 1p and 2p
-              currentScreen = new PlayScreen(width, height, FPS);
-              LOGGER.info("Starting " + WIDTH + "x" + HEIGHT + " play screen at " + FPS + " fps.");
-              returnCode = frame.setScreen(currentScreen);
-              coopSelected = ((PlayScreen) currentScreen).isCoopSelected();
+                case 5:
+                    // Play : Use the play to decide 1p and 2p
+                    currentScreen = new PlayScreen(width, height, FPS);
+                    LOGGER.info("Starting " + WIDTH + "x" + HEIGHT + " play screen at " + FPS + " fps.");
+                    returnCode = frame.setScreen(currentScreen);
+                    coopSelected = ((PlayScreen) currentScreen).isCoopSelected();
 
-              // playscreen -> shipselectionscreen
-              if (returnCode == 2) {
-                  returnCode = 6;
-              }
-              LOGGER.info("Closing play screen.");
-              break;
+                    // playscreen -> shipselectionscreen
+                    if (returnCode == 2) {
+                        returnCode = 6;
+                    }
+                    LOGGER.info("Closing play screen.");
+                    break;
 
                 case 6:
                     // Ship selection for Player 1.
                     currentScreen = new ShipSelectionScreen(width, height, FPS, 1);
-                    frame.setScreen(currentScreen);
+                    returnCode = frame.setScreen(currentScreen);
                     shipTypeP1 = ((ShipSelectionScreen) currentScreen).getSelectedShipType();
+
+                    // If clicked back button, go back to the screen 1P screen -> Player select screen
+                    if (returnCode == 5) { break; }
 
                     if (coopSelected) {
                         returnCode = 7; // Go to Player 2 selection.
@@ -191,7 +196,11 @@ public final class Core {
                 case 7:
                     // Ship selection for Player 2.
                     currentScreen = new ShipSelectionScreen(width, height, FPS, 2);
-                    frame.setScreen(currentScreen);
+                    returnCode = frame.setScreen(currentScreen);
+
+                    // If clicked back button, go back to the screen 2P screen -> 1P screen
+                    if (returnCode == 6) { break; }
+
                     shipTypeP2 = ((ShipSelectionScreen) currentScreen).getSelectedShipType();
                     returnCode = 2; // Start game.
                     break;
@@ -276,13 +285,23 @@ public final class Core {
         return new Cooldown(milliseconds, variance);
     }
 
-    /**
-     * For Check Achievement release
-     *
-     * @return Total Number of level
-     * 2025-10-02 add method
-     */
-    public static int getNumLevels(){
-        return NUM_LEVELS;
-    }
+	/**
+	 * For Check Achievement release
+	 *
+	 * @return Total Number of level
+	 * 2025-10-02 add method
+	 */
+	public static int getNumLevels(){
+		return NUM_LEVELS;
+	}
+
+	private static int volumeLevel = 50;
+
+	public static int getVolumeLevel() {
+		return volumeLevel;
+	}
+
+	public static void setVolumeLevel(int v) {
+		volumeLevel = Math.max(0, Math.min(100, v));
+	}
 }

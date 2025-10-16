@@ -8,10 +8,12 @@ public class SettingScreen extends Screen {
     private static final int volumeMenu = 0;
     private static final int firstplayerMenu = 1;
     private static final int secondplayerMenu= 2;
+    private static final int back = -1;
     private final String[] menuItem = {"Volume", "1P Keyset", "2P Keyset"};
     private int selectMenuItem;
     private Cooldown inputCooldown;
     private int volumelevel;
+    private boolean draggingVolume = false;
     private int selectedSection = 0;
     private int selectedKeyIndex = 0;
     private String[] keyItems = {"MOVE LEFT", "MOVE RIGHT", "ATTACK"};
@@ -35,6 +37,14 @@ public class SettingScreen extends Screen {
         this.player1Keys = Core.getInputManager().getPlayer1Keys();
         this.player2Keys = Core.getInputManager().getPlayer2Keys();
     }
+
+    private void setVolumeFromX(java.awt.Rectangle barBox, int mouseX) {
+        double ratio = (double)(mouseX - barBox.x) / (double)barBox.width;
+        ratio = Math.max(0.0, Math.min(1.0, ratio));
+        this.volumelevel = (int)Math.round(ratio * 100.0);
+        Core.setVolumeLevel(this.volumelevel);
+    }
+
     /**
      * Starts the action.
      *
@@ -45,39 +55,52 @@ public class SettingScreen extends Screen {
         this.inputCooldown = Core.getCooldown(200);
         this.inputCooldown.reset();
         this.selectMenuItem = volumeMenu;
-        this.volumelevel = 50;
+        this.volumelevel = Core.getVolumeLevel();
     }
     public final int run(){
         super.run();
+
         return this.returnCode;
     }
+
     /**
      * Updates the elements on screen and checks for events.
      */
     protected final void update() {
         super.update();
 
-        if(inputManager.isKeyDown(KeyEvent.VK_UP)&&this.inputCooldown.checkFinished()&&this.selectMenuItem>0) {
-            if(this.selectedSection == 0) {
-                this.selectMenuItem--;
-                this.inputCooldown.reset();
+        if(inputManager.isKeyDown(KeyEvent.VK_UP)&&this.inputCooldown.checkFinished() && this.selectedSection == 0) {
+            if(this.selectMenuItem == back) {
+                this.selectMenuItem = menuItem.length - 1;
+            } else if(this.selectMenuItem == 0){
+                this.selectMenuItem = back;
+            } else {
+                this.selectMenuItem --;
             }
+            this.inputCooldown.reset();
         }
-        if(inputManager.isKeyDown(KeyEvent.VK_DOWN)&&this.inputCooldown.checkFinished()&&this.selectMenuItem<menuItem.length-1) {
-            if(this.selectedSection == 0) {
-                this.selectMenuItem++;
-                this.inputCooldown.reset();
+
+        if(inputManager.isKeyDown(KeyEvent.VK_DOWN)&&this.inputCooldown.checkFinished() && this.selectedSection == 0) {
+            if(this.selectMenuItem == back){
+                this.selectMenuItem = 0;
+            }else if (this.selectMenuItem == menuItem.length - 1) {
+                this.selectMenuItem = back;
+            }else {
+                this.selectMenuItem ++;
             }
+            this.inputCooldown.reset();
         }
 
         if(this.selectMenuItem == volumeMenu) {
              if(this.inputCooldown.checkFinished()) {
                  if (inputManager.isKeyDown(KeyEvent.VK_LEFT) && volumelevel > 0) {
                      this.volumelevel--;
+                     Core.setVolumeLevel(this.volumelevel);
                      this.inputCooldown.reset();
                  }
                  if (inputManager.isKeyDown(KeyEvent.VK_RIGHT) && volumelevel < 100) {
                      this.volumelevel++;
+                     Core.setVolumeLevel(this.volumelevel);
                      this.inputCooldown.reset();
                  }
              }
@@ -180,6 +203,44 @@ public class SettingScreen extends Screen {
             this.isRunning = false;
             this.inputCooldown.reset();
         }
+
+        // make mouse work on volume bar
+        int mx = inputManager.getMouseX();
+        int my = inputManager.getMouseY();
+        boolean pressed = inputManager.isMousePressed();
+        boolean clicked = inputManager.isMouseClicked();
+
+        java.awt.Rectangle backBox = drawManager.getBackButtonHitbox(this);
+        java.awt.Rectangle barBox  = drawManager.getVolumeBarHitbox(this);
+
+        if (clicked && backBox.contains(mx, my)) {
+            this.returnCode = 1;
+            this.isRunning = false;
+            return;
+        }
+
+        if (!draggingVolume && pressed && barBox.contains(mx, my)) {
+            draggingVolume = true;
+            setVolumeFromX(barBox, mx);
+        }
+
+        if (draggingVolume && pressed) {
+            setVolumeFromX(barBox, mx);
+        }
+
+        if (!pressed) {
+            draggingVolume = false;
+        }
+
+        if (inputManager.isKeyDown(KeyEvent.VK_SPACE) && this.inputCooldown.checkFinished()) {
+            if (this.selectMenuItem == back) {
+                this.returnCode = 1;
+                this.isRunning = false;
+                return;
+            }
+            this.inputCooldown.reset();
+        }
+
         draw();
     }
 
@@ -193,7 +254,7 @@ public class SettingScreen extends Screen {
 
         switch(this.selectMenuItem) {
             case volumeMenu:
-                drawManager.drawVolumeBar(this,this.volumelevel);
+                drawManager.drawVolumeBar(this,this.volumelevel, this.draggingVolume);
                 break;
             case firstplayerMenu:
                 drawManager.drawKeysettings(this, 1, this.selectedSection, this.selectedKeyIndex, this.keySelected,this.player1Keys);
@@ -202,6 +263,16 @@ public class SettingScreen extends Screen {
                 drawManager.drawKeysettings(this, 2,  this.selectedSection, this.selectedKeyIndex, this.keySelected, this.player2Keys);
                 break;
         }
+
+        // hover highlight
+        int mx = inputManager.getMouseX();
+        int my = inputManager.getMouseY();
+        java.awt.Rectangle backBox = drawManager.getBackButtonHitbox(this);
+
+        boolean backHover = backBox.contains(mx, my);
+        boolean backSelected = (this. selectMenuItem == back);
+        drawManager.drawBackButton(this, backHover || backSelected);
+
         drawManager.completeDrawing(this);
     }
 

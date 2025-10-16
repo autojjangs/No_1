@@ -26,6 +26,10 @@ public class TitleScreen extends Screen {
     // menu index added for user mode selection
     private int menuIndex = 0;
 
+
+	/** Added variable to store which menu option is currently hovered */
+	private Integer hoverOption = null;
+
 	/**
 	 * Constructor, establishes the properties of the screen.
 	 *
@@ -66,10 +70,12 @@ public class TitleScreen extends Screen {
             if (inputManager.isKeyDown(KeyEvent.VK_UP) || inputManager.isKeyDown(KeyEvent.VK_W)) {
                 previousMenuItem();
                 this.selectionCooldown.reset();
+                this.hoverOption = null;
             }
             if (inputManager.isKeyDown(KeyEvent.VK_DOWN) || inputManager.isKeyDown(KeyEvent.VK_S)) {
                 nextMenuItem();
                 this.selectionCooldown.reset();
+                this.hoverOption = null;
             }
 
             // Play : Adjust the case so that 1p and 2p can be determined within the play.
@@ -98,6 +104,21 @@ public class TitleScreen extends Screen {
                         break;
                 }
             }
+            if (inputManager.isMouseClicked()) {
+                int temp_x = inputManager.getMouseX();
+                int temp_y = inputManager.getMouseY();
+
+                java.awt.Rectangle[] boxes = drawManager.getMenuHitboxes(this);
+                int[] pos = {5, 3, 4, 0};
+
+                for (int i = 0; i < boxes.length; i++) {
+                    if (boxes[i].contains(temp_x, temp_y)) {
+                        this.returnCode = pos[i];
+                        this.isRunning = false;
+                        break;
+                    }
+                }
+            }
         }
     }
 
@@ -117,13 +138,42 @@ public class TitleScreen extends Screen {
 	/**
 	 * Draws the elements associated with the screen.
 	 */
+
+	/** Check hover based on mouse position and menu hitbox. */
 	private void draw() {
 		drawManager.initDrawing(this);
 
+		int mx = inputManager.getMouseX();
+		int my = inputManager.getMouseY();
+		java.awt.Rectangle[] boxesForHover = drawManager.getMenuHitboxes(this);
+
+		Integer newHover = null;
+		if(boxesForHover[0].contains(mx, my))
+			newHover = 0;
+		if(boxesForHover[1].contains(mx, my))
+			newHover = 1;
+		if(boxesForHover[2].contains(mx, my))
+			newHover = 2;
+        if(boxesForHover[3].contains(mx, my))
+            newHover = 3;
+
+        // Modify : Update after hover calculation
+        if (newHover != null) {
+            // Hover Update + Promote to Select Index when mouse is raised (to keep mouse away)
+            if (!newHover.equals(this.hoverOption)) { this.hoverOption = newHover; }
+        } else {
+            // If we had a hover and the mouse left, promote last hover to selection for persistance
+            if (this.hoverOption != null) {
+                this.menuIndex = this.hoverOption; // persist last hovered as selection
+                this.hoverOption = null; // clear hover state
+            }
+
+        }
+
+		//pass hoverOption for menu highlights respond to mouse hover
 		drawManager.drawTitle(this);
-		drawManager.drawMenu(this, this.menuIndex); // 2P mode: using menu index for highlighting
+		drawManager.drawMenu(this, this.menuIndex, hoverOption, this.menuIndex); // 2P mode: using menu index for highlighting
 
 		drawManager.completeDrawing(this);
 	}
-
 }

@@ -8,6 +8,7 @@ import java.awt.FontFormatException;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
+import java.awt.Rectangle; // add this line
 import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -52,6 +53,12 @@ public final class DrawManager {
 
 	/** Sprite types mapped to their images. */
 	private static Map<SpriteType, boolean[][]> spriteMap;
+
+    // Variables for hitbox fine-tuning
+    private int menuHitboxOffset = 20; // add this line
+
+    // Label for back button
+    private static final String BACK_LABEL = "< Back";
 
     /** Sprite types. */
     public static enum SpriteType {
@@ -408,12 +415,13 @@ public final class DrawManager {
 	 * @param selectedIndex
 	 *               Option selected.
 	 */
-	public void drawMenu(final Screen screen, final int selectedIndex) {
-        String[] items = {"Play", "Achievements", "Settings", "Exit"}; // High scores -> Achievements
+	public void drawMenu(final Screen screen, final int option, final Integer hoverOption, final int selectedIndex) {
+        String[] items = {"Play", "Achievements", "Settings", "Exit"};
 
         int baseY = screen.getHeight() / 3 * 2; // same option choice, different formatting
         for (int i = 0; i < items.length; i++) {
-            backBufferGraphics.setColor(i == selectedIndex ? Color.GREEN : Color.WHITE);
+            boolean highlight = (hoverOption != null) ? (i == hoverOption) : (i == selectedIndex);
+            backBufferGraphics.setColor(highlight ? Color.GREEN : Color.WHITE);
             drawCenteredRegularString(screen, items[i], (int) (baseY + fontRegularMetrics.getHeight() * 1.5 * i));
         }
 
@@ -653,6 +661,9 @@ public final class DrawManager {
 		backBufferGraphics.setColor(Color.GRAY);
 		drawCenteredRegularString(screen, instructionsString,
 				screen.getHeight() / 5);
+
+        // draw back button at top-left
+        drawBackButton(screen, false);
 	}
 
     public void drawSettingMenu(final Screen screen) {
@@ -665,22 +676,7 @@ public final class DrawManager {
         backBufferGraphics.setColor(Color.GRAY);
         drawCenteredRegularString(screen, instructionsString, screen.getHeight() / 6);
     }
-	public void drawSettingLayout(final Screen screen, final String[] menuItems, final int selectedmenuItems) {
-		int splitPointX = screen.getWidth() *3/10;
-		backBufferGraphics.setFont(fontRegular);
-		int menuY = screen.getHeight()*3/10;
-		for (int i = 0; i < menuItems.length; i++) {
-			if (i == selectedmenuItems) {
-				backBufferGraphics.setColor(Color.GREEN);
-			}
-			else {
-				backBufferGraphics.setColor(Color.WHITE);
-			}
-			backBufferGraphics.drawString(menuItems[i], 30, menuY+(i*60));
-			backBufferGraphics.setColor(Color.GREEN);
-		}
-		backBufferGraphics.drawLine(splitPointX, screen.getHeight()/4, splitPointX,(menuY+menuItems.length*60));
-	}
+
 	public void drawVolumeBar(final Screen screen, final int volumlevel){
 		int bar_startWidth = screen.getWidth() / 2;
 		int bar_endWidth = screen.getWidth()-40;
@@ -834,15 +830,188 @@ public final class DrawManager {
      * @param selectedIndex
      *                  Currently selected option (0 = 1P, 1 = 2P, 2 = Back).
      */
+    // Modify to accept hoverIndex for highlighting
+    public void drawPlayMenu(final Screen screen, final Integer hoverOption, final int selectedIndex) {
+        String[] items = {"1 Player", "2 Players"};
+        // Removed center back button
 
-    public void drawPlayMenu(final Screen screen, final int selectedIndex) {
-        String[] items = {"1 Player", "2 Players", "Back"};
+        // draw back button at top-left corner\, Set the selectedIndex to Highlight the Back Button
+        drawBackButton(screen, selectedIndex == 2);
 
-        int baseY = screen.getHeight() / 3 * 1;
+        int baseY = screen.getHeight() / 2 - 20; // Modified the position with the choice reduced to two
         for (int i = 0; i < items.length; i++) {
-            backBufferGraphics.setColor(i == selectedIndex ? Color.GREEN : Color.WHITE);
+            boolean highlight = (hoverOption != null) ? (i == hoverOption) : (i == selectedIndex);
+            backBufferGraphics.setColor(highlight ? Color.GREEN : Color.WHITE);
             drawCenteredRegularString(screen, items[i],
                     baseY + fontRegularMetrics.getHeight() * 3 * i);
         }
     }
+
+    // Draw a "BACK_LABEL" button at the top-left corner.
+    public void drawBackButton(final Screen screen, final boolean highlighted) {
+        backBufferGraphics.setFont(fontRegular);
+        backBufferGraphics.setColor(highlighted ? Color.GREEN : Color.WHITE);
+
+        int margin = 12;
+        int ascent = fontRegularMetrics.getAscent();
+        backBufferGraphics.drawString(BACK_LABEL, margin, margin + ascent);
+    }
+
+    // add this line
+    // hitbox coordinate function
+    // [Refactor] unified hitbox logic to match drawMenu() for consistency
+    public Rectangle[] getMenuHitboxes (final Screen screen) {
+        if (fontRegularMetrics == null) {
+            backBufferGraphics.setFont(fontRegular);
+            fontRegularMetrics = backBufferGraphics.getFontMetrics(fontRegular);
+        }
+
+        final String[] buttons = {"Play", "Achievement", "Settings", "Exit"};
+
+        int baseY = screen.getHeight() / 3 * 2;
+        Rectangle[] boxes= new Rectangle[buttons.length];
+
+        for (int i = 0; i < buttons.length; i++) {
+            int baseline = (int) (baseY + fontRegularMetrics.getHeight() * 1.5 * i);
+            boxes[i] = centeredStringBounds(screen, buttons[i], baseline);
+        }
+
+        return boxes;
+    }
+
+    // hitbox for Back button
+    public Rectangle getBackButtonHitbox (final Screen screen) {
+        if  (fontRegularMetrics == null) {
+            backBufferGraphics.setFont(fontRegular);
+            fontRegularMetrics = backBufferGraphics.getFontMetrics(fontRegular);
+        }
+
+        int margin = 12;
+        int ascent = fontRegularMetrics.getAscent();
+        int descent = fontRegularMetrics.getDescent();
+        int padTop = 2;
+
+        int y = margin - padTop;
+        int w = fontRegularMetrics.stringWidth(BACK_LABEL);
+        int h = ascent + descent + 25;
+
+        return new Rectangle(margin, y, w, h);
+    }
+
+    public Rectangle[] getPlayMenuHitboxes(final Screen screen) {
+        if (fontRegularMetrics == null) {
+            backBufferGraphics.setFont(fontRegular);
+            fontRegularMetrics = backBufferGraphics.getFontMetrics(fontRegular);
+        }
+
+        final String[] items = {"1 Player", "2 Players"};
+        int baseY = screen.getHeight() / 2 - 20;
+        Rectangle[] boxes = new Rectangle[items.length];
+
+        for (int i = 0; i < items.length; i++) {
+            int baselineY = baseY + fontRegularMetrics.getHeight() * 3 * i;
+            boxes[i] = centeredStringBounds(screen, items[i], baselineY);
+        }
+
+        return boxes;
+    }
+
+    /*
+    When a given string is aligned in the middle of the screen,
+    the pixel area occupied by the string is calculated as Rectangle and returned
+     */
+    private Rectangle centeredStringBounds(final Screen screen, final String string, final int baselineY) {
+        backBufferGraphics.setFont(fontRegular);
+        final int pad = 4;
+
+        int textWidth = fontRegularMetrics.stringWidth(string);
+        int ascent = fontRegularMetrics.getAscent();
+        int descent = fontRegularMetrics.getDescent();
+
+        int x = screen.getWidth() / 2 - textWidth / 2;
+        int y = baselineY - ascent + menuHitboxOffset - pad / 2;
+        int h = ascent + descent + pad;
+
+        return new Rectangle(x, y, textWidth, h);
+    }
+
+	public void drawVolumeBar(final Screen screen, final int volumlevel, final boolean dragging){
+		int bar_startWidth = screen.getWidth() / 2;
+		int bar_endWidth = screen.getWidth()-40;
+		int barHeight = screen.getHeight()*3/10;
+
+		String volumelabel = "Volume";
+		backBufferGraphics.setFont(fontRegular);
+		backBufferGraphics.setColor(Color.WHITE);
+		backBufferGraphics.drawLine(bar_startWidth, barHeight, bar_endWidth, barHeight);
+
+		backBufferGraphics.setColor(Color.WHITE);
+		backBufferGraphics.drawString(volumelabel, bar_startWidth-80, barHeight+7);
+
+//		change this line to get indicator center position
+		int size = 14;
+		double ratio = volumlevel / 100.0;
+		int centerX = bar_startWidth + (int) ((bar_endWidth - bar_startWidth) * ratio);
+		int indicatorX = centerX - size / 2 - 3;
+		int indicatorY = barHeight - size / 2 ;
+
+		int rawX = Core.getInputManager().getMouseX();
+		int rawY = Core.getInputManager().getMouseY();
+		Insets insets = frame.getInsets();
+		int mouseX = rawX - insets.left;
+		int mouseY = rawY - insets.top;
+
+		boolean hoverIndicator = mouseX >= indicatorX && mouseX <= indicatorX + size &&
+				mouseY >= indicatorY && mouseY <= indicatorY + size;
+
+		if (hoverIndicator || dragging) {
+			backBufferGraphics.setColor(Color.GREEN);
+		} else {
+			backBufferGraphics.setColor(Color.WHITE);
+		}
+
+		backBufferGraphics.fillRect(indicatorX, indicatorY, size, size);
+
+		backBufferGraphics.setColor(Color.WHITE);
+		String volumeText = Integer.toString(volumlevel);
+		backBufferGraphics.drawString(volumeText, bar_endWidth+10, barHeight +7);
+
+	}
+
+	public void drawSettingLayout(final Screen screen, final String[] menuItems, final int selectedmenuItems) {
+		int splitPointX = screen.getWidth() *3/10;
+		backBufferGraphics.setFont(fontRegular);
+		int menuY = screen.getHeight()*3/10;
+		for (int i = 0; i < menuItems.length; i++) {
+			if (i == selectedmenuItems) {
+				backBufferGraphics.setColor(Color.GREEN);
+			}
+			else {
+				backBufferGraphics.setColor(Color.WHITE);
+			}
+			backBufferGraphics.drawString(menuItems[i], 30, menuY+(i*60));
+			backBufferGraphics.setColor(Color.GREEN);
+		}
+		backBufferGraphics.drawLine(splitPointX, screen.getHeight()/4, splitPointX,(menuY+menuItems.length*60));
+	}
+
+//	int for adjust volume hitbox
+	private int volumeHitBoxOffset = 20;
+
+	public Rectangle getVolumeBarHitbox(final Screen screen){
+		int bar_startWidth = screen.getWidth() / 2;
+		int bar_endWidth = screen.getWidth() - 40;
+		int barHeight = screen.getHeight() * 3 / 10;
+
+		int barThickness = 20;
+
+		int centerY = barHeight + volumeHitBoxOffset;
+
+		int x = bar_startWidth;
+		int y = centerY - barThickness;
+		int width = bar_endWidth - bar_startWidth;
+		int height = barThickness * 2;
+
+		return new Rectangle(x, y, width, height);
+	}
 }
