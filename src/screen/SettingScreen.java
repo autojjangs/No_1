@@ -121,9 +121,9 @@ public class SettingScreen extends Screen {
             if (waitingForNewKey) {
                 int newKey = inputManager.getLastPressedKey();
                 if (newKey != -1 && this.inputCooldown.checkFinished()) {
-                    // exception of esc key
-                    if (newKey == KeyEvent.VK_ESCAPE) {
-                        System.out.println("Key setting change cancelled: ESC input");
+                    // exception of esc key and backspace key
+                    if (newKey == KeyEvent.VK_ESCAPE || newKey == KeyEvent.VK_BACK_SPACE) {
+                        System.out.println("Key setting change cancelled : " + KeyEvent.getKeyText(newKey) + " input");
                         keySelected[selectedKeyIndex] = false;
                         waitingForNewKey = false;
                         this.inputCooldown.reset();
