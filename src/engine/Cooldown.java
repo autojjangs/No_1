@@ -68,4 +68,5 @@ public class Cooldown {
 					+ (int) (Math.random()
 					* (this.milliseconds + this.variance));
 	}
+
 }

@@ -46,6 +46,8 @@ public class GameScreen extends Screen {
 	private boolean levelFinished;
 	private boolean bonusLife;
 
+    private Cooldown deathDelay;
+
 	/**
 	 * Constructor, establishes the properties of the screen.
 	 * 
@@ -73,6 +75,8 @@ public class GameScreen extends Screen {
 		this.state = gameState;
 		this.gameSettings = gameSettings;
 		this.bonusLife = bonusLife;
+
+        this.deathDelay = Core.getCooldown(1200);
 
 		// 2P: bonus life adds to team pool + singleplayer mode
         if (this.bonusLife) {
@@ -188,8 +192,10 @@ public class GameScreen extends Screen {
 
 			// Update ships & enemies
 			for (Ship s : this.ships)
-				if (s != null)
-					s.update();
+				if (s != null){
+                    s.update();
+                }
+
 
 			this.enemyShipFormation.update();
 			this.enemyShipFormation.shoot(this.bullets);
@@ -206,6 +212,7 @@ public class GameScreen extends Screen {
 			this.levelFinished = true;
 			this.screenFinishedCooldown.reset();
 		}
+
 
 		if (this.levelFinished && this.screenFinishedCooldown.checkFinished())
 			this.isRunning = false;
@@ -291,18 +298,16 @@ public class GameScreen extends Screen {
 							&& checkCollision(bullet, ship) && !this.levelFinished) {
 						recyclable.add(bullet);
 
+
                         drawManager.triggerExplosion(ship.getPositionX(), ship.getPositionY());
 						ship.destroy(); // explosion/respawn handled by Ship.update()
-
+                        ship.addHit();
 
                         state.decLife(p); // decrement shared/team lives by 1
 
-                        if(state.getLivesRemaining() == 1){
-                            drawManager.setLastLife(true);
-                        }
-                        else{
-                            drawManager.setLastLife(false);
-                        }
+
+                        drawManager.setLastLife(state.getLivesRemaining() == 1);
+                        drawManager.setDeath(state.getLivesRemaining() == 0);
 
 						this.logger.info("Hit on player " + (p + 1) + ", team lives now: " + state.getLivesRemaining());
 						break;

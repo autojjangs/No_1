@@ -150,7 +150,7 @@ public class EnemyShip extends Entity {
 	 */
 	public final void destroy() {
 		this.isDestroyed = true;
-		this.spriteType = SpriteType.Explosion;
+		this.spriteType = SpriteType.Bin;
 	}
 
 	/**

@@ -58,6 +58,7 @@ public final class DrawManager {
      * */
     BasicGameSpace basicGameSpace = new BasicGameSpace(100);
     MenuSpace menuSpace = new MenuSpace(50);
+    int explosion_size = 2;
 
 	/** Sprite types. */
 	public static enum SpriteType {
@@ -84,7 +85,11 @@ public final class DrawManager {
 		/** Bonus ship. */
 		EnemyShipSpecial,
 		/** Destroyed enemy ship. */
-		Explosion
+		Explosion,
+
+        Skull,
+
+        Bin
 	};
 
 	/**
@@ -110,6 +115,10 @@ public final class DrawManager {
 			spriteMap.put(SpriteType.EnemyShipC2, new boolean[12][8]);
 			spriteMap.put(SpriteType.EnemyShipSpecial, new boolean[16][7]);
 			spriteMap.put(SpriteType.Explosion, new boolean[13][7]);
+            spriteMap.put(SpriteType.Skull, new boolean[17][31]);
+            spriteMap.put(SpriteType.Bin, new boolean[14][25]);
+
+
 
 			fileManager.loadSprite(spriteMap);
 			logger.info("Finished loading the sprites.");
@@ -262,24 +271,40 @@ public final class DrawManager {
                     continue;
                 }
 
-                int size = 2;
-                int radius = size * 2;
+                int baseSize = explosion_size;
+                int sizeVariation = (int)(Math.random() * 4 - 2);
+                int size = baseSize + sizeVariation;
+                int radius = size * 3;
 
-                float[] dist = {0.0f, 1.0f};
+                int flickerAlpha = Math.max(0, Math.min(255, p.color.getAlpha() - (int)(Math.random() * 50)));
+
+
+                float[] dist = {0.0f, 0.3f, 0.7f, 1.0f};
                 Color[] colors = {
-                        new Color(p.color.getRed(), p.color.getGreen(), p.color.getBlue(), 200),
-                        new Color(p.color.getRed(), p.color.getGreen(), p.color.getBlue(), 0)
+                        new Color(255, 255, 180, flickerAlpha),
+                        new Color(255, 200, 0, flickerAlpha),
+                        new Color(255, 80, 0, flickerAlpha / 2),
+                        new Color(0, 0, 0, 0)
                 };
 
                 RadialGradientPaint paint = new RadialGradientPaint(
-                        new Point((int)p.x, (int)p.y),
+                        new Point((int) p.x, (int) p.y),
                         radius,
                         dist,
                         colors
                 );
 
                 g2d.setPaint(paint);
-                g2d.fillOval((int)(p.x), (int)(p.y), radius, radius);
+
+                int offsetX = (int) (Math.random() * 4 - 2);
+                int offsetY = (int) (Math.random() * 4 - 2);
+
+                g2d.fillOval(
+                        (int) (p.x - radius / 2 + offsetX),
+                        (int) (p.y - radius / 2 + offsetY),
+                        radius,
+                        radius
+                );
             }
 
         }
@@ -326,6 +351,13 @@ public final class DrawManager {
 
     public void setLastLife(boolean status){
         basicGameSpace.setLastLife(status);
+    }
+
+    public void setDeath(boolean status){
+        if(status)
+            explosion_size = 10;
+        else
+            explosion_size = 2;
     }
 
 
