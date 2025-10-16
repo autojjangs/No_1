@@ -660,7 +660,7 @@ public final class DrawManager {
 
 		try {
 			int boxWidth = 350;
-			int boxHeight = 100;
+			int boxHeight = 110;
 			int cornerRadius = 15;
 
 			int x = (screen.getWidth() - boxWidth) / 2;
@@ -691,9 +691,23 @@ public final class DrawManager {
 			g2d.drawString(achievement.getName(), (screen.getWidth() - nameWidth) / 2, y + 60);
 
 			g2d.setColor(Color.LIGHT_GRAY);
-			int descWidth = regularMetrics.stringWidth(achievement.getDescription());
-			g2d.drawString(achievement.getDescription(), (screen.getWidth() - descWidth) / 2, y + 80);
 
+			if (achievement.getDescription().length() < 30) {
+				int descWidth = regularMetrics.stringWidth(achievement.getDescription());
+				g2d.drawString(achievement.getDescription(), (screen.getWidth() - descWidth) / 2, y + 80 + regularMetrics.getHeight()/2);
+			} else {
+				// 30 characters or more to handle the wrap
+				String line1 = achievement.getDescription().substring(0, achievement.getDescription().length()/2);
+				String line2 = achievement.getDescription().substring(achievement.getDescription().length()/2);
+
+				// first line
+				int line1Widgh = regularMetrics.stringWidth(line1);
+				g2d.drawString(line1, (screen.getWidth() - line1Widgh) / 2, y + 80);
+
+				// second line
+				int line2Widgh = regularMetrics.stringWidth(line2);
+				g2d.drawString(line2, (screen.getWidth() - line2Widgh) / 2, y + 80 + regularMetrics.getHeight());
+			}
 		} finally {
 			g2d.dispose();
 		}
