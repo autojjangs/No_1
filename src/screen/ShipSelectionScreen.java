@@ -14,9 +14,11 @@ public class ShipSelectionScreen extends Screen {
     private Ship[] shipExamples = new Ship[4];
 
     private String screenTitle;
+    private int player;
 
     public ShipSelectionScreen(final int width, final int height, final int fps, final int player) {
         super(width, height, fps);
+        this.player = player;
         this.screenTitle = "PLAYER " + player + " : CHOOSE YOUR SHIP";
         this.selectionCooldown = Core.getCooldown(SELECTION_TIME);
         this.selectionCooldown.reset();
@@ -32,6 +34,8 @@ public class ShipSelectionScreen extends Screen {
             shipExamples[2] = new Ship(width / 2 + 35, height / 2, Entity.Team.PLAYER2, Ship.ShipType.DOUBLE_SHOT);
             shipExamples[3] = new Ship(width / 2 + 100, height / 2, Entity.Team.PLAYER2, Ship.ShipType.MOVE_FAST);
         }
+
+
     }
 
     /**
@@ -75,8 +79,21 @@ public class ShipSelectionScreen extends Screen {
                 this.selectionCooldown.reset();
             }
             if (inputManager.isKeyDown(KeyEvent.VK_SPACE)) {
+                if (player == 1) this.returnCode = 6;
+                else if (player == 2) this.returnCode = 2;
                 this.isRunning = false;
-                this.returnCode = 4;
+            }
+            int mx = inputManager.getMouseX();
+            int my = inputManager.getMouseY();
+            boolean clicked = inputManager.isMouseClicked();
+
+            java.awt.Rectangle backBox = drawManager.getBackButtonHitbox(this);
+
+            if (clicked && backBox.contains(mx, my)) {
+                if (player == 1) this.returnCode = 5;
+                else if (player == 2) this.returnCode = 6;
+                this.isRunning = false;
+
             }
         }
     }
@@ -106,6 +123,13 @@ public class ShipSelectionScreen extends Screen {
         drawManager.drawCenteredRegularString(shipFireRates[this.selectedShipIndex], centerX, this.getHeight() / 2 + 80);
 
         drawManager.drawCenteredRegularString(this, "Press SPACE to Select", this.getHeight() - 50);
+
+        // hover highlight
+        int mx = inputManager.getMouseX();
+        int my = inputManager.getMouseY();
+        java.awt.Rectangle backBox = drawManager.getBackButtonHitbox(this);
+        boolean backHover = backBox.contains(mx, my);
+        drawManager.drawBackButton(this, backHover);
 
         drawManager.completeDrawing(this);
     }
