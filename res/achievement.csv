@@ -1,5 +1,14 @@
-player, achievement, achievement1, achievement2, achievement3, achievement4, achievement5
-ROB, 1, 1, 1, 1, 1
-PAT, 0, 0, 1, 0, 1
-KOF 1, 0, 1, 0, 0
-BYR 0, 0, 0, 0, 0
+player,First Blood,Survivor,Clear
+ROB,1,1,1
+PAT,0,0,1
+KOF,1,0,1
+BYR,0,0,0
+GEN,1,1,1
+FNC,1,1,1
+HLE,1,1,1
+COF,1,1,1
+BLG,1,1,1
+KOR,1,1,1
+JPN,1,1,1
+USA,1,1,1
+FKR,1,1,1
