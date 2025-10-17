@@ -114,10 +114,16 @@ public final class Core {
 						gameState = ((GameScreen) currentScreen).getGameState();
 
 						if (gameState.teamAlive()) {
+                            SoundManager.playOnce("sound/win.wav");
 							gameState.nextLevel();
 						}
 
 					} while (gameState.teamAlive() && gameState.getLevel() <= gameSettings.size());
+
+					// Play lose sound if team is not alive (game over)
+					if (!gameState.teamAlive()) {
+						SoundManager.playOnce("sound/lose.wav");
+					}
 
 					LOGGER.info("Starting " + WIDTH + "x" + HEIGHT + " score screen at " + FPS + " fps, with a score of "
 							+ gameState.getScore() + ", "
