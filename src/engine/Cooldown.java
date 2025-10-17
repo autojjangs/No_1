@@ -69,4 +69,21 @@ public class Cooldown {
 					* (this.milliseconds + this.variance));
 	}
 
+    public void addTime(int extraMs) {
+        if (!this.checkFinished()) {
+            // extend current cooldown
+            this.duration += extraMs;
+        } else {
+            // restart as new cooldown
+            this.reset();
+            this.duration = extraMs;
+        }
+    }
+
+    public int getDuration() {
+        if (this.time == 0) return 0; // cooldown hasn't started
+        long elapsed = System.currentTimeMillis() - this.time;
+        return Math.max(0, this.duration - (int) elapsed);
+    }
+
 }

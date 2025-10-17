@@ -58,10 +58,13 @@ public class MenuSpace {
                 break;
 
             case 2:
-                color = Color.green;
+                color = Color.GREEN;
+                break;
+            case 3:
+                color = Color.PINK;
                 break;
 
-            case 3:
+            case 4:
                 color = Color.RED;
                 break;
         }
