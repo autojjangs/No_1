@@ -367,7 +367,6 @@ public final class FileManager {
      * Unlocks an achievement for the given user.
      *
      * @param achievement achievement's name to search.
-     * @throws IOException In case of loading problems.
      *
      * [2025-10-09] Added in commit: feat: add method to retrieve achievement completer
      */
@@ -397,6 +396,7 @@ public final class FileManager {
                     String[] tmp = line.split(",");
                     if(tmp[idx].equals("1")) completer.add(tmp[0]);
                 }
+
         } catch (IOException e) {
             logger.info("Error reading achievement file, using default users.");
             completer.add("ABC");
