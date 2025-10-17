@@ -10,11 +10,14 @@ import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.awt.Rectangle; // add this line
 import java.io.IOException;
-import java.util.LinkedHashMap;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Logger;
 
+import Animations.BasicGameSpace;
+import Animations.Explosion;
+import Animations.MenuSpace;
+import com.sun.tools.javac.Main;
 import screen.Screen;
 import entity.Entity;
 import entity.Ship;
@@ -53,6 +56,17 @@ public final class DrawManager {
 
 	/** Sprite types mapped to their images. */
 	private static Map<SpriteType, boolean[][]> spriteMap;
+
+    private final java.util.List<Explosion> explosions = new java.util.ArrayList<>();
+
+    /**
+     * Stars background animations for both game and main menu
+     * Star density specified as argument.
+     * */
+    BasicGameSpace basicGameSpace = new BasicGameSpace(100);
+    MenuSpace menuSpace = new MenuSpace(50);
+    int explosion_size = 2;
+
 
     // Variables for hitbox fine-tuning
     private int menuHitboxOffset = 20; // add this line
@@ -282,6 +296,186 @@ public final class DrawManager {
         }
     }
 
+
+    public void menuHover(final int state){
+        menuSpace.setColor(state);
+        menuSpace.setSpeed(state == 4);
+    }
+
+    public void triggerExplosion(int x, int y, boolean enemy, boolean finalExplosion) {
+        logger.info("Enemy: "+enemy);
+        logger.info("final: "+finalExplosion);
+        explosions.add(new Explosion(x, y, enemy, finalExplosion));
+    }
+
+    public void drawExplosions(){
+
+        Graphics2D g2d = (Graphics2D) backBufferGraphics;
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+        g2d.setColor(Color.WHITE);
+
+
+        Iterator<Explosion> iterator = explosions.iterator();
+
+        while(iterator.hasNext()){
+            Explosion e = iterator.next();
+            e.update();
+
+            if (!e.isActive()) {
+                iterator.remove();
+                continue;
+            }
+
+            for(Explosion.Particle p : e.getParticles()){
+                if(!p.active){
+                    continue;
+                }
+
+                int baseSize;
+
+                Random random = new Random();
+                if (e.getSize() == 4)
+                    baseSize = random.nextInt(5) + 2;
+                else
+                    baseSize = random.nextInt(6)+18;
+
+                int flickerAlpha = Math.max(0, Math.min(255, p.color.getAlpha() - (int)(Math.random() * 50)));
+
+
+                float[] dist = {0.0f, 0.3f, 0.7f, 1.0f};
+                Color[] colors;
+                if(e.enemy()){
+                    colors = new Color[]{
+                            new Color(255, 255, 250, flickerAlpha),
+                            new Color(255, 250, 180, flickerAlpha),
+                            new Color(255, 200, 220, flickerAlpha / 2),
+                            new Color(0, 0, 0, 0)
+                    };
+                }
+                else{
+                    colors = new Color[]{
+                            new Color(255, 255, 180, flickerAlpha),
+                            new Color(255, 200, 0, flickerAlpha),
+                            new Color(255, 80, 0, flickerAlpha / 2),
+                            new Color(0, 0, 0, 0)
+                    };
+                }
+
+                RadialGradientPaint paint = new RadialGradientPaint(
+                        new Point((int) p.x, (int) p.y),
+                        baseSize,
+                        dist,
+                        colors
+                );
+
+                g2d.setPaint(paint);
+
+                int offsetX = (int) (Math.random() * 4 - 2);
+                int offsetY = (int) (Math.random() * 4 - 2);
+
+                g2d.fillOval(
+                        (int) (p.x - baseSize / 2 + offsetX),
+                        (int) (p.y - baseSize / 2 + offsetY),
+                        baseSize,
+                        baseSize
+                );
+            }
+
+        }
+    }
+
+
+
+    /**
+     * Draws the main menu stars background animation
+     */
+    public void updateMenuSpace(){
+        menuSpace.updateStars();
+
+        Graphics2D g2d = (Graphics2D) backBufferGraphics;
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+        backBufferGraphics.setColor(Color.WHITE);
+        int[][] positions = menuSpace.getStarLocations();
+
+        for(int i = 0; i < menuSpace.getNumStars(); i++){
+
+            int size = 1;
+            int radius = size * 2;
+
+            float[] dist = {0.0f, 1.0f};
+            Color[] colors = {
+                    menuSpace.getColor(),
+                    new Color(255, 255, 200, 0)
+            };
+
+            RadialGradientPaint paint = new RadialGradientPaint(
+                    new Point(positions[i][0], positions[i][1]),
+                    radius,
+                    dist,
+                    colors
+            );
+            g2d.setPaint(paint);
+            g2d.fillOval(positions[i][0] - radius / 2, positions[i][1] - radius / 2, radius, radius);
+
+
+            backBufferGraphics.fillOval(positions[i][0], positions[i][1], size, size);
+        }
+    }
+
+    public void setLastLife(boolean status){
+        basicGameSpace.setLastLife(status);
+    }
+
+    public void setDeath(boolean status){
+        if(status)
+            explosion_size = 20;
+        else
+            explosion_size = 2;
+    }
+
+
+    /**
+     * Draws the stars background animation during the game
+     */
+    public void updateGameSpace(){
+        basicGameSpace.update();
+
+        Graphics2D g2d = (Graphics2D) backBufferGraphics;
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+        backBufferGraphics.setColor(Color.WHITE);
+        int[][] positions = basicGameSpace.getStarLocations();
+        for(int i = 0; i < basicGameSpace.getNumStars(); i++){
+
+            int size = (positions[i][2] < 2) ? 2 : 1;
+            int radius = size * 2;
+
+            float[] dist = {0.0f, 1.0f};
+            Color[] colors = new Color[2];
+            if(basicGameSpace.isLastLife()){
+                colors[0] = new Color(255, 0, 0, 100);
+                colors[1] = new Color(255, 0, 0, 50);
+            }
+            else{
+                colors[0] = new Color(255, 255, 200, 50);
+                colors[1] = new Color(255, 255, 200, 50);
+            }
+
+            RadialGradientPaint paint = new RadialGradientPaint(
+                    new Point(positions[i][0] + size / 2, positions[i][1] + size / 2),
+                    radius,
+                    dist,
+                    colors
+            );
+            g2d.setPaint(paint);
+            g2d.fillOval(positions[i][0] - radius / 2, positions[i][1] - radius / 2, radius, radius);
+
+
+            backBufferGraphics.fillOval(positions[i][0], positions[i][1], size, size);
+        }
+    }
     /**
      * For debugging purposes, draws the canvas borders.
      *

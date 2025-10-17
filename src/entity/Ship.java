@@ -59,6 +59,9 @@ public class Ship extends Entity {
     // Identify player in index: 0 = P1, 1 = P2
     private int playerIndex = 0;
 
+    private int Y;
+    private int hits;
+
     /**
      * Constructor, establishes the ship's properties.
      *
@@ -90,6 +93,9 @@ public class Ship extends Entity {
         Team playerID = (team != null) ? team : Team.PLAYER1;
         this.setTeam(playerID);
         this.playerIndex = (playerID == Team.PLAYER1) ? 0 : (playerID == Team.PLAYER2) ? 1 : 0;
+
+        this.Y = positionY;
+        this.hits = 0;
     }
 
     /**
@@ -250,6 +256,10 @@ public class Ship extends Entity {
             return effectValue;
         }
         return 1;
+    }
+
+    public void addHit(){
+        this.hits++;
     }
 
     /**

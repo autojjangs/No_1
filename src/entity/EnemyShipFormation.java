@@ -476,6 +476,10 @@ public class EnemyShipFormation implements Iterable<EnemyShip> {
         return enemyShipsList.iterator();
     }
 
+
+    public boolean lastShip(){
+        return this.shipCount == 1;
+    }
     /**
      * Checks if there are any ships remaining.
      *
