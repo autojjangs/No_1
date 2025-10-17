@@ -85,7 +85,6 @@ public class ScoreScreen extends Screen {
 		this.achievementManager = achievementManager;
         this.mode = gameState.getCoop() ? "2P" : "1P";
 
-        Core.getFileManager().saveCoins(totalCoins);
 		try {
 			this.highScores = Core.getFileManager().loadHighScores(this.mode);
 			if (highScores.size() < MAX_HIGH_SCORE_NUM
