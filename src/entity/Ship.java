@@ -27,6 +27,9 @@ public class Ship extends Entity {
 	/** Time spent inactive between hits. */
 	private Cooldown destructionCooldown;
 
+    private int Y;
+    private int hits;
+
 	// 2P mode: id number to specifying which player this ship belongs to - 0 =
 	// unknown, 1 = P1, 2 = P2
 	private int playerId = 0; // 0 = unknown, 1 = P1, 2 = P2
@@ -45,6 +48,8 @@ public class Ship extends Entity {
 		this.spriteType = SpriteType.Ship;
 		this.shootingCooldown = Core.getCooldown(SHOOTING_INTERVAL);
 		this.destructionCooldown = Core.getCooldown(1000);
+        this.Y = positionY;
+        this.hits = 0;
 	}
 
 	// 2P mode: create and tag with a team in one shot
@@ -95,17 +100,24 @@ public class Ship extends Entity {
 	 * Updates status of the ship.
 	 */
 	public final void update() {
-		if (!this.destructionCooldown.checkFinished())
-			this.spriteType = SpriteType.ShipDestroyed;
-		else
-			this.spriteType = SpriteType.Ship;
+		if (!this.destructionCooldown.checkFinished()){
+            this.spriteType = SpriteType.ShipDestroyed;
+        }
+		else {
+            this.spriteType = SpriteType.Ship;
+        }
 	}
+
+    public void addHit(){
+        this.hits++;
+    }
+
 
 	/**
 	 * Switches the ship to its destroyed state.
 	 */
 	public final void destroy() {
-		this.destructionCooldown.reset();
+        this.destructionCooldown.reset();
 	}
 
 	/**

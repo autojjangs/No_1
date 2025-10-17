@@ -58,6 +58,7 @@ public final class DrawManager {
      * */
     BasicGameSpace basicGameSpace = new BasicGameSpace(100);
     MenuSpace menuSpace = new MenuSpace(50);
+    int explosion_size = 2;
 
 	/** Sprite types. */
 	public static enum SpriteType {
@@ -110,6 +111,8 @@ public final class DrawManager {
 			spriteMap.put(SpriteType.EnemyShipC2, new boolean[12][8]);
 			spriteMap.put(SpriteType.EnemyShipSpecial, new boolean[16][7]);
 			spriteMap.put(SpriteType.Explosion, new boolean[13][7]);
+
+
 
 			fileManager.loadSprite(spriteMap);
 			logger.info("Finished loading the sprites.");
@@ -234,8 +237,10 @@ public final class DrawManager {
         menuSpace.setSpeed(state == 3);
     }
 
-    public void triggerExplosion(int x, int y) {
-        explosions.add(new Explosion(x, y));
+    public void triggerExplosion(int x, int y, boolean enemy, boolean finalExplosion) {
+        logger.info("Enemy: "+enemy);
+        logger.info("final: "+finalExplosion);
+        explosions.add(new Explosion(x, y, enemy, finalExplosion));
     }
 
     public void drawExplosions(){
@@ -262,24 +267,54 @@ public final class DrawManager {
                     continue;
                 }
 
-                int size = 2;
-                int radius = size * 2;
+                int baseSize;
 
-                float[] dist = {0.0f, 1.0f};
-                Color[] colors = {
-                        new Color(p.color.getRed(), p.color.getGreen(), p.color.getBlue(), 200),
-                        new Color(p.color.getRed(), p.color.getGreen(), p.color.getBlue(), 0)
-                };
+                Random random = new Random();
+                if (e.getSize() == 4)
+                    baseSize = random.nextInt(5) + 2;
+                else
+                    baseSize = random.nextInt(6)+18;
+
+                int flickerAlpha = Math.max(0, Math.min(255, p.color.getAlpha() - (int)(Math.random() * 50)));
+
+
+                float[] dist = {0.0f, 0.3f, 0.7f, 1.0f};
+                Color[] colors;
+                if(e.enemy()){
+                    colors = new Color[]{
+                            new Color(255, 255, 250, flickerAlpha),
+                            new Color(255, 250, 180, flickerAlpha),
+                            new Color(255, 200, 220, flickerAlpha / 2),
+                            new Color(0, 0, 0, 0)
+                    };
+                }
+                else{
+                    colors = new Color[]{
+                            new Color(255, 255, 180, flickerAlpha),
+                            new Color(255, 200, 0, flickerAlpha),
+                            new Color(255, 80, 0, flickerAlpha / 2),
+                            new Color(0, 0, 0, 0)
+                    };
+                }
 
                 RadialGradientPaint paint = new RadialGradientPaint(
-                        new Point((int)p.x, (int)p.y),
-                        radius,
+                        new Point((int) p.x, (int) p.y),
+                        baseSize,
                         dist,
                         colors
                 );
 
                 g2d.setPaint(paint);
-                g2d.fillOval((int)(p.x), (int)(p.y), radius, radius);
+
+                int offsetX = (int) (Math.random() * 4 - 2);
+                int offsetY = (int) (Math.random() * 4 - 2);
+
+                g2d.fillOval(
+                        (int) (p.x - baseSize / 2 + offsetX),
+                        (int) (p.y - baseSize / 2 + offsetY),
+                        baseSize,
+                        baseSize
+                );
             }
 
         }
@@ -326,6 +361,13 @@ public final class DrawManager {
 
     public void setLastLife(boolean status){
         basicGameSpace.setLastLife(status);
+    }
+
+    public void setDeath(boolean status){
+        if(status)
+            explosion_size = 20;
+        else
+            explosion_size = 2;
     }
 
 
