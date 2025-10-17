@@ -27,11 +27,11 @@ public class ItemEffect {
     public static void applyCoinItem(final GameState gameState, final int playerId, int coinAmount) {
         if (gameState == null) return;
         final int playerIndex = getPlayerIndex(playerId);
-        final int beforeCoin = gameState.getCoins(playerIndex);
+        final int beforeCoin = gameState.getCoins();
 
         gameState.addCoins(playerIndex, coinAmount);
 
-        logger.info("Player " + playerId + " added " + coinAmount + " coins. before : " + beforeCoin + ", after : " + gameState.getCoins(playerIndex));
+        logger.info("Player " + playerId + " added " + coinAmount + " coins. before : " + beforeCoin + ", after : " + gameState.getCoins());
     }
 
     /**

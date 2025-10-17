@@ -38,9 +38,6 @@ public final class FileManager {
      */
     private static Logger logger;
 
-    // coins.csv file to save changes about coin content
-    private static final String COIN_FILENAME = "coins.csv";
-
     /**
      * private constructor.
      */
@@ -258,82 +255,6 @@ public final class FileManager {
                 bufferedWriter.write(score.getName() + "," + score.getScore());
                 bufferedWriter.newLine();
             }
-
-        } finally {
-            if (bufferedWriter != null)
-                bufferedWriter.close();
-        }
-    }
-
-    /**
-     * Loads the coin count from the coins.csv file.
-     *
-     * @return The saved coin count, or 0 if the file is not found or empty.
-     * @throws IOException In case of loading problems.
-     */
-    public int[] loadCoins() throws IOException {
-        InputStream inputStream;
-        BufferedReader bufferedReader = null;
-        // base coins are 0.
-        int[] result = {0, 0};
-        try {
-            String coinsPath = getFilePath(COIN_FILENAME);
-            File coinsFile = new File(coinsPath);
-            inputStream = new FileInputStream(coinsFile);
-            bufferedReader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
-            logger.info("Loading coin count from " + COIN_FILENAME + ".");
-
-            // coins.csv Read the first line of the file to get the number of coins
-            String line = bufferedReader.readLine();
-            if (line != null && !line.trim().isEmpty()) {
-                try {
-                    // Attempt to convert by extracting only numbers
-                    String[] parse = line.split(",");
-                    result = new int[parse.length];
-                    for(int i = 0; i < parse.length; i++)
-                        result[i] = Integer.parseInt(parse[i].trim().replaceAll("[^0-9]", ""));
-                    return result;
-                } catch (NumberFormatException e) {
-                    logger.warning("Coin count line is not a valid number. Returning 0.");
-                    return null;
-                }
-            }
-
-        } catch (FileNotFoundException e) {
-            logger.info(COIN_FILENAME + " not found. Returning 0 coins.");
-            return result;
-        } finally {
-            if (bufferedReader != null)
-                bufferedReader.close();
-        }
-
-        return result;
-    }
-
-    /**
-     * Saves the current coin count to the coins.csv file.
-     *
-     * @param coins The total number of coins acquired.
-     * @throws IOException In case of saving problems.
-     */
-    public void saveCoins(final int[] coins) throws IOException {
-        OutputStream outputStream = null;
-        BufferedWriter bufferedWriter = null;
-
-        try {
-            String coinsPath = getFilePath(COIN_FILENAME);
-            File coinsFile = new File(coinsPath);
-
-            if (!coinsFile.exists())
-                coinsFile.createNewFile();
-
-            outputStream = new FileOutputStream(coinsFile);
-            bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream, StandardCharsets.UTF_8));
-
-            logger.info("Saving new coin count (" + coins + ") to " + COIN_FILENAME + ".");
-
-            for(int coin : coins)
-                bufferedWriter.write(Integer.toString(coin)+",");
 
         } finally {
             if (bufferedWriter != null)

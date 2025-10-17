@@ -102,7 +102,7 @@ public final class Core {
 
                 case 2:
                     // 2P mode: building gameState now using user choice
-                    gameState = new GameState(1, MAX_LIVES, coopSelected, FileManager.getInstance().loadCoins());
+                    gameState = new GameState(1, MAX_LIVES, coopSelected, 0);
 
                     do {
                         // Extra life this level? Give it if team pool is below cap.
@@ -151,7 +151,7 @@ public final class Core {
 					LOGGER.info("Closing achievement screen.");
 					break;
 
-              case 4:
+                case 4:
                   // settings screen
                   currentScreen = new SettingScreen(width, height, FPS);
                   LOGGER.info("Starting " + WIDTH + "x" + HEIGHT
