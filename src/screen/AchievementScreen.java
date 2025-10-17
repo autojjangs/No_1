@@ -1,5 +1,7 @@
 package screen;
 
+import java.awt.event.KeyEvent;
+
 public class AchievementScreen extends Screen {
     public AchievementScreen(final int width, final int height, final int fps) {
         super(width, height, fps);
@@ -17,7 +19,7 @@ public class AchievementScreen extends Screen {
         super.update();
         draw();
 
-        if (inputManager.isKeyDown(java.awt.event.KeyEvent.VK_SPACE) && this.inputDelay.checkFinished()) {
+        if (inputManager.isKeyDown(KeyEvent.VK_ESCAPE) && this.inputDelay.checkFinished()) {
             this.returnCode = 1;
             this.isRunning = false;
         }

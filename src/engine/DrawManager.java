@@ -596,7 +596,7 @@ public final class DrawManager {
      */
     public void drawHighScoreMenu(final Screen screen) {
         String highScoreString = "High Scores";
-        String instructionsString = "Press Space to return";
+        String instructionsString = "Press ESC to return";
 
         int midX = screen.getWidth() / 2;
         int startY = screen.getHeight() / 3;
@@ -650,7 +650,7 @@ public final class DrawManager {
 	// Made it to check if the Achievement button works temporarily.
 	public void drawAchievementMenu(final Screen screen) {
 		String AchievementsString = "Achievements";
-		String instructionsString = "Press Space to return";
+		String instructionsString = "Press ESC to return";
 		backBufferGraphics.setColor(Color.GREEN);
 		drawCenteredBigString(screen, AchievementsString, screen.getHeight() / 8);
 
