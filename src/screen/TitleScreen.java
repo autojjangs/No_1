@@ -86,16 +86,20 @@ public class TitleScreen extends Screen {
                         this.isRunning = false;
                         break;
 
-                    case 1: // "Achievements" | High Scores -> Achievements
+                    case 1: // "Achievements"
                         this.returnCode = 3;
                         this.isRunning = false;
                         break;
-                    case 2: // "Settings"
+                    case 2: // "High scores"
+                        this.returnCode = 8;
+                        this.isRunning = false;
+                        break;
+                    case 3: // "Settings"
                         this.returnCode = 4;
                         this.isRunning = false;
                         break;
 
-                    case 3: // "Quit"
+                    case 4: // "Quit"
                         this.returnCode = 0;
                         this.isRunning = false;
                         break;
@@ -109,7 +113,7 @@ public class TitleScreen extends Screen {
                 int temp_y = inputManager.getMouseY();
 
                 java.awt.Rectangle[] boxes = drawManager.getMenuHitboxes(this);
-                int[] pos = {5, 3, 4, 0};
+                int[] pos = {5, 3, 8, 4, 0};
 
                 for (int i = 0; i < boxes.length; i++) {
                     if (boxes[i].contains(temp_x, temp_y)) {
@@ -126,14 +130,14 @@ public class TitleScreen extends Screen {
 	 * Shifts the focus to the next menu item. - modified for 2P mode selection
 	 */
 	private void nextMenuItem() {
-        this.menuIndex = (this.menuIndex + 1) % 4;
+        this.menuIndex = (this.menuIndex + 1) % 5;
 	}
 
 	/**
 	 * Shifts the focus to the previous menu item.
 	 */
 	private void previousMenuItem() {
-        this.menuIndex = (this.menuIndex + 3) % 4; // Fix : an issue where only the down arrow keys on the keyboard are entered and not up
+        this.menuIndex = (this.menuIndex + 4) % 5; // Fix : an issue where only the down arrow keys on the keyboard are entered and not up
     }
 	/**
 	 * Draws the elements associated with the screen.
@@ -156,6 +160,8 @@ public class TitleScreen extends Screen {
 			newHover = 2;
         if(boxesForHover[3].contains(mx, my))
             newHover = 3;
+        if(boxesForHover[4].contains(mx, my))
+            newHover = 4;
 
         // Modify : Update after hover calculation
         if (newHover != null) {

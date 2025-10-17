@@ -412,13 +412,14 @@ public final class DrawManager {
 	 *               Option selected.
 	 */
 	public void drawMenu(final Screen screen, final int option, final Integer hoverOption, final int selectedIndex) {
-        String[] items = {"Play", "Achievements", "Settings", "Exit"};
+        String[] items = {"Play", "Achievements", "High scores","Settings", "Exit"};
 
-        int baseY = screen.getHeight() / 3 * 2; // same option choice, different formatting
+        int baseY = screen.getHeight() / 3 * 2 - 20; // Adjust spacing due to high society button addition
+        int spacing = (int) (fontRegularMetrics.getHeight() * 1.5);
         for (int i = 0; i < items.length; i++) {
             boolean highlight = (hoverOption != null) ? (i == hoverOption) : (i == selectedIndex);
             backBufferGraphics.setColor(highlight ? Color.GREEN : Color.WHITE);
-            drawCenteredRegularString(screen, items[i], (int) (baseY + fontRegularMetrics.getHeight() * 1.5 * i));
+            drawCenteredRegularString(screen, items[i], baseY + spacing * i);
         }
 
         /** String playString = "1-Player Mode";
@@ -610,6 +611,9 @@ public final class DrawManager {
         backBufferGraphics.setColor(Color.GREEN);
         backBufferGraphics.drawString("1-PLAYER MODE", midX / 2 - fontBigMetrics.stringWidth("1-PLAYER MODE") / 2 + 40, startY);
         backBufferGraphics.drawString("2-PLAYER MODE", midX + midX / 2 - fontBigMetrics.stringWidth("2-PLAYER MODE") / 2 + 40, startY);
+
+        // draw back button at top-left
+        drawBackButton(screen, false);
     }
 
     /**
@@ -668,29 +672,6 @@ public final class DrawManager {
         backBufferGraphics.setColor(Color.GRAY);
         drawCenteredRegularString(screen, instructionsString, screen.getHeight() / 6);
     }
-
-	public void drawVolumeBar(final Screen screen, final int volumlevel){
-		int bar_startWidth = screen.getWidth() / 2;
-		int bar_endWidth = screen.getWidth()-40;
-		int barHeight = screen.getHeight()*3/10;
-
-		String volumelabel = "Volume";
-		backBufferGraphics.setFont(fontRegular);
-		backBufferGraphics.setColor(Color.WHITE);
-		backBufferGraphics.drawLine(bar_startWidth, barHeight, bar_endWidth, barHeight);
-
-		backBufferGraphics.setColor(Color.WHITE);
-		backBufferGraphics.drawString(volumelabel, bar_startWidth-80, barHeight+7);
-
-		int indicatorX = bar_startWidth + (int)((bar_endWidth-bar_startWidth)*(volumlevel/100.0));
-		int indicatorY = barHeight+7;
-		backBufferGraphics.fillRect(indicatorX, indicatorY-13, 14, 14);
-		backBufferGraphics.setColor(Color.WHITE);
-		String volumeText = Integer.toString(volumlevel);
-		backBufferGraphics.drawString(volumeText, bar_endWidth+10, indicatorY);
-
-	}
-
 
     public void drawKeysettings(final Screen screen, int playerNum, int selectedSection, int selectedKeyIndex, boolean[] keySelected,int[] currentKeys) {
         int panelWidth = 220;
@@ -858,13 +839,14 @@ public final class DrawManager {
             fontRegularMetrics = backBufferGraphics.getFontMetrics(fontRegular);
         }
 
-        final String[] buttons = {"Play", "Achievement", "Settings", "Exit"};
+        final String[] buttons = {"Play", "Achievement", "High scores", "Settings", "Exit"};
 
-        int baseY = screen.getHeight() / 3 * 2;
+        int baseY = screen.getHeight() / 3 * 2 - 20;
+        int spacing = (int) (fontRegularMetrics.getHeight() * 1.5);
         Rectangle[] boxes= new Rectangle[buttons.length];
 
         for (int i = 0; i < buttons.length; i++) {
-            int baseline = (int) (baseY + fontRegularMetrics.getHeight() * 1.5 * i);
+            int baseline = baseY + spacing * i;
             boxes[i] = centeredStringBounds(screen, buttons[i], baseline);
         }
 
