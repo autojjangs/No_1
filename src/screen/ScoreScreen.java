@@ -163,14 +163,32 @@ public class ScoreScreen extends Screen {
 
 	/**
 	 * Saves the score as a high score.
+     * 2025-10-18
+     * Add ability that distinguish duplicate names and save higher scores
 	 */
-	private void saveScore() {
-		String mode = (gameState != null && gameState.isCoop()) ? "2P" : "1P";
-		highScores.add(new Score(new String(this.name), this.gameState, mode)); // update mode
-		Collections.sort(highScores);
-		if (highScores.size() > MAX_HIGH_SCORE_NUM)
-			highScores.remove(highScores.size() - 1);
-
+    private void saveScore() {
+        String mode = (gameState != null && gameState.isCoop()) ? "2P" : "1P";
+        String newName = new String(this.name);
+        Score newScore = new Score(newName, this.gameState, mode);
+        boolean foundAndReplaced = false;
+        for (int i = 0; i < highScores.size(); i++) {
+            Score existingScore = highScores.get(i);
+            if (existingScore.getName().equals(newName)) {
+                if (newScore.getScore() > existingScore.getScore()) {
+                    highScores.set(i, newScore);
+                    foundAndReplaced = true;
+                } else {
+                    foundAndReplaced = true;
+                }
+                break;
+            }
+        }
+        if (!foundAndReplaced) {
+            highScores.add(newScore);
+        }
+        Collections.sort(highScores);
+        if (highScores.size() > MAX_HIGH_SCORE_NUM)
+            highScores.remove(highScores.size() - 1);
         try {
 			Core.getFileManager().saveHighScores(highScores, mode);
 		} catch (IOException e) {
