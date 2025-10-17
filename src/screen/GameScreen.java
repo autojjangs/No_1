@@ -83,6 +83,7 @@ public class GameScreen extends Screen {
      * 2025-10-02 add new variable
      * */
     private boolean tookDamageThisLevel;
+    private boolean countdownSoundPlayed = false;
 
     private final GameState state;
 
@@ -152,6 +153,9 @@ public class GameScreen extends Screen {
 
         state.clearAllEffects();
 
+        // Start background music for gameplay
+        SoundManager.startBackgroundMusic("sound/SpaceInvader-GameTheme.wav");
+
         enemyShipFormation = new EnemyShipFormation(this.gameSettings);
         enemyShipFormation.attach(this);
 
@@ -200,6 +204,9 @@ public class GameScreen extends Screen {
         // 2P mode: award bonus score for remaining TEAM lives
         state.addScore(0, LIFE_SCORE * state.getLivesRemaining());
 
+        // Stop background music on exiting this screen
+        SoundManager.stopBackgroundMusic();
+
         this.logger.info("Screen cleared with a score of " + state.getScore());
         return this.returnCode;
     }
@@ -210,11 +217,23 @@ public class GameScreen extends Screen {
     protected final void update() {
         super.update();
 
+        // Countdown beep once during pre-start
+        if (!this.inputDelay.checkFinished() && !countdownSoundPlayed) {
+            long elapsed = System.currentTimeMillis() - this.gameStartTime;
+            if (elapsed > 1750) {
+                SoundManager.playOnce("sound/CountDownSound.wav");
+                countdownSoundPlayed = true;
+            }
+        }
+
         if (this.inputDelay.checkFinished() && inputManager.isKeyDown(KeyEvent.VK_ESCAPE) && this.pauseCooldown.checkFinished()) {
             this.isPaused = !this.isPaused;
             this.pauseCooldown.reset();
+            SoundManager.playOnce("sound/menu_sound.wav");
         }
         if (this.isPaused && inputManager.isKeyDown(KeyEvent.VK_BACK_SPACE) && this.returnMenuCooldown.checkFinished()) {
+            SoundManager.playOnce("sound/select.wav");
+            SoundManager.stopBackgroundMusic();
             returnCode = 1;
             this.isRunning = false;
         }
@@ -255,6 +274,7 @@ public class GameScreen extends Screen {
                             : inputManager.isKeyDown(KeyEvent.VK_ENTER);
 
                         if (fire && ship.shoot(this.bullets)) {
+                            SoundManager.playOnce("sound/shoot.wav");
 
                         state.incBulletsShot(p); // 2P mode: increments per-player bullet shots
 
@@ -271,10 +291,12 @@ public class GameScreen extends Screen {
                     if (this.enemyShipSpecial == null && this.enemyShipSpecialCooldown.checkFinished()) {
                         this.enemyShipSpecial = new EnemyShip();
                         this.enemyShipSpecialCooldown.reset();
+                        SoundManager.playLoop("sound/special_ship_sound.wav");
                         this.logger.info("A special ship appears");
                     }
                     if (this.enemyShipSpecial != null && this.enemyShipSpecial.getPositionX() > this.width) {
                         this.enemyShipSpecial = null;
+                        SoundManager.stop();
                         this.logger.info("The special ship has escaped");
                     }
 
@@ -284,7 +306,12 @@ public class GameScreen extends Screen {
                             s.update();
 
                     this.enemyShipFormation.update();
+                    int bulletsBefore = this.bullets.size();
                     this.enemyShipFormation.shoot(this.bullets);
+                    if (this.bullets.size() > bulletsBefore) {
+                        // At least one enemy bullet added
+                        SoundManager.playOnce("sound/shoot_enemies.wav");
+                    }
                 }
 
                 manageCollisions();
@@ -310,6 +337,16 @@ public class GameScreen extends Screen {
                     this.levelFinished = true;
                     this.screenFinishedCooldown.reset();
 
+                    // Ensure any looped special-ship sound is stopped when the level ends
+                    SoundManager.stop();
+
+                    // Win/Lose feedback
+                    if (this.enemyShipFormation.isEmpty()) {
+                        SoundManager.playOnce("sound/win.wav");
+                    } else if (!state.teamAlive()) {
+                        SoundManager.playOnce("sound/lose.wav");
+                    }
+
                     /*
                               check of achievement release
                               2025-10-02 add three 'if'statements
@@ -317,14 +354,17 @@ public class GameScreen extends Screen {
                     // Survivor
                     if (!this.tookDamageThisLevel && this.level == Core.getNumLevels()) {
                         achievementManager.unlock("Survivor");
+                        SoundManager.playOnce("sound/achievement.wav");
                     }
                     // Clear
                     if (this.level == Core.getNumLevels()) {
                         achievementManager.unlock("Clear");
+                        SoundManager.playOnce("sound/achievement.wav");
                     }
                     //Perfect Shooter
                     if (this.bulletsShot > 0 && this.bulletsShot == this.shipsDestroyed) {
                         achievementManager.unlock("Perfect Shooter");
+                        SoundManager.playOnce("sound/achievement.wav");
                     }
                 }
 
@@ -436,6 +476,7 @@ public class GameScreen extends Screen {
                 if (checkCollision(item, ship) && !collected.contains(item)) {
                     collected.add(item);
                     this.logger.info("Player " + ship.getPlayerId() + " picked up item: " + item.getType());
+                    SoundManager.playOnce("sound/hover.wav");
                     item.applyEffect(getGameState(), ship.getPlayerId());
                 }
             }
@@ -492,8 +533,9 @@ public class GameScreen extends Screen {
                                 this.logger.info("Spawned " + drop.getType() + " at " + drop.getPositionX() + "," + drop.getPositionY());
                             }
 
-                            this.enemyShipFormation.destroy(enemyShip);
-                            this.logger.info("Hit on enemy ship.");
+                        this.enemyShipFormation.destroy(enemyShip);
+                        SoundManager.playOnce("sound/invaderkilled.wav");
+                        this.logger.info("Hit on enemy ship.");
                             /*
                                 check of 'First Blood' achievement release
                                 2025.10.02 add
@@ -517,6 +559,9 @@ public class GameScreen extends Screen {
                     state.incShipsDestroyed(pIdx); // 2P mode: modified incrementing ships destroyed
 
                     this.enemyShipSpecial.destroy();
+                    // Stop special ship loop and play explosion SFX
+                    SoundManager.stop();
+                    SoundManager.playOnce("sound/explosion.wav");
                     this.enemyShipSpecialExplosionCooldown.reset();
                     recyclable.add(bullet);
                 }
