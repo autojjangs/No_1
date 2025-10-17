@@ -367,19 +367,16 @@ public class GameScreen extends Screen {
         // 2P mode: setting per-player coin count
         if (state.isCoop()) {
             // left: P1
-            String p1 = String.format("P1  S:%d  K:%d  B:%d  C:%d",
+            String p1 = String.format("P1  S:%d  K:%d  B:%d",
                     state.getScore(0), state.getShipsDestroyed(0),
-                    state.getBulletsShot(0), state.getCoins(0));
+                    state.getBulletsShot(0));
             // right: P2
-            String p2 = String.format("P2  S:%d  K:%d  B:%d  C:%d",
+            String p2 = String.format("P2  S:%d  K:%d  B:%d",
                     state.getScore(1), state.getShipsDestroyed(1),
-                    state.getBulletsShot(1), state.getCoins(1));
-
+                    state.getBulletsShot(1));
             drawManager.drawCenteredRegularString(this, p1, 40);
             drawManager.drawCenteredRegularString(this, p2, 60);
-
             // remove the unnecessary "P1 S: K: B: C:" and "P2 S: K: B: C:" lines from the game screen
-
         }
 
         drawManager.drawHorizontalLine(this, SEPARATION_LINE_HEIGHT - 1);
