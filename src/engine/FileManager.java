@@ -391,7 +391,7 @@ public final class FileManager {
      * @param unlockedAchievement A list of booleans representing which achievements
      * @throws IOException In case of loading problems.
      */
-    public void unlockAchievement(String userName, List<Boolean> unlockedAchievement) throws IOException {
+    public void unlockAchievement(String userName, List<Boolean> unlockedAchievement) {
         List<String[]> records = new ArrayList<>();
         try {
             String achievementPath = getFilePath("achievement.csv");
@@ -409,7 +409,8 @@ public final class FileManager {
                     flag = true;
                     logger.info("Achievement has been updated");
                     for (int i = 1; i < playRecord.length; i++) {
-                        if (playRecord[i].equals("0") && unlockedAchievement.get(i))
+                        // [2025-10-17] fix : Fixed index offset
+                        if (playRecord[i].equals("0") && unlockedAchievement.get(i-1))
                             playRecord[i] = "1";
                     }
                 }
@@ -436,7 +437,7 @@ public final class FileManager {
 
             bWriter.close();
 
-        } catch (FileNotFoundException e) {
+        } catch (IOException e) {
             logger.info("No achievements to save");
         }
     }
@@ -449,7 +450,7 @@ public final class FileManager {
      *
      * [2025-10-09] Added in commit: feat: add method to retrieve achievement completer
      */
-    public List<String> getAchievementCompleter(Achievement achievement) throws IOException {
+    public List<String> getAchievementCompleter(Achievement achievement) {
         List<String> completer = new ArrayList<String>();
         try {
                 String achievementPath = getFilePath("achievement.csv");
