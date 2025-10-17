@@ -1,5 +1,6 @@
 package screen;
 
+import java.awt.*;
 import java.awt.event.KeyEvent;
 import engine.Cooldown;
 import engine.Core;
@@ -13,14 +14,12 @@ public class ShipSelectionScreen extends Screen {
     private int selectedShipIndex = 0; // 0: NORMAL, 1: BIG_SHOT, 2: DOUBLE_SHOT, 3: MOVE_FAST
     private Ship[] shipExamples = new Ship[4];
 
-    private String screenTitle;
     private int player;
     private boolean backSelected = false; // If current state is on the back button, can't select ship
 
     public ShipSelectionScreen(final int width, final int height, final int fps, final int player) {
         super(width, height, fps);
         this.player = player;
-        this.screenTitle = "PLAYER " + player + " : CHOOSE YOUR SHIP";
         this.selectionCooldown = Core.getCooldown(SELECTION_TIME);
         this.selectionCooldown.reset();
 
@@ -52,7 +51,7 @@ public class ShipSelectionScreen extends Screen {
                 return Ship.ShipType.DOUBLE_SHOT;
             case 3:
                 return Ship.ShipType.MOVE_FAST;
-            case 4:
+            case 0:
             default:
                 return Ship.ShipType.NORMAL;
         }
@@ -114,28 +113,7 @@ public class ShipSelectionScreen extends Screen {
     private void draw() {
         drawManager.initDrawing(this);
 
-        Ship ship = shipExamples[this.selectedShipIndex];
-        int centerX = ship.getPositionX();
-
-        // Ship Type Info
-        String[] shipNames = {"Normal Type", "Big Shot Type", "Double Shot Type", "Speed Type"};
-        String[] shipSpeeds = {"SPEED: NORMAL", "SPEED: SLOW", "SPEED: SLOW", "SPEED: FAST"};
-        String[] shipFireRates = {"FIRE RATE: NORMAL", "FIRE RATE: NORMAL", "FIRE RATE: NORMAL", "FIRE RATE: SLOW"};
-
-        for (int i = 0; i < 4; i++) {
-            // Draw Player Ship
-            drawManager.drawEntity(ship, ship.getPositionX() - ship.getWidth()/2, ship.getPositionY());
-        }
-
-        // Draw Selected Player Page Title
-        drawManager.drawCenteredBigString(this, this.screenTitle, this.getHeight() / 4);
-        // Draw Selected Player Ship Type
-        drawManager.drawCenteredRegularString(this, " > " + shipNames[this.selectedShipIndex] + " < ", this.getHeight() / 2 - 40);
-        // Draw Selected Player Ship Info
-        drawManager.drawCenteredRegularString(shipSpeeds[this.selectedShipIndex], centerX, this.getHeight() / 2 + 60);
-        drawManager.drawCenteredRegularString(shipFireRates[this.selectedShipIndex], centerX, this.getHeight() / 2 + 80);
-
-        drawManager.drawCenteredRegularString(this, "Press SPACE to Select", this.getHeight() - 50);
+        drawManager.drawShipSelectionMenu(this, shipExamples, this.selectedShipIndex, this.player);
 
         // hover highlight
         int mx = inputManager.getMouseX();
