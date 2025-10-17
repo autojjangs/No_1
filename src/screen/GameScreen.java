@@ -116,6 +116,7 @@ public class GameScreen extends Screen {
 		this.gameStartTime = System.currentTimeMillis();
 		this.inputDelay = Core.getCooldown(INPUT_DELAY);
 		this.inputDelay.reset();
+        drawManager.setDeath(false);
 	}
 
 	/**
@@ -205,6 +206,7 @@ public class GameScreen extends Screen {
 		manageCollisions();
 		cleanBullets();
 		draw();
+        drawManager.setLastLife(state.getLivesRemaining() == 1);
 
 
         // End condition: formation cleared or TEAM lives exhausted.
@@ -299,7 +301,7 @@ public class GameScreen extends Screen {
 						recyclable.add(bullet);
 
 
-                        drawManager.triggerExplosion(ship.getPositionX(), ship.getPositionY());
+                        drawManager.triggerExplosion(ship.getPositionX(), ship.getPositionY(), false, state.getLivesRemaining() == 1);
 						ship.destroy(); // explosion/respawn handled by Ship.update()
                         ship.addHit();
 
@@ -319,13 +321,17 @@ public class GameScreen extends Screen {
 				final int ownerId = bullet.getOwnerPlayerId(); // 1 or 2 (0 if unset)
 				final int pIdx = (ownerId == 2) ? 1 : 0; // default to P1 when unset
 
+                boolean finalShip = this.enemyShipFormation.lastShip();
+
 				for (EnemyShip enemyShip : this.enemyShipFormation)
 					if (!enemyShip.isDestroyed() && checkCollision(bullet, enemyShip)) {
 						int points = enemyShip.getPointValue();
                         state.addCoins(pIdx, enemyShip.getCoinValue()); // 2P mode: modified to per-player coins
 
+                        drawManager.triggerExplosion(enemyShip.getPositionX(), enemyShip.getPositionY(), true, finalShip);
 						state.addScore(pIdx, points); // 2P mode: modified to add to P1 score for now
 						state.incShipsDestroyed(pIdx);
+
 
 						this.enemyShipFormation.destroy(enemyShip);
 						recyclable.add(bullet);
@@ -343,6 +349,7 @@ public class GameScreen extends Screen {
 					state.incShipsDestroyed(pIdx); // 2P mode: modified incrementing ships destroyed
 
 					this.enemyShipSpecial.destroy();
+                    drawManager.triggerExplosion(this.enemyShipSpecial.getPositionX(), this.enemyShipSpecial.getPositionY(), true, true);
 					this.enemyShipSpecialExplosionCooldown.reset();
 					recyclable.add(bullet);
 				}

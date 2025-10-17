@@ -17,7 +17,7 @@ public class MenuSpace {
         this.numStars = numStars;
         this.stars = new Star[this.numStars];
         this.positions = new int[this.numStars][2];
-        this.color = Color.lightGray;
+        this.color = Color.YELLOW;
         this.speed = 1;
 
         for (int i = 0; i < this.numStars; i++) {
@@ -50,11 +50,11 @@ public class MenuSpace {
     public void setColor(final int state){
         switch(state){
             case 0:
-                color = Color.lightGray;
+                color = Color.YELLOW;
                 break;
 
             case 1:
-                color = Color.YELLOW;
+                color = Color.WHITE;
                 break;
 
             case 2:

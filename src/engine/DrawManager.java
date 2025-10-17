@@ -85,11 +85,7 @@ public final class DrawManager {
 		/** Bonus ship. */
 		EnemyShipSpecial,
 		/** Destroyed enemy ship. */
-		Explosion,
-
-        Skull,
-
-        Bin
+		Explosion
 	};
 
 	/**
@@ -115,8 +111,6 @@ public final class DrawManager {
 			spriteMap.put(SpriteType.EnemyShipC2, new boolean[12][8]);
 			spriteMap.put(SpriteType.EnemyShipSpecial, new boolean[16][7]);
 			spriteMap.put(SpriteType.Explosion, new boolean[13][7]);
-            spriteMap.put(SpriteType.Skull, new boolean[17][31]);
-            spriteMap.put(SpriteType.Bin, new boolean[14][25]);
 
 
 
@@ -243,8 +237,10 @@ public final class DrawManager {
         menuSpace.setSpeed(state == 3);
     }
 
-    public void triggerExplosion(int x, int y) {
-        explosions.add(new Explosion(x, y));
+    public void triggerExplosion(int x, int y, boolean enemy, boolean finalExplosion) {
+        logger.info("Enemy: "+enemy);
+        logger.info("final: "+finalExplosion);
+        explosions.add(new Explosion(x, y, enemy, finalExplosion));
     }
 
     public void drawExplosions(){
@@ -271,25 +267,39 @@ public final class DrawManager {
                     continue;
                 }
 
-                int baseSize = explosion_size;
-                int sizeVariation = (int)(Math.random() * 4 - 2);
-                int size = baseSize + sizeVariation;
-                int radius = size * 3;
+                int baseSize;
+
+                Random random = new Random();
+                if (e.getSize() == 4)
+                    baseSize = random.nextInt(5) + 2;
+                else
+                    baseSize = random.nextInt(6)+18;
 
                 int flickerAlpha = Math.max(0, Math.min(255, p.color.getAlpha() - (int)(Math.random() * 50)));
 
 
                 float[] dist = {0.0f, 0.3f, 0.7f, 1.0f};
-                Color[] colors = {
-                        new Color(255, 255, 180, flickerAlpha),
-                        new Color(255, 200, 0, flickerAlpha),
-                        new Color(255, 80, 0, flickerAlpha / 2),
-                        new Color(0, 0, 0, 0)
-                };
+                Color[] colors;
+                if(e.enemy()){
+                    colors = new Color[]{
+                            new Color(255, 255, 250, flickerAlpha),
+                            new Color(255, 250, 180, flickerAlpha),
+                            new Color(255, 200, 220, flickerAlpha / 2),
+                            new Color(0, 0, 0, 0)
+                    };
+                }
+                else{
+                    colors = new Color[]{
+                            new Color(255, 255, 180, flickerAlpha),
+                            new Color(255, 200, 0, flickerAlpha),
+                            new Color(255, 80, 0, flickerAlpha / 2),
+                            new Color(0, 0, 0, 0)
+                    };
+                }
 
                 RadialGradientPaint paint = new RadialGradientPaint(
                         new Point((int) p.x, (int) p.y),
-                        radius,
+                        baseSize,
                         dist,
                         colors
                 );
@@ -300,10 +310,10 @@ public final class DrawManager {
                 int offsetY = (int) (Math.random() * 4 - 2);
 
                 g2d.fillOval(
-                        (int) (p.x - radius / 2 + offsetX),
-                        (int) (p.y - radius / 2 + offsetY),
-                        radius,
-                        radius
+                        (int) (p.x - baseSize / 2 + offsetX),
+                        (int) (p.y - baseSize / 2 + offsetY),
+                        baseSize,
+                        baseSize
                 );
             }
 
@@ -355,7 +365,7 @@ public final class DrawManager {
 
     public void setDeath(boolean status){
         if(status)
-            explosion_size = 10;
+            explosion_size = 20;
         else
             explosion_size = 2;
     }

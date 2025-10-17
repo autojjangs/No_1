@@ -101,17 +101,9 @@ public class Ship extends Entity {
 	 */
 	public final void update() {
 		if (!this.destructionCooldown.checkFinished()){
-            if(hits%3 == 0){
-                setPositionY(400);
-                this.spriteType = SpriteType.Skull;
-            }
-            else{
-                this.spriteType = SpriteType.ShipDestroyed;
-            }
+            this.spriteType = SpriteType.ShipDestroyed;
         }
-
 		else {
-            setPositionY(Y);
             this.spriteType = SpriteType.Ship;
         }
 	}

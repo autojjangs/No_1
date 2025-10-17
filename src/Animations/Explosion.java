@@ -8,15 +8,22 @@ import java.util.Random;
 
 public class Explosion {
 
-    private static final int NUM_PARTICLES = 20; // 20 particles
+    private static final int NUM_PARTICLES = 40;
     private Particle[] particles;
     private boolean active;
+    private boolean enemy;
+    private int size;
 
     private static final Random random = new Random();
 
-    public Explosion(double startX, double startY) {
+    public Explosion(double startX, double startY, boolean enemy, boolean finalExplosion) {
         this.particles = new Particle[NUM_PARTICLES];
         this.active = true;
+        this.enemy = enemy;
+        if(finalExplosion)
+            this.size = 20;
+        else
+            this.size = 4;
 
         for (int i = 0; i < NUM_PARTICLES; i++) {
             double angle = 2 * Math.PI * random.nextDouble();
@@ -25,7 +32,7 @@ public class Explosion {
             double dy = Math.sin(angle) * speed;
 
             Color color = new Color(255, random.nextInt(150), 0, 255);
-            int life = 60; // each particle lifetime
+            int life = 60;
 
             particles[i] = new Particle(startX, startY, dx, dy, color, life);
         }
@@ -67,9 +74,13 @@ public class Explosion {
         return particles;
     }
 
+    public boolean enemy(){return this.enemy;}
+
     public boolean isActive() {
         return active;
     }
+
+    public int getSize(){return this.size;}
 
     public static class Particle {
         public double x, y;
