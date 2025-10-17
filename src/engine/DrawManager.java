@@ -77,9 +77,15 @@ public final class DrawManager {
     /** Sprite types. */
     public static enum SpriteType {
         /** Player ship. */
-        Ship,
+        Ship1,
+        Ship2,
+        Ship3,
+        Ship4,
         /** Destroyed player ship. */
-        ShipDestroyed,
+        ShipDestroyed1,
+        ShipDestroyed2,
+        ShipDestroyed3,
+        ShipDestroyed4,
         /** Player bullet. */
         Bullet,
         /** Enemy bullet. */
@@ -109,29 +115,35 @@ public final class DrawManager {
         ItemBulletSpeedUp
     };
 
-	/**
-	 * Private constructor.
-	 */
-	private DrawManager() {
-		fileManager = Core.getFileManager();
-		logger = Core.getLogger();
-		logger.info("Started loading resources.");
+    /**
+     * Private constructor.
+     */
+    private DrawManager() {
+        fileManager = Core.getFileManager();
+        logger = Core.getLogger();
+        logger.info("Started loading resources.");
 
-		try {
-			spriteMap = new LinkedHashMap<SpriteType, boolean[][]>();
+        try {
+            spriteMap = new LinkedHashMap<SpriteType, boolean[][]>();
 
-			spriteMap.put(SpriteType.Ship, new boolean[13][8]);
-			spriteMap.put(SpriteType.ShipDestroyed, new boolean[13][8]);
-			spriteMap.put(SpriteType.Bullet, new boolean[3][5]);
-			spriteMap.put(SpriteType.EnemyBullet, new boolean[3][5]);
-			spriteMap.put(SpriteType.EnemyShipA1, new boolean[12][8]);
-			spriteMap.put(SpriteType.EnemyShipA2, new boolean[12][8]);
-			spriteMap.put(SpriteType.EnemyShipB1, new boolean[12][8]);
-			spriteMap.put(SpriteType.EnemyShipB2, new boolean[12][8]);
-			spriteMap.put(SpriteType.EnemyShipC1, new boolean[12][8]);
-			spriteMap.put(SpriteType.EnemyShipC2, new boolean[12][8]);
-			spriteMap.put(SpriteType.EnemyShipSpecial, new boolean[16][7]);
-			spriteMap.put(SpriteType.Explosion, new boolean[13][7]);
+            spriteMap.put(SpriteType.Ship1, new boolean[13][8]);
+            spriteMap.put(SpriteType.Ship2, new boolean[13][8]);
+            spriteMap.put(SpriteType.Ship3, new boolean[13][8]);
+            spriteMap.put(SpriteType.Ship4, new boolean[13][8]);
+            spriteMap.put(SpriteType.ShipDestroyed1, new boolean[13][8]);
+            spriteMap.put(SpriteType.ShipDestroyed2, new boolean[13][8]);
+            spriteMap.put(SpriteType.ShipDestroyed3, new boolean[13][8]);
+            spriteMap.put(SpriteType.ShipDestroyed4, new boolean[13][8]);
+            spriteMap.put(SpriteType.Bullet, new boolean[3][5]);
+            spriteMap.put(SpriteType.EnemyBullet, new boolean[3][5]);
+            spriteMap.put(SpriteType.EnemyShipA1, new boolean[12][8]);
+            spriteMap.put(SpriteType.EnemyShipA2, new boolean[12][8]);
+            spriteMap.put(SpriteType.EnemyShipB1, new boolean[12][8]);
+            spriteMap.put(SpriteType.EnemyShipB2, new boolean[12][8]);
+            spriteMap.put(SpriteType.EnemyShipC1, new boolean[12][8]);
+            spriteMap.put(SpriteType.EnemyShipC2, new boolean[12][8]);
+            spriteMap.put(SpriteType.EnemyShipSpecial, new boolean[16][7]);
+            spriteMap.put(SpriteType.Explosion, new boolean[13][7]);
 
             // Item sprite placeholder
             spriteMap.put(SpriteType.ItemScore, new boolean[5][5]);

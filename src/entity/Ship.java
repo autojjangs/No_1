@@ -82,7 +82,7 @@ public class Ship extends Entity {
 
         this.gameState = gameState;
         this.type = (type != null) ? type : ShipType.NORMAL;
-        this.spriteType = SpriteType.Ship;
+        this.spriteType = SpriteType.Ship1;
 
         initializeShipProperties(this.type);
 
@@ -111,13 +111,16 @@ public class Ship extends Entity {
                 this.moveSpeed -= 1;
                 this.bulletWidth = 9;  // 3 * 3
                 this.bulletHeight = 15; // 5 * 3
+                this.spriteType = SpriteType.Ship2;
                 break;
             case DOUBLE_SHOT:
                 this.moveSpeed -= 1;
+                this.spriteType = SpriteType.Ship3;
                 break;
             case MOVE_FAST:
                 this.moveSpeed += 1;
                 this.shootingInterval += 150;
+                this.spriteType = SpriteType.Ship4;
                 break;
             case NORMAL:
             default:
@@ -170,9 +173,19 @@ public class Ship extends Entity {
      */
     public final void update() {
         if (!this.destructionCooldown.checkFinished())
-            this.spriteType = SpriteType.ShipDestroyed;
+            switch (this.spriteType) {
+                case Ship1 -> this.spriteType = SpriteType.ShipDestroyed1;
+                case Ship2 -> this.spriteType = SpriteType.ShipDestroyed2;
+                case Ship3 -> this.spriteType = SpriteType.ShipDestroyed3;
+                case Ship4 -> this.spriteType = SpriteType.ShipDestroyed4;
+            }
         else
-            this.spriteType = SpriteType.Ship;
+            switch (this.spriteType) {
+                case ShipDestroyed1 -> this.spriteType = SpriteType.Ship1;
+                case ShipDestroyed2 -> this.spriteType = SpriteType.Ship2;
+                case ShipDestroyed3 -> this.spriteType = SpriteType.Ship3;
+                case ShipDestroyed4 -> this.spriteType = SpriteType.Ship4;
+        }
     }
 
     /**
