@@ -1,5 +1,6 @@
 package engine;
 
+import screen.GameScreen;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -9,6 +10,7 @@ import java.util.List;
  * including loading from and saving to the FileManager.
  */
 public class AchievementManager {
+    private static final java.util.logging.Logger logger = Core.getLogger();
 
     private List<Achievement> achievements;
 
@@ -22,6 +24,9 @@ public class AchievementManager {
         list.add(new Achievement("First Blood", "Defeat your first enemy."));
         list.add(new Achievement("Survivor", "Clear a round without losing a life."));
         list.add(new Achievement("Clear", "Clear 5 levels."));
+        list.add(new Achievement("Sharpshooter", "Record an accuracy of more than 80 percent"));
+        list.add(new Achievement("50 Bullets", "Fire 50 Bullets."));
+        list.add(new Achievement("Get 3000 Score", "Get more than 3,000 points"));
         return list;
     }
 
@@ -62,6 +67,7 @@ public class AchievementManager {
             if (a.getName().equals(name) && !a.isUnlocked()) {
                 a.unlock();
                 System.out.println("Achievement unlocked: " + a);
+                logger.info("Achievement unlocked: " + a);
             }
         }
     }

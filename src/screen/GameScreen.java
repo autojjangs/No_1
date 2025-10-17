@@ -208,7 +208,7 @@ public class GameScreen extends Screen {
      */
     protected final void update() {
         super.update();
-
+        checkAchievement();
         if (this.inputDelay.checkFinished() && inputManager.isKeyDown(KeyEvent.VK_ESCAPE) && this.pauseCooldown.checkFinished()) {
             this.isPaused = !this.isPaused;
             this.pauseCooldown.reset();
@@ -309,22 +309,7 @@ public class GameScreen extends Screen {
                     this.levelFinished = true;
                     this.screenFinishedCooldown.reset();
 
-                    /*
-                              check of achievement release
-                              2025-10-02 add three 'if'statements
-                          */
-                    // Survivor
-                    if (!this.tookDamageThisLevel && this.level == Core.getNumLevels()) {
-                        achievementManager.unlock("Survivor");
-                    }
-                    // Clear
-                    if (this.level == Core.getNumLevels()) {
-                        achievementManager.unlock("Clear");
-                    }
-                    //Perfect Shooter
-                    if (this.bulletsShot > 0 && this.bulletsShot == this.shipsDestroyed) {
-                        achievementManager.unlock("Perfect Shooter");
-                    }
+                    checkAchievement();
                 }
 
                 if (this.levelFinished && this.screenFinishedCooldown.checkFinished())
@@ -491,14 +476,8 @@ public class GameScreen extends Screen {
 
                             this.enemyShipFormation.destroy(enemyShip);
                             this.logger.info("Hit on enemy ship.");
-                            /*
-                                check of 'First Blood' achievement release
-                                2025.10.02 add
-                            */
-                            if(this.shipsDestroyed == 1) {
-                                //achievementManager.unlockFirstBlood();
-                                achievementManager.unlock("First Blood");
-                            }
+
+                            checkAchievement();
                         }
                         break;
                     }
@@ -551,5 +530,34 @@ public class GameScreen extends Screen {
      */
     public final GameState getGameState() {
         return this.state;
+    }
+
+    /**
+     * check Achievement released;
+     */
+    public void checkAchievement(){
+        // First Blood
+        if(state.getShipsDestroyed() == 1) {
+            achievementManager.unlock("First Blood");
+        }
+        // Clear
+        if (levelFinished && this.enemyShipFormation.isEmpty() && state.getLevel()==5) {
+            achievementManager.unlock("Clear");
+            // Survivor
+            if(!this.tookDamageThisLevel){
+                achievementManager.unlock("Survivor");
+            }
+        }
+        if (this.bulletsShot == state.getShipsDestroyed()) {
+            achievementManager.unlock("SharpShooter");
+        }
+        //50 Bullets
+        if(state.getBulletsShot() >= 50){
+            achievementManager.unlock("50 Bullets");
+        }
+        //Get 3000 Score
+        if(state.getScore()>=3000){
+            achievementManager.unlock("Get 3000 Score");
+        }
     }
 }
