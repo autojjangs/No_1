@@ -60,9 +60,21 @@ public class HighScoreScreen extends Screen {
         super.update();
 
         draw();
-        if (inputManager.isKeyDown(KeyEvent.VK_SPACE)
+        if (inputManager.isKeyDown(KeyEvent.VK_ESCAPE)
                 && this.inputDelay.checkFinished())
             this.isRunning = false;
+
+        // back button click event
+        if (inputManager.isMouseClicked()) {
+            int mx = inputManager.getMouseX();
+            int my = inputManager.getMouseY();
+            java.awt.Rectangle backBox = drawManager.getBackButtonHitbox(this);
+
+            if (backBox.contains(mx, my)) {
+                this.returnCode = 1;
+                this.isRunning = false;
+            }
+        }
     }
     private List<Score> getPlayerScores(String mode) {
         return mode.equals("1P") ? highScores1P : highScores2P;
@@ -76,6 +88,15 @@ public class HighScoreScreen extends Screen {
         drawManager.drawHighScoreMenu(this);
         drawManager.drawHighScores(this, getPlayerScores("1P"), "1P"); // Left column
         drawManager.drawHighScores(this, getPlayerScores("2P"), "2P"); // Right column
+
+        // hover highlight
+        int mx = inputManager.getMouseX();
+        int my = inputManager.getMouseY();
+        java.awt.Rectangle backBox = drawManager.getBackButtonHitbox(this);
+
+        if (backBox.contains(mx, my)) {
+            drawManager.drawBackButton(this, true);
+        }
 
         drawManager.completeDrawing(this);
     }

@@ -204,6 +204,15 @@ public final class Core {
                     returnCode = 2; // Start game.
                     break;
 
+                case 8:
+                    // High scores.
+                    currentScreen = new HighScoreScreen(width, height, FPS);
+                    LOGGER.info("Starting " + WIDTH + "x" + HEIGHT
+                            + " high score screen at " + FPS + " fps.");
+                    returnCode = frame.setScreen(currentScreen);
+                    LOGGER.info("Closing high score screen.");
+                    break;
+
                 default:
                     break;
             }
