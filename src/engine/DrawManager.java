@@ -539,7 +539,7 @@ public final class DrawManager {
         backBufferGraphics.setColor(Color.WHITE);
 
 
-        Entity heart = new Entity(0, 0, 6*2, 5*2, Color.RED) {
+        Entity heart = new Entity(0, 0, 12*2, 10*2, Color.RED) {
             { this.spriteType = SpriteType.Heart; }
         };
 
