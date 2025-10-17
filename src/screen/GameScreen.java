@@ -548,9 +548,6 @@ public class GameScreen extends Screen {
                 achievementManager.unlock("Survivor");
             }
         }
-        if (this.bulletsShot == state.getShipsDestroyed()) {
-            achievementManager.unlock("SharpShooter");
-        }
         //50 Bullets
         if(state.getBulletsShot() >= 50){
             achievementManager.unlock("50 Bullets");
