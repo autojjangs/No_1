@@ -303,13 +303,13 @@ public class GameScreen extends Screen {
 			this.levelFinished = true;
 			this.screenFinishedCooldown.reset();
 
-			if(state.getBulletsShot() > 0 && state.getBulletsShot() == state.getShipsDestroyed()){
+			if(enemyShipFormation.getShipCount() == 0 && state.getBulletsShot() > 0 && state.getBulletsShot() == state.getShipsDestroyed()){
 				achievementManager.unlock("Perfect Shooter");
 			}
-			if(!this.tookDamageThisLevel){
+			if(enemyShipFormation.getShipCount() == 0 && !this.tookDamageThisLevel){
 				achievementManager.unlock("Survivor");
 			}
-			if(state.getLevel() == 5){
+			if(enemyShipFormation.getShipCount() == 0 & state.getLevel() == 5){
 				achievementManager.unlock("Clear");
 			}
 		}
