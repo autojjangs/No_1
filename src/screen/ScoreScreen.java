@@ -2,7 +2,6 @@ package screen;
 
 import java.awt.event.KeyEvent;
 import java.io.IOException;
-import java.sql.Array;
 import java.util.*;
 
 import engine.*;
@@ -133,31 +132,31 @@ public class ScoreScreen extends Screen {
                 }
             }
 
-            if (this.isNewRecord && this.selectionCooldown.checkFinished()) {
-                if (inputManager.isKeyDown(KeyEvent.VK_RIGHT)) {
-                    this.nameCharSelected = this.nameCharSelected == 2 ? 0
-                            : this.nameCharSelected + 1;
-                    this.selectionCooldown.reset();
-                }
-                if (inputManager.isKeyDown(KeyEvent.VK_LEFT)) {
-                    this.nameCharSelected = this.nameCharSelected == 0 ? 2
-                            : this.nameCharSelected - 1;
-                    this.selectionCooldown.reset();
-                }
-                if (inputManager.isKeyDown(KeyEvent.VK_UP)) {
-                    this.name[this.nameCharSelected] = (char) (this.name[this.nameCharSelected] == LAST_CHAR
-                            ? FIRST_CHAR
-                            : this.name[this.nameCharSelected] + 1);
-                    this.selectionCooldown.reset();
-                }
-                if (inputManager.isKeyDown(KeyEvent.VK_DOWN)) {
-                    this.name[this.nameCharSelected] = (char) (this.name[this.nameCharSelected] == FIRST_CHAR
-                            ? LAST_CHAR
-                            : this.name[this.nameCharSelected] - 1);
-                    this.selectionCooldown.reset();
-                }
-            }
-        }
+			if (this.selectionCooldown.checkFinished()) {
+				if (inputManager.isKeyDown(KeyEvent.VK_RIGHT)) {
+					this.nameCharSelected = this.nameCharSelected == 2 ? 0
+							: this.nameCharSelected + 1;
+					this.selectionCooldown.reset();
+				}
+				if (inputManager.isKeyDown(KeyEvent.VK_LEFT)) {
+					this.nameCharSelected = this.nameCharSelected == 0 ? 2
+							: this.nameCharSelected - 1;
+					this.selectionCooldown.reset();
+				}
+				if (inputManager.isKeyDown(KeyEvent.VK_UP)) {
+					this.name[this.nameCharSelected] = (char) (this.name[this.nameCharSelected] == LAST_CHAR
+							? FIRST_CHAR
+							: this.name[this.nameCharSelected] + 1);
+					this.selectionCooldown.reset();
+				}
+				if (inputManager.isKeyDown(KeyEvent.VK_DOWN)) {
+					this.name[this.nameCharSelected] = (char) (this.name[this.nameCharSelected] == FIRST_CHAR
+							? LAST_CHAR
+							: this.name[this.nameCharSelected] - 1);
+					this.selectionCooldown.reset();
+				}
+			}
+		}
 
     }
 
@@ -215,23 +214,22 @@ public class ScoreScreen extends Screen {
     private void draw() {
         drawManager.initDrawing(this);
 
-        drawManager.drawGameOver(this, this.inputDelay.checkFinished(), this.isNewRecord);
+		drawManager.drawGameOver(this, this.inputDelay.checkFinished());
 
         float accuracy = (this.bulletsShot > 0)
                 ? (float) this.shipsDestroyed / this.bulletsShot
                 : 0f;
 
-        // 2P mode: edit to include co-op + individual score/coins
-        if (this.gameState != null && this.gameState.isCoop()) {
-            // team summary
-            drawManager.drawResults(this,
-                    this.gameState.getScore(), // team score
-                    this.gameState.getLivesRemaining(),
-                    this.gameState.getShipsDestroyed(),
-                    0f, // leaving out team accuracy
-                    this.isNewRecord,
+		// 2P mode: edit to include co-op + individual score/coins
+		if (this.gameState != null && this.gameState.isCoop()) {
+			// team summary
+			drawManager.drawResults(this,
+					this.gameState.getScore(), // team score
+					this.gameState.getLivesRemaining(),
+					this.gameState.getShipsDestroyed(),
+					0f, // leaving out team accuracy
                     false // Draw accuracy for 2P mode
-            );
+			);
 
             // show per-player lines when in 2P mode
 
@@ -253,17 +251,16 @@ public class ScoreScreen extends Screen {
             drawManager.drawCenteredRegularString(this, p1, y);
             drawManager.drawCenteredRegularString(this, p2, y + 40); // Increase spacing
 
-        } else {
-            // 1P legacy summary with accuracy
-            float acc = (this.bulletsShot > 0) ? (float) this.shipsDestroyed / this.bulletsShot : 0f;
-            if(acc >= 80){
-                achievementManager.unlock("Sharpshooter");
-            }
-            drawManager.drawResults(this, this.score, this.livesRemaining, this.shipsDestroyed, acc, this.isNewRecord, true); // Draw accuracy for 1P mode
-        }
+		} else {
+			// 1P legacy summary with accuracy
+			float acc = (this.bulletsShot > 0) ? (float) this.shipsDestroyed / this.bulletsShot : 0f;
+			if(acc >= 80){
+				achievementManager.unlock("Sharpshooter");
+			}
+			drawManager.drawResults(this, this.score, this.livesRemaining, this.shipsDestroyed, acc, true); // Draw accuracy for 1P mode
+		}
 
-        if (this.isNewRecord)
-            drawManager.drawNameInput(this, this.name, this.nameCharSelected);
+        drawManager.drawNameInput(this, this.name, this.nameCharSelected, isNewRecord);
 
         drawManager.completeDrawing(this);
     }

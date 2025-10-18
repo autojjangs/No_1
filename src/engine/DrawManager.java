@@ -468,19 +468,17 @@ public final class DrawManager {
      *                       Total ships destroyed.
      * @param accuracy
      *                       Total accuracy.
-     * @param isNewRecord
-     *                       If the score is a new high score.
      */
     public void drawResults(final Screen screen, final int score,
                             final int livesRemaining, final int shipsDestroyed,
-                            final float accuracy, final boolean isNewRecord, final boolean accuracy1P) {
+                            final float accuracy, final boolean accuracy1P) {
         String scoreString = String.format("score %04d", score);
         String livesRemainingString = "lives remaining " + livesRemaining;
         String shipsDestroyedString = "enemies destroyed " + shipsDestroyed;
         String accuracyString = String
                 .format("accuracy %.2f%%", accuracy * 100);
 
-        int height = isNewRecord ? 4 : 2;
+        int height = 4;
 
         backBufferGraphics.setColor(Color.WHITE);
         drawCenteredRegularString(screen, scoreString, screen.getHeight()
@@ -509,8 +507,8 @@ public final class DrawManager {
      *                         Current character selected for modification.
      */
     public void drawNameInput(final Screen screen, final char[] name,
-                              final int nameCharSelected) {
-        String newRecordString = "New Record!";
+                              final int nameCharSelected, final boolean newRecord) {
+        String newRecordString = (newRecord) ? "New Record!" : "";
         String introduceNameString = "Introduce name:";
 
         backBufferGraphics.setColor(Color.GREEN);
@@ -554,15 +552,12 @@ public final class DrawManager {
      *                     Screen to draw on.
      * @param acceptsInput
      *                     If the screen accepts input.
-     * @param isNewRecord
-     *                     If the score is a new high score.
      */
-    public void drawGameOver(final Screen screen, final boolean acceptsInput,
-                             final boolean isNewRecord) {
+    public void drawGameOver(final Screen screen, final boolean acceptsInput) {
         String gameOverString = "Game Over";
         String continueOrExitString = "Press Space to play again, Escape to exit";
 
-        int height = isNewRecord ? 4 : 2;
+        int height = 4;
 
         backBufferGraphics.setColor(Color.GREEN);
         drawCenteredBigString(screen, gameOverString, screen.getHeight()
