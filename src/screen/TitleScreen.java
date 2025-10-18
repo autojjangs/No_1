@@ -140,6 +140,7 @@ public class TitleScreen extends Screen {
 	 */
 	private void nextMenuItem() {
         this.menuIndex = (this.menuIndex + 1) % 5;
+        drawManager.menuHover(this.menuIndex);
 	}
 
 	/**
@@ -147,6 +148,7 @@ public class TitleScreen extends Screen {
 	 */
 	private void previousMenuItem() {
         this.menuIndex = (this.menuIndex + 4) % 5; // Fix : an issue where only the down arrow keys on the keyboard are entered and not up
+        drawManager.menuHover(this.menuIndex);
     }
 	/**
 	 * Draws the elements associated with the screen.
@@ -156,21 +158,34 @@ public class TitleScreen extends Screen {
 	private void draw() {
 		drawManager.initDrawing(this);
 
+        // Main menu space animation
+        drawManager.updateMenuSpace();
+
 		int mx = inputManager.getMouseX();
 		int my = inputManager.getMouseY();
 		java.awt.Rectangle[] boxesForHover = drawManager.getMenuHitboxes(this);
 
 		Integer newHover = null;
-		if(boxesForHover[0].contains(mx, my))
-			newHover = 0;
-		if(boxesForHover[1].contains(mx, my))
-			newHover = 1;
-		if(boxesForHover[2].contains(mx, my))
-			newHover = 2;
-        if(boxesForHover[3].contains(mx, my))
+		if(boxesForHover[0].contains(mx, my)) {
+            newHover = 0;
+            drawManager.menuHover(0);
+        }
+		if(boxesForHover[1].contains(mx, my)){
+            newHover = 1;
+            drawManager.menuHover(1);
+        }
+		if(boxesForHover[2].contains(mx, my)){
+            newHover = 2;
+            drawManager.menuHover(2);
+        }
+        if(boxesForHover[3].contains(mx, my)){
             newHover = 3;
-        if(boxesForHover[4].contains(mx, my))
+            drawManager.menuHover(3);
+        }
+        if(boxesForHover[4].contains(mx, my)){
             newHover = 4;
+            drawManager.menuHover(4);
+        }
 
         // Modify : Update after hover calculation
         if (newHover != null) {
