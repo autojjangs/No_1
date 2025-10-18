@@ -2,10 +2,12 @@ package screen;
 
 import java.awt.event.KeyEvent;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
-
+import java.util.stream.Collectors;
 import engine.Core;
 import engine.Score;
+import engine.SoundManager;
 
 /**
  * Implements the high scores screen, it shows player records.
@@ -16,7 +18,7 @@ import engine.Score;
 public class HighScoreScreen extends Screen {
 
     /** List of past high scores. */
-    private List<Score> highScores;
+    private List<Score> highScores1P, highScores2P;
 
     /**
      * Constructor, establishes the properties of the screen.
@@ -29,12 +31,14 @@ public class HighScoreScreen extends Screen {
      *            Frames per second, frame rate at which the game is run.
      */
     public HighScoreScreen(final int width, final int height, final int fps) {
+        SoundManager.playLoop("sound/menu_sound.wav");
         super(width, height, fps);
 
         this.returnCode = 1;
 
         try {
-            this.highScores = Core.getFileManager().loadHighScores();
+            this.highScores1P = Core.getFileManager().loadHighScores("1P");
+            this.highScores2P = Core.getFileManager().loadHighScores("2P");
         } catch (NumberFormatException | IOException e) {
             logger.warning("Couldn't load high scores!");
         }
@@ -47,6 +51,7 @@ public class HighScoreScreen extends Screen {
      */
     public final int run() {
         super.run();
+        SoundManager.playOnce("sound/select.wav");
 
         return this.returnCode;
     }
@@ -58,28 +63,43 @@ public class HighScoreScreen extends Screen {
         super.update();
 
         draw();
-        if (inputManager.isKeyDown(KeyEvent.VK_SPACE)
+        if (inputManager.isKeyDown(KeyEvent.VK_ESCAPE)
                 && this.inputDelay.checkFinished())
             this.isRunning = false;
-    }
 
+        // back button click event
+        if (inputManager.isMouseClicked()) {
+            int mx = inputManager.getMouseX();
+            int my = inputManager.getMouseY();
+            java.awt.Rectangle backBox = drawManager.getBackButtonHitbox(this);
+
+            if (backBox.contains(mx, my)) {
+                this.returnCode = 1;
+                this.isRunning = false;
+            }
+        }
+    }
+    private List<Score> getPlayerScores(String mode) {
+        return mode.equals("1P") ? highScores1P : highScores2P;
+    }
     /**
      * Draws the elements associated with the screen.
      */
     private void draw() {
         drawManager.initDrawing(this);
 
-            // Separate scores into 1P and 2P lists
-        List<Score> onePlayerScores = highScores.stream()
-                .filter(s -> "1P".equals(s.getMode()))
-                .collect(java.util.stream.Collectors.toList());
-        List<Score> twoPlayerScores = highScores.stream()
-                .filter(s -> "2P".equals(s.getMode()))
-                .collect(java.util.stream.Collectors.toList());
-
         drawManager.drawHighScoreMenu(this);
-        drawManager.drawHighScores(this, onePlayerScores, "1P"); // Left column
-        drawManager.drawHighScores(this, twoPlayerScores, "2P"); // Right column
+        drawManager.drawHighScores(this, getPlayerScores("1P"), "1P"); // Left column
+        drawManager.drawHighScores(this, getPlayerScores("2P"), "2P"); // Right column
+
+        // hover highlight
+        int mx = inputManager.getMouseX();
+        int my = inputManager.getMouseY();
+        java.awt.Rectangle backBox = drawManager.getBackButtonHitbox(this);
+
+        if (backBox.contains(mx, my)) {
+            drawManager.drawBackButton(this, true);
+        }
 
         drawManager.completeDrawing(this);
     }
