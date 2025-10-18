@@ -31,8 +31,8 @@ public class HighScoreScreen extends Screen {
      *            Frames per second, frame rate at which the game is run.
      */
     public HighScoreScreen(final int width, final int height, final int fps) {
-        SoundManager.playLoop("sound/menu_sound.wav");
         super(width, height, fps);
+        SoundManager.playLoop("sound/menu_sound.wav");
 
         this.returnCode = 1;
 

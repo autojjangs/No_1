@@ -295,64 +295,64 @@ public class GameScreen extends Screen {
                     }
                 }
 
-                    // Special ship lifecycle
-                    if (this.enemyShipSpecial != null) {
-                        if (!this.enemyShipSpecial.isDestroyed())
-                            this.enemyShipSpecial.move(2, 0);
-                        else if (this.enemyShipSpecialExplosionCooldown.checkFinished())
-                            this.enemyShipSpecial = null;
-                    }
-                    if (this.enemyShipSpecial == null && this.enemyShipSpecialCooldown.checkFinished()) {
-                        this.enemyShipSpecial = new EnemyShip();
-                        this.enemyShipSpecialCooldown.reset();
-                        SoundManager.playLoop("sound/special_ship_sound.wav");
-                        this.logger.info("A special ship appears");
-                    }
-                    if (this.enemyShipSpecial != null && this.enemyShipSpecial.getPositionX() > this.width) {
+                // Special ship lifecycle
+                if (this.enemyShipSpecial != null) {
+                    if (!this.enemyShipSpecial.isDestroyed())
+                        this.enemyShipSpecial.move(2, 0);
+                    else if (this.enemyShipSpecialExplosionCooldown.checkFinished())
                         this.enemyShipSpecial = null;
-                        SoundManager.stop();
-                        this.logger.info("The special ship has escaped");
-                    }
+                }
+                if (this.enemyShipSpecial == null && this.enemyShipSpecialCooldown.checkFinished()) {
+                    this.enemyShipSpecial = new EnemyShip();
+                    this.enemyShipSpecialCooldown.reset();
+                    SoundManager.playLoop("sound/special_ship_sound.wav");
+                    this.logger.info("A special ship appears");
+                }
+                if (this.enemyShipSpecial != null && this.enemyShipSpecial.getPositionX() > this.width) {
+                    this.enemyShipSpecial = null;
+                    SoundManager.stop();
+                    this.logger.info("The special ship has escaped");
+                }
 
                 // Update ships & enemies
                 for (Ship s : this.ships)
                     if (s != null)
                         s.update();
 
-                    this.enemyShipFormation.update();
-                    int bulletsBefore = this.bullets.size();
-                    this.enemyShipFormation.shoot(this.bullets);
-                    if (this.bullets.size() > bulletsBefore) {
-                        // At least one enemy bullet added
-                        SoundManager.playOnce("sound/shoot_enemies.wav");
-                    }
+                this.enemyShipFormation.update();
+                int bulletsBefore = this.bullets.size();
+                this.enemyShipFormation.shoot(this.bullets);
+                if (this.bullets.size() > bulletsBefore) {
+                    // At least one enemy bullet added
+                    SoundManager.playOnce("sound/shoot_enemies.wav");
                 }
+            }
 
 
-                manageCollisions();
-                cleanBullets();
+            manageCollisions();
+            cleanBullets();
 
-                // Item Entity Code
-                cleanItems();
-                manageItemPickups();
+            // Item Entity Code
+            cleanItems();
+            manageItemPickups();
 
-        // check active item affects
+            // check active item affects
             state.updateEffects();
             drawManager.setLastLife(state.getLivesRemaining() == 1);
-		draw();
+		    draw();
 
 
 
-                // End condition: formation cleared or TEAM lives exhausted.
-                if ((this.enemyShipFormation.isEmpty() || !state.teamAlive()) && !this.levelFinished) {
-                    // The object managed by the object pool pattern must be recycled at the end of the level.
-                    BulletPool.recycle(this.bullets);
-                    this.bullets.removeAll(this.bullets);
-                    ItemPool.recycle(items);
-                    this.items.removeAll(this.items);
+            // End condition: formation cleared or TEAM lives exhausted.
+            if ((this.enemyShipFormation.isEmpty() || !state.teamAlive()) && !this.levelFinished) {
+                // The object managed by the object pool pattern must be recycled at the end of the level.
+                BulletPool.recycle(this.bullets);
+                this.bullets.removeAll(this.bullets);
+                ItemPool.recycle(items);
+                this.items.removeAll(this.items);
 
-                    this.levelFinished = true;
-                    this.screenFinishedCooldown.reset();
+                this.levelFinished = true;
+                this.screenFinishedCooldown.reset();
 
                 checkAchievement();
             }
@@ -397,20 +397,20 @@ public class GameScreen extends Screen {
         drawManager.drawLives(this, state.getLivesRemaining());
         drawManager.drawCoins(this,  state.getCoins()); // ADD THIS LINE - 2P mode: team total
 
-        // 2P mode: setting per-player coin count
-        if (state.isCoop()) {
-            // left: P1
-            String p1 = String.format("P1  S:%d  K:%d  B:%d",
-                    state.getScore(0), state.getShipsDestroyed(0),
-                    state.getBulletsShot(0));
-            // right: P2
-            String p2 = String.format("P2  S:%d  K:%d  B:%d",
-                    state.getScore(1), state.getShipsDestroyed(1),
-                    state.getBulletsShot(1));
-            drawManager.drawCenteredRegularString(this, p1, 40);
-            drawManager.drawCenteredRegularString(this, p2, 60);
-            // remove the unnecessary "P1 S: K: B: C:" and "P2 S: K: B: C:" lines from the game screen
-        }
+//        // 2P mode: setting per-player coin count
+//        if (state.isCoop()) {
+//            // left: P1
+//            String p1 = String.format("P1  S:%d  K:%d  B:%d",
+//                    state.getScore(0), state.getShipsDestroyed(0),
+//                    state.getBulletsShot(0));
+//            // right: P2
+//            String p2 = String.format("P2  S:%d  K:%d  B:%d",
+//                    state.getScore(1), state.getShipsDestroyed(1),
+//                    state.getBulletsShot(1));
+//            drawManager.drawCenteredRegularString(this, p1, 40);
+//            drawManager.drawCenteredRegularString(this, p2, 60);
+//            // remove the unnecessary "P1 S: K: B: C:" and "P2 S: K: B: C:" lines from the game screen
+//        }
 
         drawManager.drawHorizontalLine(this, SEPARATION_LINE_HEIGHT - 1);
 
@@ -622,7 +622,5 @@ public class GameScreen extends Screen {
         if(state.getScore()>=3000){
             achievementManager.unlock("Get 3000 Score");
         }
-
-        SoundManager.playOnce("sound/CountDownSound.wav");
     }
 }
