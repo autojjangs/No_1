@@ -15,7 +15,7 @@ Don't make error!!!
 2. **Enemy Variety** – At least 3 enemy types.
 3. **Bullet Variety** – At least 3 bullet types.
 4. **Wave System Update** – Integration of enemy types into waves with balanced difficulty scaling.
-~~5. **Create Boss** - Boss-type enemy for advanced challenge.~~
+5. ~~**Create Boss** - Boss-type enemy for advanced challenge.~~
 6. **Player Ship Design** - Design the player ship each type.
 ## Dependencies on Other Teams
 1. **Gameplay HUD** – The screen keeps changing with the movement of the enemy, the player and bullets.
