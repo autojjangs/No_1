@@ -19,6 +19,9 @@ public class ItemData {
     /** duration that the effect remains active. */
     private int effectDuration;
 
+    /** cost in coins required to activate this item on pickup (0 = free). */
+    private int cost;
+
     /**
      * Constructs an ItemData object.
      *
@@ -33,7 +36,7 @@ public class ItemData {
      * @param effectDuration
      *            duration the effect remains active.
      */
-    public ItemData(String type, String spriteType, String dropTier, int effectValue, int effectDuration) {
+    public ItemData(String type, String spriteType, String dropTier, int effectValue, int effectDuration, int cost) {
         // Unique identifier for the item (e.g "COIN", "HEAL", "SCORE").
         this.type = type;
         // The sprite type (e.g "ItemScore, ItemHeal", etc).
@@ -44,8 +47,15 @@ public class ItemData {
         this.effectValue = effectValue;
         // The duration (in seconds or frames) that the effect remains active. 
         this.effectDuration = effectDuration;
+        // 0 = free
+        this.cost = Math.max(0, cost);
     }
-
+    /**
+     * default constructor (no cost) — sets cost to 0.
+     */
+    public ItemData(String type, String spriteType, String dropTier, int effectValue, int effectDuration) {
+        this(type, spriteType, dropTier, effectValue, effectDuration, 0);
+    }
     /**
      * Getter for item type.
      *
@@ -80,4 +90,7 @@ public class ItemData {
      * @return effect duration.
      */
     public int getEffectDuration() { return effectDuration; }
+
+    // Getter for item cost
+    public int getCost() { return cost; }
 }
