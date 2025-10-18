@@ -73,6 +73,7 @@ public final class  SoundManager {
      */
     public static void playLoop(String resourcePath) {
         stop();
+        stopBackgroundMusic();
 
         AudioInputStream audioStream = null;
         try {
@@ -118,6 +119,15 @@ public final class  SoundManager {
             }
         }
     }
+
+    /**
+     * Stops all music (both looped and background music).
+     * Use this when transitioning between screens to ensure no overlap.
+     */
+    public static void stopAllMusic() {
+        stop(); // stops looped music
+        stopBackgroundMusic(); // stops background music
+    }
     // Background music clip - static to persist across method calls
     private static Clip backgroundMusicClip = null;
     private static boolean isMusicPlaying = false;
@@ -127,7 +137,8 @@ public final class  SoundManager {
      * starts playing background music that loops during gameplay
      */
     public static void startBackgroundMusic(String musicResourcePath) {
-        // stop any currently playing music
+        // stop any currently playing music (both loop and background music)
+        stop();
         stopBackgroundMusic();
 
         InputStream in = null;
@@ -228,13 +239,13 @@ public final class  SoundManager {
     public static void updateVolume() {
         float volumeDb = calculateVolumeDb(Core.getVolumeLevel());
         
-        // Update looped sound volume
+        // Update looped sound volume (menu music)
         if (loopClip != null && loopClip.isControlSupported(FloatControl.Type.MASTER_GAIN)) {
             FloatControl gain = (FloatControl) loopClip.getControl(FloatControl.Type.MASTER_GAIN);
             gain.setValue(Math.max(gain.getMinimum(), Math.min(gain.getMaximum(), volumeDb)));
         }
         
-        // Update background music volume
+        // Update background music volume (game music)
         if (backgroundMusicClip != null && backgroundMusicClip.isControlSupported(FloatControl.Type.MASTER_GAIN)) {
             FloatControl gain = (FloatControl) backgroundMusicClip.getControl(FloatControl.Type.MASTER_GAIN);
             gain.setValue(Math.max(gain.getMinimum(), Math.min(gain.getMaximum(), volumeDb)));

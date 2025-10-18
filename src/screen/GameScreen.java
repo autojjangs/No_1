@@ -211,8 +211,8 @@ public class GameScreen extends Screen {
         // 2P mode: award bonus score for remaining TEAM lives
         state.addScore(0, LIFE_SCORE * state.getLivesRemaining());
 
-        // Stop background music on exiting this screen
-        SoundManager.stopBackgroundMusic();
+        // Stop all music on exiting this screen
+        SoundManager.stopAllMusic();
 
         this.logger.info("Screen cleared with a score of " + state.getScore());
         return this.returnCode;
@@ -236,11 +236,18 @@ public class GameScreen extends Screen {
         if (this.inputDelay.checkFinished() && inputManager.isKeyDown(KeyEvent.VK_ESCAPE) && this.pauseCooldown.checkFinished()) {
             this.isPaused = !this.isPaused;
             this.pauseCooldown.reset();
-            SoundManager.playOnce("sound/menu_sound.wav");
+            
+            if (this.isPaused) {
+                // Pause game music when pausing - no sound during pause
+                SoundManager.stopBackgroundMusic();
+            } else {
+                // Resume game music when unpausing
+                SoundManager.startBackgroundMusic("sound/SpaceInvader-GameTheme.wav");
+            }
         }
         if (this.isPaused && inputManager.isKeyDown(KeyEvent.VK_BACK_SPACE) && this.returnMenuCooldown.checkFinished()) {
             SoundManager.playOnce("sound/select.wav");
-            SoundManager.stopBackgroundMusic();
+            SoundManager.stopAllMusic(); // Stop all music before returning to menu
             returnCode = 1;
             this.isRunning = false;
         }
