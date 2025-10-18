@@ -4,6 +4,7 @@ import java.awt.event.KeyEvent;
 
 import engine.Cooldown;
 import engine.Core;
+import engine.SoundManager;
 
 /**
  * Implements the title screen.
@@ -47,6 +48,9 @@ public class TitleScreen extends Screen {
 		this.returnCode = 1; // 2P mode: changed to default selection as 1P
 		this.selectionCooldown = Core.getCooldown(SELECTION_TIME);
 		this.selectionCooldown.reset();
+
+        // Start menu music loop when the title screen is created
+        SoundManager.playLoop("sound/menu_sound.wav");
 	}
 
 	/**
@@ -56,6 +60,8 @@ public class TitleScreen extends Screen {
 	 */
 	public final int run() {
 		super.run();
+        // Stop menu music when leaving the title screen
+        SoundManager.stop();
 		return this.returnCode;
 	}
 
@@ -68,11 +74,13 @@ public class TitleScreen extends Screen {
         draw();
         if (this.selectionCooldown.checkFinished() && this.inputDelay.checkFinished()) {
             if (inputManager.isKeyDown(KeyEvent.VK_UP) || inputManager.isKeyDown(KeyEvent.VK_W)) {
+                SoundManager.playOnce("sound/hover.wav");
                 previousMenuItem();
                 this.selectionCooldown.reset();
                 this.hoverOption = null;
             }
             if (inputManager.isKeyDown(KeyEvent.VK_DOWN) || inputManager.isKeyDown(KeyEvent.VK_S)) {
+                SoundManager.playOnce("sound/hover.wav");
                 nextMenuItem();
                 this.selectionCooldown.reset();
                 this.hoverOption = null;
@@ -80,6 +88,7 @@ public class TitleScreen extends Screen {
 
             // Play : Adjust the case so that 1p and 2p can be determined within the play.
             if (inputManager.isKeyDown(KeyEvent.VK_SPACE)) {
+                SoundManager.playOnce("sound/select.wav");
                 switch (this.menuIndex) {
                     case 0: // "Play"
                         this.returnCode = 5; // go to PlayScreen
@@ -131,6 +140,7 @@ public class TitleScreen extends Screen {
 	 */
 	private void nextMenuItem() {
         this.menuIndex = (this.menuIndex + 1) % 5;
+        drawManager.menuHover(this.menuIndex);
 	}
 
 	/**
@@ -138,6 +148,7 @@ public class TitleScreen extends Screen {
 	 */
 	private void previousMenuItem() {
         this.menuIndex = (this.menuIndex + 4) % 5; // Fix : an issue where only the down arrow keys on the keyboard are entered and not up
+        drawManager.menuHover(this.menuIndex);
     }
 	/**
 	 * Draws the elements associated with the screen.
@@ -147,21 +158,34 @@ public class TitleScreen extends Screen {
 	private void draw() {
 		drawManager.initDrawing(this);
 
+        // Main menu space animation
+        drawManager.updateMenuSpace();
+
 		int mx = inputManager.getMouseX();
 		int my = inputManager.getMouseY();
 		java.awt.Rectangle[] boxesForHover = drawManager.getMenuHitboxes(this);
 
 		Integer newHover = null;
-		if(boxesForHover[0].contains(mx, my))
-			newHover = 0;
-		if(boxesForHover[1].contains(mx, my))
-			newHover = 1;
-		if(boxesForHover[2].contains(mx, my))
-			newHover = 2;
-        if(boxesForHover[3].contains(mx, my))
+		if(boxesForHover[0].contains(mx, my)) {
+            newHover = 0;
+            drawManager.menuHover(0);
+        }
+		if(boxesForHover[1].contains(mx, my)){
+            newHover = 1;
+            drawManager.menuHover(1);
+        }
+		if(boxesForHover[2].contains(mx, my)){
+            newHover = 2;
+            drawManager.menuHover(2);
+        }
+        if(boxesForHover[3].contains(mx, my)){
             newHover = 3;
-        if(boxesForHover[4].contains(mx, my))
+            drawManager.menuHover(3);
+        }
+        if(boxesForHover[4].contains(mx, my)){
             newHover = 4;
+            drawManager.menuHover(4);
+        }
 
         // Modify : Update after hover calculation
         if (newHover != null) {

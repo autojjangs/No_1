@@ -85,4 +85,5 @@ public class Cooldown {
         long elapsed = System.currentTimeMillis() - this.time;
         return Math.max(0, this.duration - (int) elapsed);
     }
+
 }

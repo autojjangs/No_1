@@ -6,6 +6,7 @@ import engine.Core;
 import engine.FileManager;
 
 import java.awt.event.KeyEvent;
+import engine.SoundManager;
 import java.util.List;
 
 public class AchievementScreen extends Screen {
@@ -23,10 +24,15 @@ public class AchievementScreen extends Screen {
         fileManager = Core.getFileManager();
         this.completer = Core.getFileManager().getAchievementCompleter(achievements.get(currentIdx));
         this.returnCode = 3;
+
+        // Start menu music loop when the achievement screen is created
+        SoundManager.playLoop("sound/menu_sound.wav");
     }
 
     public final int run() {
         super.run();
+        // Stop menu music when leaving the achievement screen
+        SoundManager.stop();
 
         return this.returnCode;
     }
