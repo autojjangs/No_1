@@ -3,6 +3,7 @@ package engine;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import engine.SoundManager;
 
 /**
  * Manages the list of achievements for a player,
@@ -61,6 +62,7 @@ public class AchievementManager {
         for (Achievement a : achievements) {
             if (a.getName().equals(name) && !a.isUnlocked()) {
                 a.unlock();
+                SoundManager.playOnce("sound/achievement.wav");
                 System.out.println("Achievement unlocked: " + a);
             }
         }

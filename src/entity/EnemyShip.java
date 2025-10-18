@@ -204,7 +204,7 @@ public class EnemyShip extends Entity {
             }
             Color color = this.getColor();
             if(initialHealth != 0) {
-                int alpha = (int)Math.clamp(180 * (float)health / initialHealth, 0, 255);
+                int alpha = (int)Math.clamp(70 + 150 * (float)health / initialHealth, 0, 255);
                 color = new Color(color.getRed(), color.getGreen(), color.getBlue(), alpha);
                 changeColor(color);
             }

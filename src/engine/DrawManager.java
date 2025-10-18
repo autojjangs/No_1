@@ -10,11 +10,14 @@ import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.awt.Rectangle; // add this line
 import java.io.IOException;
-import java.util.LinkedHashMap;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Logger;
 
+import Animations.BasicGameSpace;
+import Animations.Explosion;
+import Animations.MenuSpace;
+import com.sun.tools.javac.Main;
 import screen.Screen;
 import entity.Entity;
 import entity.Ship;
@@ -54,6 +57,17 @@ public final class DrawManager {
 	/** Sprite types mapped to their images. */
 	private static Map<SpriteType, boolean[][]> spriteMap;
 
+    private final java.util.List<Explosion> explosions = new java.util.ArrayList<>();
+
+    /**
+     * Stars background animations for both game and main menu
+     * Star density specified as argument.
+     * */
+    BasicGameSpace basicGameSpace = new BasicGameSpace(100);
+    MenuSpace menuSpace = new MenuSpace(50);
+    int explosion_size = 2;
+
+
     // Variables for hitbox fine-tuning
     private int menuHitboxOffset = 20; // add this line
 
@@ -63,9 +77,15 @@ public final class DrawManager {
     /** Sprite types. */
     public static enum SpriteType {
         /** Player ship. */
-        Ship,
+        Ship1,
+        Ship2,
+        Ship3,
+        Ship4,
         /** Destroyed player ship. */
-        ShipDestroyed,
+        ShipDestroyed1,
+        ShipDestroyed2,
+        ShipDestroyed3,
+        ShipDestroyed4,
         /** Player bullet. */
         Bullet,
         /** Enemy bullet. */
@@ -95,29 +115,35 @@ public final class DrawManager {
         ItemBulletSpeedUp
     };
 
-	/**
-	 * Private constructor.
-	 */
-	private DrawManager() {
-		fileManager = Core.getFileManager();
-		logger = Core.getLogger();
-		logger.info("Started loading resources.");
+    /**
+     * Private constructor.
+     */
+    private DrawManager() {
+        fileManager = Core.getFileManager();
+        logger = Core.getLogger();
+        logger.info("Started loading resources.");
 
-		try {
-			spriteMap = new LinkedHashMap<SpriteType, boolean[][]>();
+        try {
+            spriteMap = new LinkedHashMap<SpriteType, boolean[][]>();
 
-			spriteMap.put(SpriteType.Ship, new boolean[13][8]);
-			spriteMap.put(SpriteType.ShipDestroyed, new boolean[13][8]);
-			spriteMap.put(SpriteType.Bullet, new boolean[3][5]);
-			spriteMap.put(SpriteType.EnemyBullet, new boolean[3][5]);
-			spriteMap.put(SpriteType.EnemyShipA1, new boolean[12][8]);
-			spriteMap.put(SpriteType.EnemyShipA2, new boolean[12][8]);
-			spriteMap.put(SpriteType.EnemyShipB1, new boolean[12][8]);
-			spriteMap.put(SpriteType.EnemyShipB2, new boolean[12][8]);
-			spriteMap.put(SpriteType.EnemyShipC1, new boolean[12][8]);
-			spriteMap.put(SpriteType.EnemyShipC2, new boolean[12][8]);
-			spriteMap.put(SpriteType.EnemyShipSpecial, new boolean[16][7]);
-			spriteMap.put(SpriteType.Explosion, new boolean[13][7]);
+            spriteMap.put(SpriteType.Ship1, new boolean[13][8]);
+            spriteMap.put(SpriteType.Ship2, new boolean[13][8]);
+            spriteMap.put(SpriteType.Ship3, new boolean[13][8]);
+            spriteMap.put(SpriteType.Ship4, new boolean[13][8]);
+            spriteMap.put(SpriteType.ShipDestroyed1, new boolean[13][8]);
+            spriteMap.put(SpriteType.ShipDestroyed2, new boolean[13][8]);
+            spriteMap.put(SpriteType.ShipDestroyed3, new boolean[13][8]);
+            spriteMap.put(SpriteType.ShipDestroyed4, new boolean[13][8]);
+            spriteMap.put(SpriteType.Bullet, new boolean[3][5]);
+            spriteMap.put(SpriteType.EnemyBullet, new boolean[3][5]);
+            spriteMap.put(SpriteType.EnemyShipA1, new boolean[12][8]);
+            spriteMap.put(SpriteType.EnemyShipA2, new boolean[12][8]);
+            spriteMap.put(SpriteType.EnemyShipB1, new boolean[12][8]);
+            spriteMap.put(SpriteType.EnemyShipB2, new boolean[12][8]);
+            spriteMap.put(SpriteType.EnemyShipC1, new boolean[12][8]);
+            spriteMap.put(SpriteType.EnemyShipC2, new boolean[12][8]);
+            spriteMap.put(SpriteType.EnemyShipSpecial, new boolean[16][7]);
+            spriteMap.put(SpriteType.Explosion, new boolean[13][7]);
 
             // Item sprite placeholder
             spriteMap.put(SpriteType.ItemScore, new boolean[5][5]);
@@ -268,6 +294,186 @@ public final class DrawManager {
         }
     }
 
+
+    public void menuHover(final int state){
+        menuSpace.setColor(state);
+        menuSpace.setSpeed(state == 4);
+    }
+
+    public void triggerExplosion(int x, int y, boolean enemy, boolean finalExplosion) {
+        logger.info("Enemy: "+enemy);
+        logger.info("final: "+finalExplosion);
+        explosions.add(new Explosion(x, y, enemy, finalExplosion));
+    }
+
+    public void drawExplosions(){
+
+        Graphics2D g2d = (Graphics2D) backBufferGraphics;
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+        g2d.setColor(Color.WHITE);
+
+
+        Iterator<Explosion> iterator = explosions.iterator();
+
+        while(iterator.hasNext()){
+            Explosion e = iterator.next();
+            e.update();
+
+            if (!e.isActive()) {
+                iterator.remove();
+                continue;
+            }
+
+            for(Explosion.Particle p : e.getParticles()){
+                if(!p.active){
+                    continue;
+                }
+
+                int baseSize;
+
+                Random random = new Random();
+                if (e.getSize() == 4)
+                    baseSize = random.nextInt(5) + 2;
+                else
+                    baseSize = random.nextInt(6)+18;
+
+                int flickerAlpha = Math.max(0, Math.min(255, p.color.getAlpha() - (int)(Math.random() * 50)));
+
+
+                float[] dist = {0.0f, 0.3f, 0.7f, 1.0f};
+                Color[] colors;
+                if(e.enemy()){
+                    colors = new Color[]{
+                            new Color(255, 255, 250, flickerAlpha),
+                            new Color(255, 250, 180, flickerAlpha),
+                            new Color(255, 200, 220, flickerAlpha / 2),
+                            new Color(0, 0, 0, 0)
+                    };
+                }
+                else{
+                    colors = new Color[]{
+                            new Color(255, 255, 180, flickerAlpha),
+                            new Color(255, 200, 0, flickerAlpha),
+                            new Color(255, 80, 0, flickerAlpha / 2),
+                            new Color(0, 0, 0, 0)
+                    };
+                }
+
+                RadialGradientPaint paint = new RadialGradientPaint(
+                        new Point((int) p.x, (int) p.y),
+                        baseSize,
+                        dist,
+                        colors
+                );
+
+                g2d.setPaint(paint);
+
+                int offsetX = (int) (Math.random() * 4 - 2);
+                int offsetY = (int) (Math.random() * 4 - 2);
+
+                g2d.fillOval(
+                        (int) (p.x - baseSize / 2 + offsetX),
+                        (int) (p.y - baseSize / 2 + offsetY),
+                        baseSize,
+                        baseSize
+                );
+            }
+
+        }
+    }
+
+
+
+    /**
+     * Draws the main menu stars background animation
+     */
+    public void updateMenuSpace(){
+        menuSpace.updateStars();
+
+        Graphics2D g2d = (Graphics2D) backBufferGraphics;
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+        backBufferGraphics.setColor(Color.WHITE);
+        int[][] positions = menuSpace.getStarLocations();
+
+        for(int i = 0; i < menuSpace.getNumStars(); i++){
+
+            int size = 1;
+            int radius = size * 2;
+
+            float[] dist = {0.0f, 1.0f};
+            Color[] colors = {
+                    menuSpace.getColor(),
+                    new Color(255, 255, 200, 0)
+            };
+
+            RadialGradientPaint paint = new RadialGradientPaint(
+                    new Point(positions[i][0], positions[i][1]),
+                    radius,
+                    dist,
+                    colors
+            );
+            g2d.setPaint(paint);
+            g2d.fillOval(positions[i][0] - radius / 2, positions[i][1] - radius / 2, radius, radius);
+
+
+            backBufferGraphics.fillOval(positions[i][0], positions[i][1], size, size);
+        }
+    }
+
+    public void setLastLife(boolean status){
+        basicGameSpace.setLastLife(status);
+    }
+
+    public void setDeath(boolean status){
+        if(status)
+            explosion_size = 20;
+        else
+            explosion_size = 2;
+    }
+
+
+    /**
+     * Draws the stars background animation during the game
+     */
+    public void updateGameSpace(){
+        basicGameSpace.update();
+
+        Graphics2D g2d = (Graphics2D) backBufferGraphics;
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+        backBufferGraphics.setColor(Color.WHITE);
+        int[][] positions = basicGameSpace.getStarLocations();
+        for(int i = 0; i < basicGameSpace.getNumStars(); i++){
+
+            int size = (positions[i][2] < 2) ? 2 : 1;
+            int radius = size * 2;
+
+            float[] dist = {0.0f, 1.0f};
+            Color[] colors = new Color[2];
+            if(basicGameSpace.isLastLife()){
+                colors[0] = new Color(255, 0, 0, 100);
+                colors[1] = new Color(255, 0, 0, 50);
+            }
+            else{
+                colors[0] = new Color(255, 255, 200, 50);
+                colors[1] = new Color(255, 255, 200, 50);
+            }
+
+            RadialGradientPaint paint = new RadialGradientPaint(
+                    new Point(positions[i][0] + size / 2, positions[i][1] + size / 2),
+                    radius,
+                    dist,
+                    colors
+            );
+            g2d.setPaint(paint);
+            g2d.fillOval(positions[i][0] - radius / 2, positions[i][1] - radius / 2, radius, radius);
+
+
+            backBufferGraphics.fillOval(positions[i][0], positions[i][1], size, size);
+        }
+    }
     /**
      * For debugging purposes, draws the canvas borders.
      *
@@ -398,13 +604,14 @@ public final class DrawManager {
 	 *               Option selected.
 	 */
 	public void drawMenu(final Screen screen, final int option, final Integer hoverOption, final int selectedIndex) {
-        String[] items = {"Play", "Achievements", "Settings", "Exit"};
+        String[] items = {"Play", "Achievements", "High scores","Settings", "Exit"};
 
-        int baseY = screen.getHeight() / 3 * 2; // same option choice, different formatting
+        int baseY = screen.getHeight() / 3 * 2 - 20; // Adjust spacing due to high society button addition
+        int spacing = (int) (fontRegularMetrics.getHeight() * 1.5);
         for (int i = 0; i < items.length; i++) {
             boolean highlight = (hoverOption != null) ? (i == hoverOption) : (i == selectedIndex);
             backBufferGraphics.setColor(highlight ? Color.GREEN : Color.WHITE);
-            drawCenteredRegularString(screen, items[i], (int) (baseY + fontRegularMetrics.getHeight() * 1.5 * i));
+            drawCenteredRegularString(screen, items[i], baseY + spacing * i);
         }
 
         /** String playString = "1-Player Mode";
@@ -581,7 +788,7 @@ public final class DrawManager {
      */
     public void drawHighScoreMenu(final Screen screen) {
         String highScoreString = "High Scores";
-        String instructionsString = "Press Space to return";
+        String instructionsString = "Press ESC to return";
 
         int midX = screen.getWidth() / 2;
         int startY = screen.getHeight() / 3;
@@ -596,6 +803,9 @@ public final class DrawManager {
         backBufferGraphics.setColor(Color.GREEN);
         backBufferGraphics.drawString("1-PLAYER MODE", midX / 2 - fontBigMetrics.stringWidth("1-PLAYER MODE") / 2 + 40, startY);
         backBufferGraphics.drawString("2-PLAYER MODE", midX + midX / 2 - fontBigMetrics.stringWidth("2-PLAYER MODE") / 2 + 40, startY);
+
+        // draw back button at top-left
+        drawBackButton(screen, false);
     }
 
     /**
@@ -632,7 +842,7 @@ public final class DrawManager {
 	// Made it to check if the Achievement button works temporarily.
 	public void drawAchievementMenu(final Screen screen) {
 		String AchievementsString = "Achievements";
-		String instructionsString = "Press Space to return";
+		String instructionsString = "Press ESC to return";
 		backBufferGraphics.setColor(Color.GREEN);
 		drawCenteredBigString(screen, AchievementsString, screen.getHeight() / 8);
 
@@ -654,29 +864,6 @@ public final class DrawManager {
         backBufferGraphics.setColor(Color.GRAY);
         drawCenteredRegularString(screen, instructionsString, screen.getHeight() / 6);
     }
-
-	public void drawVolumeBar(final Screen screen, final int volumlevel){
-		int bar_startWidth = screen.getWidth() / 2;
-		int bar_endWidth = screen.getWidth()-40;
-		int barHeight = screen.getHeight()*3/10;
-
-		String volumelabel = "Volume";
-		backBufferGraphics.setFont(fontRegular);
-		backBufferGraphics.setColor(Color.WHITE);
-		backBufferGraphics.drawLine(bar_startWidth, barHeight, bar_endWidth, barHeight);
-
-		backBufferGraphics.setColor(Color.WHITE);
-		backBufferGraphics.drawString(volumelabel, bar_startWidth-80, barHeight+7);
-
-		int indicatorX = bar_startWidth + (int)((bar_endWidth-bar_startWidth)*(volumlevel/100.0));
-		int indicatorY = barHeight+7;
-		backBufferGraphics.fillRect(indicatorX, indicatorY-13, 14, 14);
-		backBufferGraphics.setColor(Color.WHITE);
-		String volumeText = Integer.toString(volumlevel);
-		backBufferGraphics.drawString(volumeText, bar_endWidth+10, indicatorY);
-
-	}
-
 
     public void drawKeysettings(final Screen screen, int playerNum, int selectedSection, int selectedKeyIndex, boolean[] keySelected,int[] currentKeys) {
         int panelWidth = 220;
@@ -733,11 +920,11 @@ public final class DrawManager {
      * Draws a centered string on regular font at a specific coordinate.
      *
      * @param string
-     * String to draw.
+     *              String to draw.
      * @param x
-     * X coordinate to center the string on.
+     *              X coordinate to center the string on.
      * @param y
-     * Y coordinate of the drawing.
+     *              Y coordinate of the drawing.
      */
     public void drawCenteredRegularString(final String string, final int x, final int y) {
         backBufferGraphics.setFont(fontRegular);
@@ -844,13 +1031,14 @@ public final class DrawManager {
             fontRegularMetrics = backBufferGraphics.getFontMetrics(fontRegular);
         }
 
-        final String[] buttons = {"Play", "Achievement", "Settings", "Exit"};
+        final String[] buttons = {"Play", "Achievement", "High scores", "Settings", "Exit"};
 
-        int baseY = screen.getHeight() / 3 * 2;
+        int baseY = screen.getHeight() / 3 * 2 - 20;
+        int spacing = (int) (fontRegularMetrics.getHeight() * 1.5);
         Rectangle[] boxes= new Rectangle[buttons.length];
 
         for (int i = 0; i < buttons.length; i++) {
-            int baseline = (int) (baseY + fontRegularMetrics.getHeight() * 1.5 * i);
+            int baseline = baseY + spacing * i;
             boxes[i] = centeredStringBounds(screen, buttons[i], baseline);
         }
 
@@ -892,6 +1080,40 @@ public final class DrawManager {
         }
 
         return boxes;
+    }
+
+    public void drawShipSelectionMenu(final Screen screen, final Ship[] shipExamples, final int selectedShipIndex, final int playerIndex) {
+        Ship ship = shipExamples[selectedShipIndex];
+        int centerX = ship.getPositionX();
+
+        String screenTitle = "PLAYER " + playerIndex + " : CHOOSE YOUR SHIP";
+
+        // Ship Type Info
+        String[] shipNames = {"Normal Type", "Big Shot Type", "Double Shot Type", "Speed Type"};
+        String[] shipSpeeds = {"SPEED: NORMAL", "SPEED: SLOW", "SPEED: SLOW", "SPEED: FAST"};
+        String[] shipFireRates = {"FIRE RATE: NORMAL", "FIRE RATE: NORMAL", "FIRE RATE: NORMAL", "FIRE RATE: SLOW"};
+
+        drawEntity(ship, ship.getPositionX() - ship.getWidth()/2, ship.getPositionY());
+//        for (int i = 0; i < 4; i++) {
+//            // Draw Player Ship
+//            drawManager.drawEntity(ship, ship.getPositionX() - ship.getWidth()/2, ship.getPositionY());
+//        }
+
+        // Draw Selected Player Page Title
+        backBufferGraphics.setColor(Color.GREEN);
+        drawCenteredBigString(screen, screenTitle, screen.getHeight() / 4);
+        // Draw Selected Player Ship Type
+        backBufferGraphics.setColor(Color.white);
+        drawCenteredRegularString(screen, " > " + shipNames[selectedShipIndex] + " < ", screen.getHeight() / 2 - 40);
+        // Draw Selected Player Ship Info
+        backBufferGraphics.setColor(Color.WHITE);
+//        drawCenteredRegularString(shipSpeeds[selectedShipIndex], centerX, screen.getHeight() / 2 + 60);
+//        drawCenteredRegularString(shipFireRates[selectedShipIndex], centerX, screen.getHeight() / 2 + 80);
+        drawCenteredRegularString(screen, shipSpeeds[selectedShipIndex], screen.getHeight() / 2 + 60);
+        drawCenteredRegularString(screen, shipFireRates[selectedShipIndex], screen.getHeight() / 2 + 80);
+
+        backBufferGraphics.setColor(Color.GRAY);
+        drawCenteredRegularString(screen, "Press SPACE to Select", screen.getHeight() - 50);
     }
 
     /*

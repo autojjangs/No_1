@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import engine.Core;
 import engine.Score;
+import engine.SoundManager;
 
 /**
  * Implements the high scores screen, it shows player records.
@@ -30,6 +31,7 @@ public class HighScoreScreen extends Screen {
      *            Frames per second, frame rate at which the game is run.
      */
     public HighScoreScreen(final int width, final int height, final int fps) {
+        SoundManager.playLoop("sound/menu_sound.wav");
         super(width, height, fps);
 
         this.returnCode = 1;
@@ -49,6 +51,7 @@ public class HighScoreScreen extends Screen {
      */
     public final int run() {
         super.run();
+        SoundManager.playOnce("sound/select.wav");
 
         return this.returnCode;
     }
@@ -60,9 +63,21 @@ public class HighScoreScreen extends Screen {
         super.update();
 
         draw();
-        if (inputManager.isKeyDown(KeyEvent.VK_SPACE)
+        if (inputManager.isKeyDown(KeyEvent.VK_ESCAPE)
                 && this.inputDelay.checkFinished())
             this.isRunning = false;
+
+        // back button click event
+        if (inputManager.isMouseClicked()) {
+            int mx = inputManager.getMouseX();
+            int my = inputManager.getMouseY();
+            java.awt.Rectangle backBox = drawManager.getBackButtonHitbox(this);
+
+            if (backBox.contains(mx, my)) {
+                this.returnCode = 1;
+                this.isRunning = false;
+            }
+        }
     }
     private List<Score> getPlayerScores(String mode) {
         return mode.equals("1P") ? highScores1P : highScores2P;
@@ -76,6 +91,15 @@ public class HighScoreScreen extends Screen {
         drawManager.drawHighScoreMenu(this);
         drawManager.drawHighScores(this, getPlayerScores("1P"), "1P"); // Left column
         drawManager.drawHighScores(this, getPlayerScores("2P"), "2P"); // Right column
+
+        // hover highlight
+        int mx = inputManager.getMouseX();
+        int my = inputManager.getMouseY();
+        java.awt.Rectangle backBox = drawManager.getBackButtonHitbox(this);
+
+        if (backBox.contains(mx, my)) {
+            drawManager.drawBackButton(this, true);
+        }
 
         drawManager.completeDrawing(this);
     }
