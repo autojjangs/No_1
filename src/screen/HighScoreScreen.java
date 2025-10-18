@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import engine.Core;
 import engine.Score;
+import engine.SoundManager;
 
 /**
  * Implements the high scores screen, it shows player records.
@@ -30,6 +31,7 @@ public class HighScoreScreen extends Screen {
      *            Frames per second, frame rate at which the game is run.
      */
     public HighScoreScreen(final int width, final int height, final int fps) {
+        SoundManager.playLoop("sound/menu_sound.wav");
         super(width, height, fps);
 
         this.returnCode = 1;
@@ -49,6 +51,7 @@ public class HighScoreScreen extends Screen {
      */
     public final int run() {
         super.run();
+        SoundManager.playOnce("sound/select.wav");
 
         return this.returnCode;
     }
