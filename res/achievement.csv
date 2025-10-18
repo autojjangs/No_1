@@ -1,5 +1,14 @@
-player,First Blood,Survivor,Clear,Sharpshooter,50 Bullets,Get 3000 Score
-ROB,1,1,1,1,1,0
-PAT,0,0,1,0,1,0
-KOF,1,0,1,0,0,0
-BYR,0,0,0,0,0,0
+mode,player,First Blood,Survivor,Clear,Sharpshooter,50 Bullets,Get 3000 Score
+1,ROB,1,1,1,1,1,1
+1,PAT,0,0,1,0,0,0
+2,KOF,1,0,1,1,0,0
+1,BYR,0,0,0,0,0,0
+2,GEN,1,1,1,0,1,1
+2,FNC,1,1,1,0,1,1
+1,HLE,1,1,1,1,0,1
+2,COF,1,1,1,0,1,1
+1,BLG,1,1,1,0,0,1
+1,KOR,1,1,1,0,0,1
+1,JPN,1,1,1,1,1,1
+2,USA,1,1,1,0,1,1
+2,FKR,1,1,1,0,0,0
