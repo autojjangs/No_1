@@ -2,7 +2,6 @@ package screen;
 
 import java.awt.event.KeyEvent;
 import java.io.IOException;
-import java.sql.Array;
 import java.util.*;
 
 import engine.*;
@@ -133,7 +132,7 @@ public class ScoreScreen extends Screen {
 				}
 			}
 
-			if (this.isNewRecord && this.selectionCooldown.checkFinished()) {
+			if (this.selectionCooldown.checkFinished()) {
 				if (inputManager.isKeyDown(KeyEvent.VK_RIGHT)) {
 					this.nameCharSelected = this.nameCharSelected == 2 ? 0
 							: this.nameCharSelected + 1;
@@ -215,7 +214,7 @@ public class ScoreScreen extends Screen {
 	private void draw() {
 		drawManager.initDrawing(this);
 
-		drawManager.drawGameOver(this, this.inputDelay.checkFinished(), this.isNewRecord);
+		drawManager.drawGameOver(this, this.inputDelay.checkFinished());
 
 		float accuracy = (this.bulletsShot > 0)
 				? (float) this.shipsDestroyed / this.bulletsShot
@@ -229,8 +228,7 @@ public class ScoreScreen extends Screen {
 					this.gameState.getLivesRemaining(),
 					this.gameState.getShipsDestroyed(),
 					0f, // leaving out team accuracy
-					this.isNewRecord,
-					false // Draw accuracy for 2P mode
+                    false // Draw accuracy for 2P mode
 			);
 
 			// show per-player lines when in 2P mode
@@ -259,11 +257,10 @@ public class ScoreScreen extends Screen {
 			if(acc >= 80){
 				achievementManager.unlock("Sharpshooter");
 			}
-			drawManager.drawResults(this, this.score, this.livesRemaining, this.shipsDestroyed, acc, this.isNewRecord, true); // Draw accuracy for 1P mode
+			drawManager.drawResults(this, this.score, this.livesRemaining, this.shipsDestroyed, acc, true); // Draw accuracy for 1P mode
 		}
 
-		if (this.isNewRecord)
-			drawManager.drawNameInput(this, this.name, this.nameCharSelected);
+        drawManager.drawNameInput(this, this.name, this.nameCharSelected, isNewRecord);
 
 		drawManager.completeDrawing(this);
 	}
