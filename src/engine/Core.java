@@ -9,11 +9,9 @@ import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import screen.GameScreen;
-import screen.HighScoreScreen;
-import screen.ScoreScreen;
-import screen.Screen;
-import screen.TitleScreen;
+import screen.*;
+import entity.Ship;
+import screen.*;
 
 /**
  * Implements core game logic.
@@ -60,10 +58,12 @@ public final class Core {
 			e.printStackTrace();
 		}
 
-		frame = new Frame(WIDTH, HEIGHT);
-		DrawManager.getInstance().setFrame(frame);
-		int width = frame.getWidth();
-		int height = frame.getHeight();
+        frame = new Frame(WIDTH, HEIGHT);
+        InputManager input = InputManager.getInstance();
+        frame.addKeyListener(input); // Register an instance to allow the window to receive keyboard event information
+        DrawManager.getInstance().setFrame(frame);
+        int width = frame.getWidth();
+        int height = frame.getHeight();
 
 		gameSettings = GameSettings.getGameSettings();
 		NUM_LEVELS = gameSettings.size(); // Initialize total number of levels
@@ -73,156 +73,224 @@ public final class Core {
 		GameState gameState = null;
 		boolean coopSelected = false; // false = 1P, true = 2P
 
-		AchievementManager achievementManager = new AchievementManager(); // add 1P/2P achievement manager
+        int returnCode = 1;
 
-		int returnCode = 1;
-		do {
+        // Game & score.
+        AchievementManager achievementManager = new AchievementManager(); // add 1P/2P achievement manager
 
-			switch (returnCode) {
-				case 1:
-					currentScreen = new TitleScreen(width, height, FPS);
-					LOGGER.info("Starting " + WIDTH + "x" + HEIGHT + " title screen at " + FPS + " fps.");
-					returnCode = frame.setScreen(currentScreen);
-					LOGGER.info("Closing title screen.");
+        Ship.ShipType shipTypeP1 = Ship.ShipType.NORMAL; // P1 Ship Type
+        Ship.ShipType shipTypeP2 = Ship.ShipType.NORMAL; // P2 Ship Type
+        do {
 
-					// 2P mode: reading the mode which user chose from TitleScreen
-					if (returnCode == 2 || returnCode == 3) {
-						coopSelected = ((TitleScreen) currentScreen).isCoopSelected();
-					}
+            switch (returnCode) {
+                case 1:
+                    currentScreen = new TitleScreen(width, height, FPS);
+                    LOGGER.info("Starting " + WIDTH + "x" + HEIGHT + " title screen at " + FPS + " fps.");
+                    returnCode = frame.setScreen(currentScreen);
+                    LOGGER.info("Closing title screen.");
+
+                    // 2P mode: reading the mode which user chose from TitleScreen
+                    // (edit) TitleScreen to PlayScreen
+                    if (returnCode == 2) {
+                        currentScreen = new PlayScreen(width, height, FPS);
+                        returnCode = frame.setScreen(currentScreen);
+
+                        coopSelected = ((PlayScreen) currentScreen).isCoopSelected();
+                    }
 
 					break;
 
-				case 2:
-					// 2P mode: building gameState now using user choice
-					gameState = new GameState(1, MAX_LIVES, coopSelected);
+                case 2:
+                    // 2P mode: building gameState now using user choice
+                    gameState = new GameState(1, MAX_LIVES, coopSelected, FileManager.getInstance().loadCoins());
 
-					do {
-						// Extra life this level? Give it if team pool is below cap.
-						int teamCap = gameState.isCoop() ? (MAX_LIVES * GameState.NUM_PLAYERS) : MAX_LIVES;
-						boolean bonusLife = gameState.getLevel() % EXTRA_LIFE_FRECUENCY == 0
-								&& gameState.getLivesRemaining() < teamCap;
+                    do {
+                        // Extra life this level? Give it if team pool is below cap.
+                        int teamCap = gameState.isCoop() ? (MAX_LIVES * GameState.NUM_PLAYERS) : MAX_LIVES;
+                        boolean bonusLife = gameState.getLevel() % EXTRA_LIFE_FRECUENCY == 0
+                                && gameState.getLivesRemaining() < teamCap;
 
-						currentScreen = new GameScreen(
-								gameState,
-								gameSettings.get(gameState.getLevel() - 1),
-								bonusLife, width, height, FPS, achievementManager);
+                        currentScreen = new GameScreen(
+                                gameState,
+                                gameSettings.get(gameState.getLevel() - 1),
+                                bonusLife, width, height, FPS, shipTypeP1, shipTypeP2, achievementManager);
 
-						LOGGER.info("Starting " + WIDTH + "x" + HEIGHT + " game screen at " + FPS + " fps.");
-						frame.setScreen(currentScreen);
-						LOGGER.info("Closing game screen.");
+                        LOGGER.info("Starting " + WIDTH + "x" + HEIGHT + " game screen at " + FPS + " fps.");
+                        returnCode = frame.setScreen(currentScreen);
+                        LOGGER.info("Closing game screen.");
+                        if (returnCode == 1) {
+                            break;
+                        }
 
-						gameState = ((GameScreen) currentScreen).getGameState();
+                        gameState = ((GameScreen) currentScreen).getGameState();
 
-						if (gameState.teamAlive()) {
-                            SoundManager.playOnce("sound/win.wav");
-							gameState.nextLevel();
-						}
+                        if (gameState.teamAlive()) {
+                            gameState.nextLevel();
+                        }
 
-					} while (gameState.teamAlive() && gameState.getLevel() <= gameSettings.size());
-
-					// Play lose sound if team is not alive (game over)
-					if (!gameState.teamAlive()) {
-						SoundManager.playOnce("sound/lose.wav");
-					}
-
-					LOGGER.info("Starting " + WIDTH + "x" + HEIGHT + " score screen at " + FPS + " fps, with a score of "
-							+ gameState.getScore() + ", "
-							+ gameState.getLivesRemaining() + " lives remaining, "
-							+ gameState.getBulletsShot() + " bullets shot and "
-							+ gameState.getShipsDestroyed() + " ships destroyed.");
-					currentScreen = new ScoreScreen(width, height, FPS, gameState, achievementManager);
-					returnCode = frame.setScreen(currentScreen);
-					LOGGER.info("Closing score screen.");
-					break;
+                    } while (gameState.teamAlive() && gameState.getLevel() <= gameSettings.size());
+                    if (returnCode == 1) {
+                        break;
+                    }
+                    LOGGER.info("Starting " + WIDTH + "x" + HEIGHT + " score screen at " + FPS + " fps, with a score of "
+                            + gameState.getScore() + ", "
+                            + gameState.getLivesRemaining() + " lives remaining, "
+                            + gameState.getBulletsShot() + " bullets shot and "
+                            + gameState.getShipsDestroyed() + " ships destroyed.");
+                    currentScreen = new ScoreScreen(width, height, FPS, gameState, achievementManager);
+                    returnCode = frame.setScreen(currentScreen);
+                    LOGGER.info("Closing score screen.");
+                    break;
 
 				case 3:
-					// High scores.
-					currentScreen = new HighScoreScreen(width, height, FPS);
+					// Achievements.
+					currentScreen = new AchievementScreen(width, height, FPS);
 					LOGGER.info("Starting " + WIDTH + "x" + HEIGHT
-							+ " high score screen at " + FPS + " fps.");
+							+ " achievements screen at " + FPS + " fps.");
 					returnCode = frame.setScreen(currentScreen);
-					LOGGER.info("Closing high score screen.");
+					LOGGER.info("Closing achievement screen.");
 					break;
 
-				default:
-					break;
-			}
+              case 4:
+                  // settings screen
+                  currentScreen = new SettingScreen(width, height, FPS);
+                  LOGGER.info("Starting " + WIDTH + "x" + HEIGHT
+                          + " setting screen at " + FPS + " fps.");
+                  returnCode = frame.setScreen(currentScreen);
+                  LOGGER.info("Closing setting screen.");
+                  frame.removeKeyListener(InputManager.getInstance());
+                  frame.addKeyListener(InputManager.getInstance()); // Remove and re-register the input manager, forcing the key setting of the frame to be updated
+                  break;
 
-		} while (returnCode != 0);
+                case 5:
+                    // Play : Use the play to decide 1p and 2p
+                    currentScreen = new PlayScreen(width, height, FPS);
+                    LOGGER.info("Starting " + WIDTH + "x" + HEIGHT + " play screen at " + FPS + " fps.");
+                    returnCode = frame.setScreen(currentScreen);
+                    coopSelected = ((PlayScreen) currentScreen).isCoopSelected();
 
-		fileHandler.flush();
-		fileHandler.close();
-		System.exit(0);
-	}
+                    // playscreen -> shipselectionscreen
+                    if (returnCode == 2) {
+                        returnCode = 6;
+                    }
+                    LOGGER.info("Closing play screen.");
+                    break;
 
-	/**
-	 * Constructor, not called.
-	 */
-	private Core() {
+                case 6:
+                    // Ship selection for Player 1.
+                    currentScreen = new ShipSelectionScreen(width, height, FPS, 1);
+                    returnCode = frame.setScreen(currentScreen);
+                    shipTypeP1 = ((ShipSelectionScreen) currentScreen).getSelectedShipType();
 
-	}
+                    // If clicked back button, go back to the screen 1P screen -> Player select screen
+                    if (returnCode == 5) { break; }
 
-	/**
-	 * Controls access to the logger.
-	 * sh
-	 *
-	 * @return Application logger.
-	 */
-	public static Logger getLogger() {
-		return LOGGER;
-	}
+                    if (coopSelected) {
+                        returnCode = 7; // Go to Player 2 selection.
+                    } else {
+                        returnCode = 2; // Start game.
+                    }
+                    break;
 
-	/**
-	 * Controls access to the drawing manager.
-	 *
-	 * @return Application draw manager.
-	 */
-	public static DrawManager getDrawManager() {
-		return DrawManager.getInstance();
-	}
+                case 7:
+                    // Ship selection for Player 2.
+                    currentScreen = new ShipSelectionScreen(width, height, FPS, 2);
+                    returnCode = frame.setScreen(currentScreen);
 
-	/**
-	 * Controls access to the input manager.
-	 *
-	 * @return Application input manager.
-	 */
-	public static InputManager getInputManager() {
-		return InputManager.getInstance();
-	}
+                    // If clicked back button, go back to the screen 2P screen -> 1P screen
+                    if (returnCode == 6) { break; }
 
-	/**
-	 * Controls access to the file manager.
-	 *
-	 * @return Application file manager.
-	 */
-	public static FileManager getFileManager() {
-		return FileManager.getInstance();
-	}
+                    shipTypeP2 = ((ShipSelectionScreen) currentScreen).getSelectedShipType();
+                    returnCode = 2; // Start game.
+                    break;
 
-	/**
-	 * Controls creation of new cooldowns.
-	 *
-	 * @param milliseconds
-	 *                     Duration of the cooldown.
-	 * @return A new cooldown.
-	 */
-	public static Cooldown getCooldown(final int milliseconds) {
-		return new Cooldown(milliseconds);
-	}
+                case 8:
+                    // High scores.
+                    currentScreen = new HighScoreScreen(width, height, FPS);
+                    LOGGER.info("Starting " + WIDTH + "x" + HEIGHT
+                            + " high score screen at " + FPS + " fps.");
+                    returnCode = frame.setScreen(currentScreen);
+                    LOGGER.info("Closing high score screen.");
+                    break;
 
-	/**
-	 * Controls creation of new cooldowns with variance.
-	 *
-	 * @param milliseconds
-	 *                     Duration of the cooldown.
-	 * @param variance
-	 *                     Variation in the cooldown duration.
-	 * @return A new cooldown with variance.
-	 */
-	public static Cooldown getVariableCooldown(final int milliseconds,
-											   final int variance) {
-		return new Cooldown(milliseconds, variance);
-	}
+                default:
+                    break;
+            }
+
+        } while (returnCode != 0);
+
+        fileHandler.flush();
+        fileHandler.close();
+        System.exit(0);
+    }
+
+    /**
+     * Constructor, not called.
+     */
+    private Core() {
+
+    }
+
+    /**
+     * Controls access to the logger.
+     *
+     *
+     * @return Application logger.
+     */
+    public static Logger getLogger() {
+        return LOGGER;
+    }
+
+    /**
+     * Controls access to the drawing manager.
+     *
+     * @return Application draw manager.
+     */
+    public static DrawManager getDrawManager() {
+        return DrawManager.getInstance();
+    }
+
+    /**
+     * Controls access to the input manager.
+     *
+     * @return Application input manager.
+     */
+    public static InputManager getInputManager() {
+        return InputManager.getInstance();
+    }
+
+    /**
+     * Controls access to the file manager.
+     *
+     * @return Application file manager.
+     */
+    public static FileManager getFileManager() {
+        return FileManager.getInstance();
+    }
+
+    /**
+     * Controls creation of new cooldowns.
+     *
+     * @param milliseconds
+     *                     Duration of the cooldown.
+     * @return A new cooldown.
+     */
+    public static Cooldown getCooldown(final int milliseconds) {
+        return new Cooldown(milliseconds);
+    }
+
+    /**
+     * Controls creation of new cooldowns with variance.
+     *
+     * @param milliseconds
+     *                     Duration of the cooldown.
+     * @param variance
+     *                     Variation in the cooldown duration.
+     * @return A new cooldown with variance.
+     */
+    public static Cooldown getVariableCooldown(final int milliseconds, final int variance) {
+        return new Cooldown(milliseconds, variance);
+    }
 
 	/**
 	 * For Check Achievement release
@@ -234,4 +302,13 @@ public final class Core {
 		return NUM_LEVELS;
 	}
 
+	private static int volumeLevel = 50;
+
+	public static int getVolumeLevel() {
+		return volumeLevel;
+	}
+
+	public static void setVolumeLevel(int v) {
+		volumeLevel = Math.max(0, Math.min(100, v));
+	}
 }
