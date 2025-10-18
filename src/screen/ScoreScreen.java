@@ -243,9 +243,6 @@ public class ScoreScreen extends Screen {
             float p1Acc = this.gameState.getBulletsShot(0) > 0 ? (float) this.gameState.getShipsDestroyed(0) / this.gameState.getBulletsShot(0) : 0f;
             float p2Acc = this.gameState.getBulletsShot(1) > 0 ? (float) this.gameState.getShipsDestroyed(1) / this.gameState.getBulletsShot(1) : 0f;
 
-            if(p1Acc >= 80 && p2Acc >=80){
-                achievementManager.unlock("Sharpshooter");
-            }
             String p1 = String.format("P1  %04d  |  acc %.2f%%", this.gameState.getScore(0), p1Acc * 100f);
             String p2 = String.format("P2  %04d  |  acc %.2f%%", this.gameState.getScore(1), p2Acc * 100f);
 
@@ -261,9 +258,6 @@ public class ScoreScreen extends Screen {
 		} else {
 			// 1P legacy summary with accuracy
 			float acc = (this.bulletsShot > 0) ? (float) this.shipsDestroyed / this.bulletsShot : 0f;
-			if(acc >= 80){
-				achievementManager.unlock("Sharpshooter");
-			}
 			drawManager.drawResults(this, this.score, this.livesRemaining, this.shipsDestroyed, acc, true); // Draw accuracy for 1P mode
 		}
 
