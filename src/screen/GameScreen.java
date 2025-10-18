@@ -609,11 +609,23 @@ public class GameScreen extends Screen {
         // Clear
         if (levelFinished && this.enemyShipFormation.isEmpty() && state.getLevel()==5) {
             achievementManager.unlock("Clear");
+            float p1Acc = state.getBulletsShot(0) > 0 ? (float) state.getShipsDestroyed(0) / state.getBulletsShot(0)*100 : 0f;
+            float p2Acc = state.getBulletsShot(1) > 0 ? (float) state.getShipsDestroyed(1) / state.getBulletsShot(1)*100 : 0f;
             // Survivor
             if(!this.tookDamageThisLevel){
                 achievementManager.unlock("Survivor");
             }
+            //Sharpshooter
+            if(p1Acc>=30){
+                //1p
+                achievementManager.unlock("Sharpshooter");
+                //coop
+                if(p2Acc>=30){
+                    achievementManager.unlock("Sharpshooter");
+                }
+            }
         }
+
         //50 Bullets
         if(state.getBulletsShot() >= 50){
             achievementManager.unlock("50 Bullets");
