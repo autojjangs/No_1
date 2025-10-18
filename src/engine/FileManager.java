@@ -38,9 +38,6 @@ public final class FileManager {
      */
     private static Logger logger;
 
-    // coins.csv file to save changes about coin content
-    private static final String COIN_FILENAME = "coins.csv";
-
     /**
      * private constructor.
      */
@@ -266,82 +263,6 @@ public final class FileManager {
     }
 
     /**
-     * Loads the coin count from the coins.csv file.
-     *
-     * @return The saved coin count, or 0 if the file is not found or empty.
-     * @throws IOException In case of loading problems.
-     */
-    public int[] loadCoins() throws IOException {
-        InputStream inputStream;
-        BufferedReader bufferedReader = null;
-        // base coins are 0.
-        int[] result = {0, 0};
-        try {
-            String coinsPath = getFilePath(COIN_FILENAME);
-            File coinsFile = new File(coinsPath);
-            inputStream = new FileInputStream(coinsFile);
-            bufferedReader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
-            logger.info("Loading coin count from " + COIN_FILENAME + ".");
-
-            // coins.csv Read the first line of the file to get the number of coins
-            String line = bufferedReader.readLine();
-            if (line != null && !line.trim().isEmpty()) {
-                try {
-                    // Attempt to convert by extracting only numbers
-                    String[] parse = line.split(",");
-                    result = new int[parse.length];
-                    for(int i = 0; i < parse.length; i++)
-                        result[i] = Integer.parseInt(parse[i].trim().replaceAll("[^0-9]", ""));
-                    return result;
-                } catch (NumberFormatException e) {
-                    logger.warning("Coin count line is not a valid number. Returning 0.");
-                    return null;
-                }
-            }
-
-        } catch (FileNotFoundException e) {
-            logger.info(COIN_FILENAME + " not found. Returning 0 coins.");
-            return result;
-        } finally {
-            if (bufferedReader != null)
-                bufferedReader.close();
-        }
-
-        return result;
-    }
-
-    /**
-     * Saves the current coin count to the coins.csv file.
-     *
-     * @param coins The total number of coins acquired.
-     * @throws IOException In case of saving problems.
-     */
-    public void saveCoins(final int[] coins) throws IOException {
-        OutputStream outputStream = null;
-        BufferedWriter bufferedWriter = null;
-
-        try {
-            String coinsPath = getFilePath(COIN_FILENAME);
-            File coinsFile = new File(coinsPath);
-
-            if (!coinsFile.exists())
-                coinsFile.createNewFile();
-
-            outputStream = new FileOutputStream(coinsFile);
-            bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream, StandardCharsets.UTF_8));
-
-            logger.info("Saving new coin count (" + coins + ") to " + COIN_FILENAME + ".");
-
-            for(int coin : coins)
-                bufferedWriter.write(Integer.toString(coin)+",");
-
-        } finally {
-            if (bufferedWriter != null)
-                bufferedWriter.close();
-        }
-    }
-
-    /**
      * Search Achievement list of user
      *
      * @param userName user's name to search.
@@ -391,7 +312,7 @@ public final class FileManager {
      * @param unlockedAchievement A list of booleans representing which achievements
      * @throws IOException In case of loading problems.
      */
-    public void unlockAchievement(String userName, List<Boolean> unlockedAchievement) throws IOException {
+    public void unlockAchievement(String userName, List<Boolean> unlockedAchievement) {
         List<String[]> records = new ArrayList<>();
         try {
             String achievementPath = getFilePath("achievement.csv");
@@ -409,7 +330,8 @@ public final class FileManager {
                     flag = true;
                     logger.info("Achievement has been updated");
                     for (int i = 1; i < playRecord.length; i++) {
-                        if (playRecord[i].equals("0") && unlockedAchievement.get(i))
+                        // [2025-10-17] fix : Fixed index offset
+                        if (playRecord[i].equals("0") && unlockedAchievement.get(i-1))
                             playRecord[i] = "1";
                     }
                 }
@@ -436,7 +358,7 @@ public final class FileManager {
 
             bWriter.close();
 
-        } catch (FileNotFoundException e) {
+        } catch (IOException e) {
             logger.info("No achievements to save");
         }
     }
@@ -445,11 +367,10 @@ public final class FileManager {
      * Unlocks an achievement for the given user.
      *
      * @param achievement achievement's name to search.
-     * @throws IOException In case of loading problems.
      *
      * [2025-10-09] Added in commit: feat: add method to retrieve achievement completer
      */
-    public List<String> getAchievementCompleter(Achievement achievement) throws IOException {
+    public List<String> getAchievementCompleter(Achievement achievement) {
         List<String> completer = new ArrayList<String>();
         try {
                 String achievementPath = getFilePath("achievement.csv");
@@ -475,6 +396,7 @@ public final class FileManager {
                     String[] tmp = line.split(",");
                     if(tmp[idx].equals("1")) completer.add(tmp[0]);
                 }
+
         } catch (IOException e) {
             logger.info("Error reading achievement file, using default users.");
             completer.add("ABC");

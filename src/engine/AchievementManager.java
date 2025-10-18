@@ -14,6 +14,8 @@ public class AchievementManager {
 
     private List<Achievement> achievements;
 
+    private  static AchievementManager instance;
+
     public AchievementManager() {
         this.achievements = createDefaultAchievements();
     }
@@ -70,5 +72,15 @@ public class AchievementManager {
                 logger.info("Achievement unlocked: " + a);
             }
         }
+    }
+
+    /**
+     * Returns the shared instance of AchievementManager.
+     * [2025-10-17] Added in commit feat: complete drawAchievementMenu method in DrawManager.
+     */
+    protected static AchievementManager getInstance() {
+        if (instance == null)
+            instance = new AchievementManager();
+        return instance;
     }
 }

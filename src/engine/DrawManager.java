@@ -647,16 +647,51 @@ public final class DrawManager {
             i++;
         }
     }
-	// Made it to check if the Achievement button works temporarily.
-	public void drawAchievementMenu(final Screen screen) {
+
+    /**
+     * Draws high scores.
+     *
+     * @param screen
+     *                   Screen to draw on.
+     * @param completer
+     *                   List of completer
+     * [2025-10-09] Added in commit: feat: complete drawAchievementMenu method in DrawManager
+     */
+	public void drawAchievementMenu(final Screen screen,
+                                    Achievement achievement, List<String> completer) {
 		String AchievementsString = "Achievements";
 		String instructionsString = "Press ESC to return";
-		backBufferGraphics.setColor(Color.GREEN);
-		drawCenteredBigString(screen, AchievementsString, screen.getHeight() / 8);
+        String prevNext = "PREV                                                              NEXT";
+        String achString = achievement.getName();
+        String descriptionString = achievement.getDescription();
 
+		backBufferGraphics.setColor(Color.GREEN);
+		drawCenteredBigString(screen, AchievementsString, screen.getHeight() / 10);
+        drawCenteredRegularString(screen, achString, screen.getHeight() / 7);
 		backBufferGraphics.setColor(Color.GRAY);
-		drawCenteredRegularString(screen, instructionsString,
-				screen.getHeight() / 5);
+        drawCenteredRegularString(screen, descriptionString, screen.getHeight()/5);
+		drawCenteredRegularString(screen, instructionsString, (int)(screen.getHeight() * 0.9));
+
+        int firstX = 100;
+        int firstY = (int)(screen.getHeight() * 0.3);
+        int columnSpace = 50;
+        int rowSpace = 25;
+        int perRow = 5;
+
+        if(completer != null && !completer.isEmpty()){
+            for (int i = 0; i < completer.size(); i++) {
+                int row = i / perRow;
+                int col = i % perRow;
+                int x = firstX + col * columnSpace;
+                int y = firstY + row * rowSpace;
+                backBufferGraphics.drawString(completer.get(i), x, y);
+            }
+        }else{
+            backBufferGraphics.setColor(Color.GREEN);
+            drawCenteredBigString(screen, "1557", (int)(screen.getHeight()*0.5));
+        }
+        backBufferGraphics.setColor(Color.GREEN);
+        drawCenteredRegularString(screen, prevNext, (int)(screen.getHeight()*0.8));
 
         // draw back button at top-left
         drawBackButton(screen, false);

@@ -1,11 +1,27 @@
 package screen;
 
+import engine.Achievement;
+import engine.AchievementManager;
+import engine.Core;
+import engine.FileManager;
+
 import java.awt.event.KeyEvent;
+import java.util.List;
 
 public class AchievementScreen extends Screen {
+
+    private FileManager fileManager;
+    private AchievementManager achievementManager;
+    private List<Achievement> achievements;
+    private List<String> completer;
+    private int currentIdx = 0;
+
     public AchievementScreen(final int width, final int height, final int fps) {
         super(width, height, fps);
-
+        achievementManager = Core.getAchievementManager();
+        achievements = achievementManager.getAchievements();
+        fileManager = Core.getFileManager();
+        this.completer = Core.getFileManager().getAchievementCompleter(achievements.get(currentIdx));
         this.returnCode = 3;
     }
 
@@ -16,6 +32,21 @@ public class AchievementScreen extends Screen {
     }
 
     protected final void update() {
+
+        // [2025-10-17] feat: Added key input logic to navigate achievements
+        // When the right or left arrow key is pressed, update the current achievement index
+        // and reload the completer list for the newly selected achievement.
+        if (inputManager.isKeyDown(KeyEvent.VK_RIGHT) && inputDelay.checkFinished()) {
+            currentIdx = (currentIdx + 1) % achievements.size();
+            completer = fileManager.getAchievementCompleter(achievements.get(currentIdx));
+            inputDelay.reset();
+        }
+        if (inputManager.isKeyDown(KeyEvent.VK_LEFT) && inputDelay.checkFinished()) {
+            currentIdx = (currentIdx - 1 + achievements.size()) % achievements.size();
+            completer = fileManager.getAchievementCompleter(achievements.get(currentIdx));
+            inputDelay.reset();
+        }
+
         super.update();
         draw();
 
@@ -39,7 +70,7 @@ public class AchievementScreen extends Screen {
 
     private void draw() {
         drawManager.initDrawing(this);
-        drawManager.drawAchievementMenu(this);
+        drawManager.drawAchievementMenu(this, achievements.get(currentIdx), completer);
 
         // hover highlight
         int mx = inputManager.getMouseX();
