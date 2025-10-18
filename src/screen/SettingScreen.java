@@ -2,6 +2,7 @@ package screen;
 
 import engine.Cooldown;
 import engine.Core;
+import engine.SoundManager;
 import java.awt.event.KeyEvent;
 
 public class SettingScreen extends Screen {
@@ -36,6 +37,9 @@ public class SettingScreen extends Screen {
         // Import key arrangement and save it to field
         this.player1Keys = Core.getInputManager().getPlayer1Keys();
         this.player2Keys = Core.getInputManager().getPlayer2Keys();
+        
+        // Start menu music loop when the settings screen is created
+        SoundManager.playLoop("sound/menu_sound.wav");
     }
 
     private void setVolumeFromX(java.awt.Rectangle barBox, int mouseX) {
@@ -43,6 +47,8 @@ public class SettingScreen extends Screen {
         ratio = Math.max(0.0, Math.min(1.0, ratio));
         this.volumelevel = (int)Math.round(ratio * 100.0);
         Core.setVolumeLevel(this.volumelevel);
+        // Update volume of currently playing sounds
+        SoundManager.updateVolume();
     }
 
     /**
@@ -59,6 +65,8 @@ public class SettingScreen extends Screen {
     }
     public final int run(){
         super.run();
+        // Stop menu music when leaving the settings screen
+        SoundManager.stop();
 
         return this.returnCode;
     }
@@ -96,11 +104,13 @@ public class SettingScreen extends Screen {
                  if (inputManager.isKeyDown(KeyEvent.VK_LEFT) && volumelevel > 0) {
                      this.volumelevel--;
                      Core.setVolumeLevel(this.volumelevel);
+                     SoundManager.updateVolume();
                      this.inputCooldown.reset();
                  }
                  if (inputManager.isKeyDown(KeyEvent.VK_RIGHT) && volumelevel < 100) {
                      this.volumelevel++;
                      Core.setVolumeLevel(this.volumelevel);
+                     SoundManager.updateVolume();
                      this.inputCooldown.reset();
                  }
              }

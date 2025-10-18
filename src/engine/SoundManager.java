@@ -41,11 +41,11 @@ public final class  SoundManager {
             clip = (Clip) AudioSystem.getLine(info);
             clip.open(audioStream);
 
-            // Reduce volume slightly to avoid clipping
+            // Set volume based on user settings
             if (clip.isControlSupported(FloatControl.Type.MASTER_GAIN)) {
                 FloatControl gain = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
-                float attenuationDb = -6.0f; // ~ half perceived loudness
-                gain.setValue(Math.max(gain.getMinimum(), Math.min(gain.getMaximum(), attenuationDb)));
+                float volumeDb = calculateVolumeDb(Core.getVolumeLevel());
+                gain.setValue(Math.max(gain.getMinimum(), Math.min(gain.getMaximum(), volumeDb)));
             }
 
             clip.start();
@@ -84,11 +84,11 @@ public final class  SoundManager {
             loopClip = (Clip) AudioSystem.getLine(info);
             loopClip.open(audioStream);
 
-            // Slight attenuation by default for loops
+            // Set volume based on user settings for loops
             if (loopClip.isControlSupported(FloatControl.Type.MASTER_GAIN)) {
                 FloatControl gain = (FloatControl) loopClip.getControl(FloatControl.Type.MASTER_GAIN);
-                float attenuationDb = -8.0f;
-                gain.setValue(Math.max(gain.getMinimum(), Math.min(gain.getMaximum(), attenuationDb)));
+                float volumeDb = calculateVolumeDb(Core.getVolumeLevel());
+                gain.setValue(Math.max(gain.getMinimum(), Math.min(gain.getMaximum(), volumeDb)));
             }
 
             loopClip.loop(Clip.LOOP_CONTINUOUSLY);
@@ -148,10 +148,11 @@ public final class  SoundManager {
             // set looping
             backgroundMusicClip.loop(Clip.LOOP_CONTINUOUSLY);
 
-            // set music volume
+            // set music volume based on user settings
             if (backgroundMusicClip.isControlSupported(FloatControl.Type.MASTER_GAIN)) {
                 FloatControl gain = (FloatControl) backgroundMusicClip.getControl(FloatControl.Type.MASTER_GAIN);
-                gain.setValue(Math.max(gain.getMinimum(), Math.min(gain.getMaximum(), musicVolumeDb)));
+                float volumeDb = calculateVolumeDb(Core.getVolumeLevel());
+                gain.setValue(Math.max(gain.getMinimum(), Math.min(gain.getMaximum(), volumeDb)));
             }
 
             backgroundMusicClip.start();
@@ -218,6 +219,48 @@ public final class  SoundManager {
                 false
         );
         return AudioSystem.getAudioInputStream(targetFormat, source);
+    }
+
+    /**
+     * Updates the volume of currently playing sounds.
+     * This should be called when the volume slider is changed.
+     */
+    public static void updateVolume() {
+        float volumeDb = calculateVolumeDb(Core.getVolumeLevel());
+        
+        // Update looped sound volume
+        if (loopClip != null && loopClip.isControlSupported(FloatControl.Type.MASTER_GAIN)) {
+            FloatControl gain = (FloatControl) loopClip.getControl(FloatControl.Type.MASTER_GAIN);
+            gain.setValue(Math.max(gain.getMinimum(), Math.min(gain.getMaximum(), volumeDb)));
+        }
+        
+        // Update background music volume
+        if (backgroundMusicClip != null && backgroundMusicClip.isControlSupported(FloatControl.Type.MASTER_GAIN)) {
+            FloatControl gain = (FloatControl) backgroundMusicClip.getControl(FloatControl.Type.MASTER_GAIN);
+            gain.setValue(Math.max(gain.getMinimum(), Math.min(gain.getMaximum(), volumeDb)));
+        }
+    }
+
+    /**
+     * Calculates the volume in decibels based on the volume level (0-100).
+     * Volume level 100 = 0dB (full volume), Volume level 0 = -80dB (silent)
+     * 
+     * @param volumeLevel Volume level from 0 to 100
+     * @return Volume in decibels
+     */
+    private static float calculateVolumeDb(int volumeLevel) {
+        if (volumeLevel <= 0) {
+            return -80.0f; // Silent
+        }
+        if (volumeLevel >= 100) {
+            return 0.0f; // Full volume
+        }
+        
+        // Convert percentage to decibels
+        // Using logarithmic scale: dB = 20 * log10(volumeLevel/100)
+        // But we'll use a simpler linear mapping for better user experience
+        float ratio = volumeLevel / 100.0f;
+        return (float) (20.0 * Math.log10(ratio));
     }
 }
 
