@@ -145,13 +145,13 @@ public class GameScreen extends Screen {
         this.achievementManager = achievementManager;
         this.tookDamageThisLevel = false;
       
-        try {
-            List<Score> highScores = Core.getFileManager().loadHighScores();
-            this.topScore = highScores.isEmpty() ? 0 : highScores.get(0).getScore();
-        } catch (IOException e) {
-            logger.warning("Couldn't load high scores for checking!");
-            this.topScore = 0;
-        }
+//        try {
+//            List<Score> highScores = Core.getFileManager().loadHighScores();
+//            this.topScore = highScores.isEmpty() ? 0 : highScores.get(0).getScore();
+//        } catch (IOException e) {
+//            logger.warning("Couldn't load high scores for checking!");
+//            this.topScore = 0;
+//        }
         this.highScoreNotified = false;
         this.highScoreNoticeStartTime = 0;
 
@@ -369,30 +369,30 @@ public class GameScreen extends Screen {
 		if (this.achievementManager != null) this.achievementManager.update();
 	}
 
-                    this.levelFinished = true;
-                    this.screenFinishedCooldown.reset();
-
-                    /*
-                              check of achievement release
-                              2025-10-02 add three 'if'statements
-                          */
-                    // Survivor
-                    if (!this.tookDamageThisLevel && this.level == Core.getNumLevels()) {
-                        achievementManager.unlock("Survivor");
-                    }
-                    // Clear
-                    if (this.level == Core.getNumLevels()) {
-                        achievementManager.unlock("Clear");
-                    }
-                    //Perfect Shooter
-                    if (this.bulletsShot > 0 && this.bulletsShot == this.shipsDestroyed) {
-                        achievementManager.unlock("Perfect Shooter");
-                    }
-                }
-
-                if (this.levelFinished && this.screenFinishedCooldown.checkFinished())
-                    this.isRunning = false;
-        }
+//                    this.levelFinished = true;
+//                    this.screenFinishedCooldown.reset();
+//
+//                    /*
+//                              check of achievement release
+//                              2025-10-02 add three 'if'statements
+//                          */
+//                    // Survivor
+//                    if (!this.tookDamageThisLevel && this.level == Core.getNumLevels()) {
+//                        achievementManager.unlock("Survivor");
+//                    }
+//                    // Clear
+//                    if (this.level == Core.getNumLevels()) {
+//                        achievementManager.unlock("Clear");
+//                    }
+//                    //Perfect Shooter
+//                    if (this.bulletsShot > 0 && this.bulletsShot == this.shipsDestroyed) {
+//                        achievementManager.unlock("Perfect Shooter");
+//                    }
+//                }
+//
+//                if (this.levelFinished && this.screenFinishedCooldown.checkFinished())
+//                    this.isRunning = false;
+//        }
         draw();
     }
 
@@ -430,19 +430,19 @@ public class GameScreen extends Screen {
     drawManager.drawLives(this, state.getLivesRemaining(),state.isCoop() );
 		drawManager.drawCoins(this,  state.getCoins()); // ADD THIS LINE - 2P mode: team total
         // 2P mode: setting per-player coin count
-        if (state.isCoop()) {
-            // left: P1
-            String p1 = String.format("P1  S:%d  K:%d  B:%d",
-                    state.getScore(0), state.getShipsDestroyed(0),
-                    state.getBulletsShot(0));
-            // right: P2
-            String p2 = String.format("P2  S:%d  K:%d  B:%d",
-                    state.getScore(1), state.getShipsDestroyed(1),
-                    state.getBulletsShot(1));
-            drawManager.drawCenteredRegularString(this, p1, 40);
-            drawManager.drawCenteredRegularString(this, p2, 60);
-            // remove the unnecessary "P1 S: K: B: C:" and "P2 S: K: B: C:" lines from the game screen
-        }
+//        if (state.isCoop()) {
+//            // left: P1
+//            String p1 = String.format("P1  S:%d  K:%d  B:%d",
+//                    state.getScore(0), state.getShipsDestroyed(0),
+//                    state.getBulletsShot(0));
+//            // right: P2
+//            String p2 = String.format("P2  S:%d  K:%d  B:%d",
+//                    state.getScore(1), state.getShipsDestroyed(1),
+//                    state.getBulletsShot(1));
+//            drawManager.drawCenteredRegularString(this, p1, 40);
+//            drawManager.drawCenteredRegularString(this, p2, 60);
+//            // remove the unnecessary "P1 S: K: B: C:" and "P2 S: K: B: C:" lines from the game screen
+//        }
         drawManager.drawLevel(this, this.state.getLevel());
 		drawManager.drawHorizontalLine(this, SEPARATION_LINE_HEIGHT - 1);
         drawManager.drawShipCount(this, enemyShipFormation.getShipCount());
@@ -525,6 +525,9 @@ public class GameScreen extends Screen {
      * Enemy bullets hit players → decrement TEAM lives; player bullets hit enemies
      * → add score.
      */
+    /**
+     * Enemy bullets hit players → decrement TEAM lives; player bullets hit enemies → add score.
+     */
     private void manageCollisions() {
         Set<Bullet> recyclable = new HashSet<Bullet>();
         for (Bullet bullet : this.bullets) {
@@ -536,45 +539,49 @@ public class GameScreen extends Screen {
                             && checkCollision(bullet, ship) && !this.levelFinished) {
                         recyclable.add(bullet);
 
-
                         drawManager.triggerExplosion(ship.getPositionX(), ship.getPositionY(), false, state.getLivesRemaining() == 1);
                         ship.addHit();
+                        ship.destroy();
+                        state.decLife(p);
 
-                        ship.destroy(); // explosion/respawn handled by Ship.update()
-                        state.decLife(p); // decrement shared/team lives by 1
-
-                      						// [ADD] record damage for Survivor achievement check
-						            this.tookDamageThisLevel = true;
+                        // Record damage for Survivor achievement check
+                        this.tookDamageThisLevel = true;
 
                         drawManager.setLastLife(state.getLivesRemaining() == 1);
                         drawManager.setDeath(state.getLivesRemaining() == 0);
 
-						this.logger.info("Hit on player " + (p + 1) + ", team lives now: " + state.getLivesRemaining());
-						break;
-					}
-				}
-			} else {
-				// Player bullet vs enemies
-				// map Bullet owner id (1 or 2) to per-player index (0 or 1)
-				final int ownerId = bullet.getOwnerPlayerId(); // 1 or 2 (0 if unset)
-				final int pIdx = (ownerId == 2) ? 1 : 0; // default to P1 when unset
+                        this.logger.info("Hit on player " + (p + 1) + ", team lives now: " + state.getLivesRemaining());
+                        break;
+                    }
+                }
+            } else {
+                // Player bullet vs enemies
+                final int ownerId = bullet.getOwnerPlayerId();
+                final int pIdx = (ownerId == 2) ? 1 : 0;
 
                 boolean finalShip = this.enemyShipFormation.lastShip();
 
-                for (EnemyShip enemyShip : this.enemyShipFormation)
+                // Check collision with formation enemies
+                for (EnemyShip enemyShip : this.enemyShipFormation) {
                     if (!enemyShip.isDestroyed() && checkCollision(bullet, enemyShip)) {
                         recyclable.add(bullet);
                         enemyShip.hit();
+
                         if (enemyShip.isDestroyed()) {
                             int points = enemyShip.getPointValue();
-                            state.addCoins(pIdx, enemyShip.getCoinValue()); // 2P mode: modified to per-player coins
+                            state.addCoins(pIdx, enemyShip.getCoinValue());
 
                             drawManager.triggerExplosion(enemyShip.getPositionX(), enemyShip.getPositionY(), true, finalShip);
-						    state.addScore(pIdx, points); // 2P mode: modified to add to P1 score for now
-						    state.incShipsDestroyed(pIdx);
+                            state.addScore(pIdx, points);
+                            state.incShipsDestroyed(pIdx);
 
-                            // obtain drop from ItemManager (may return null)
-                            Item drop = engine.ItemManager.getInstance().obtainDrop(enemyShip);
+                            // Check First Blood achievement
+                            if (this.achievementManager != null && state.getShipsDestroyed(pIdx) == 1) {
+                                this.achievementManager.unlock("First Blood");
+                            }
+
+                            // Obtain drop from ItemManager
+                            Item drop = ItemManager.getInstance().obtainDrop(enemyShip);
                             if (drop != null) {
                                 this.items.add(drop);
                                 this.logger.info("Spawned " + drop.getType() + " at " + drop.getPositionX() + "," + drop.getPositionY());
@@ -582,62 +589,31 @@ public class GameScreen extends Screen {
 
                             this.enemyShipFormation.destroy(enemyShip);
                             this.logger.info("Hit on enemy ship.");
-                            /*
-                                check of 'First Blood' achievement release
-                                2025.10.02 add
-                            */
-                            if(this.shipsDestroyed == 1) {
-                                //achievementManager.unlockFirstBlood();
-                                achievementManager.unlock("First Blood");
-                            }
                         }
                         break;
                     }
+                }
 
-						int points = enemyShip.getPointValue();
-						state.addCoins(pIdx, enemyShip.getCoinValue()); // 2P mode: modified to per-player coins
+                // Check collision with special enemy ship
+                if (this.enemyShipSpecial != null
+                        && !this.enemyShipSpecial.isDestroyed()
+                        && checkCollision(bullet, this.enemyShipSpecial)) {
+                    int points = this.enemyShipSpecial.getPointValue();
 
-						state.addScore(pIdx, points); // 2P mode: modified to add to P1 score for now
-						state.incShipsDestroyed(pIdx);
-
-						// [ADD] precise First Blood check using current counter
-						if (this.achievementManager != null && state.getShipsDestroyed(pIdx) == 1) {
-							this.achievementManager.unlock("First Blood");
-						}
-
-						// obtain drop from ItemManager (may return null)
-						Item drop = ItemManager.getInstance().obtainDrop(enemyShip);
-						if (drop != null) {
-							this.items.add(drop);
-							this.logger.info("Spawned " + drop.getType() + " at " + drop.getPositionX() + "," + drop.getPositionY());
-						}
-
-						this.enemyShipFormation.destroy(enemyShip);
-						this.logger.info("Hit on enemy ship.");
-
-						recyclable.add(bullet);
-						break;
-					}
-				if (this.enemyShipSpecial != null
-						&& !this.enemyShipSpecial.isDestroyed()
-						&& checkCollision(bullet, this.enemyShipSpecial)) {
-					int points = this.enemyShipSpecial.getPointValue();
-
-					state.addCoins(pIdx, this.enemyShipSpecial.getCoinValue()); // 2P mode: modified to per-player coins
-
+                    state.addCoins(pIdx, this.enemyShipSpecial.getCoinValue());
                     state.addScore(pIdx, points);
-                    state.incShipsDestroyed(pIdx); // 2P mode: modified incrementing ships destroyed
+                    state.incShipsDestroyed(pIdx);
 
-					this.enemyShipSpecial.destroy();
+                    this.enemyShipSpecial.destroy();
                     drawManager.triggerExplosion(this.enemyShipSpecial.getPositionX(), this.enemyShipSpecial.getPositionY(), true, true);
-					this.enemyShipSpecialExplosionCooldown.reset();
-					recyclable.add(bullet);
-				}
-			}
-		}
-		this.bullets.removeAll(recyclable);
-		BulletPool.recycle(recyclable);
-	}
+                    this.enemyShipSpecialExplosionCooldown.reset();
+                    recyclable.add(bullet);
+                }
+            }
+        }
+        this.bullets.removeAll(recyclable);
+        BulletPool.recycle(recyclable);
+    }
 
     /**
      * Checks if two entities are colliding.
