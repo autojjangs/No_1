@@ -18,7 +18,7 @@ public class ItemEffect {
      * player doesn't have enough coins the effect is not applied.
      */
     private static final int COST_TRIPLESHOT = 100;
-    private static final int COST_SCOREBOOST = 2000;
+    private static final int COST_SCOREBOOST = 0;
     private static final int COST_BULLETSPEEDUP = 75;
 
     /**=========================SINGLE USE=================================**/
