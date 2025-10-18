@@ -310,7 +310,6 @@ public final class FileManager {
      *
      * @param userName user's name to search.
      * @param unlockedAchievement A list of booleans representing which achievements
-     * @throws IOException In case of loading problems.
      */
     public void unlockAchievement(String userName, List<Boolean> unlockedAchievement) {
         List<String[]> records = new ArrayList<>();
@@ -382,7 +381,7 @@ public final class FileManager {
                 String line;
                 String[] header = bReader.readLine().split(",");
                 int idx = -1;
-                for(int i = 0; i < header.length; i++){
+                for(int i = 1; i < header.length; i++){
                     if(header[i].equals(achievement.getName())){
                         idx = i;
                         break;

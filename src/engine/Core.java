@@ -280,6 +280,16 @@ public final class Core {
     }
 
     /**
+     * Controls access to the achievement manager.
+     *
+     * @return Application achievement manager.
+     * [2025-10-09] Added in commit: feat: complete drawAchievementMenu method in DrawManager
+     */
+    public static AchievementManager getAchievementManager() {
+        return AchievementManager.getInstance();
+    }
+
+    /**
      * Controls creation of new cooldowns with variance.
      *
      * @param milliseconds
