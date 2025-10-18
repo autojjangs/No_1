@@ -616,11 +616,11 @@ public class GameScreen extends Screen {
                 achievementManager.unlock("Survivor");
             }
             //Sharpshooter
-            if(p1Acc>=30){
+            if(p1Acc>=80){
                 //1p
                 achievementManager.unlock("Sharpshooter");
                 //coop
-                if(p2Acc>=30){
+                if(p2Acc>=80){
                     achievementManager.unlock("Sharpshooter");
                 }
             }

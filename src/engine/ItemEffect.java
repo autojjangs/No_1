@@ -115,11 +115,11 @@ public class ItemEffect {
         if (cost <= 0) return true; // free or invalid cost treated as free
 
         final int playerIndex = getPlayerIndex(playerId);
-        final int current = gameState.getCoins(playerIndex);
+        final int current = gameState.getCoins();
 
         // Use the dedicated spend method implemented in GameState
         if (gameState.spendCoins(playerIndex, cost)) {
-            logger.info("Player " + playerId + " spent " + cost + " coins. before: " + current + ", after: " + gameState.getCoins(playerIndex));
+            logger.info("Player " + playerId + " spent " + cost + " coins. before: " + current + ", after: " + gameState.getCoins());
             return true;
         } else {
             logger.info("Player " + playerId + " cannot afford cost " + cost + ". current coins: " + current);
