@@ -544,7 +544,7 @@ public class GameScreen extends Screen {
                         state.decLife(p); // decrement shared/team lives by 1
 
                       						// [ADD] record damage for Survivor achievement check
-						            this.tookDamageThisLevel = true;
+						this.tookDamageThisLevel = true;
 
                         drawManager.setLastLife(state.getLivesRemaining() == 1);
                         drawManager.setDeath(state.getLivesRemaining() == 0);
