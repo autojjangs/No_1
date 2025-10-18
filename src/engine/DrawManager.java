@@ -920,11 +920,11 @@ public final class DrawManager {
      * Draws a centered string on regular font at a specific coordinate.
      *
      * @param string
-     * String to draw.
+     *              String to draw.
      * @param x
-     * X coordinate to center the string on.
+     *              X coordinate to center the string on.
      * @param y
-     * Y coordinate of the drawing.
+     *              Y coordinate of the drawing.
      */
     public void drawCenteredRegularString(final String string, final int x, final int y) {
         backBufferGraphics.setFont(fontRegular);
@@ -1080,6 +1080,40 @@ public final class DrawManager {
         }
 
         return boxes;
+    }
+
+    public void drawShipSelectionMenu(final Screen screen, final Ship[] shipExamples, final int selectedShipIndex, final int playerIndex) {
+        Ship ship = shipExamples[selectedShipIndex];
+        int centerX = ship.getPositionX();
+
+        String screenTitle = "PLAYER " + playerIndex + " : CHOOSE YOUR SHIP";
+
+        // Ship Type Info
+        String[] shipNames = {"Normal Type", "Big Shot Type", "Double Shot Type", "Speed Type"};
+        String[] shipSpeeds = {"SPEED: NORMAL", "SPEED: SLOW", "SPEED: SLOW", "SPEED: FAST"};
+        String[] shipFireRates = {"FIRE RATE: NORMAL", "FIRE RATE: NORMAL", "FIRE RATE: NORMAL", "FIRE RATE: SLOW"};
+
+        drawEntity(ship, ship.getPositionX() - ship.getWidth()/2, ship.getPositionY());
+//        for (int i = 0; i < 4; i++) {
+//            // Draw Player Ship
+//            drawManager.drawEntity(ship, ship.getPositionX() - ship.getWidth()/2, ship.getPositionY());
+//        }
+
+        // Draw Selected Player Page Title
+        backBufferGraphics.setColor(Color.GREEN);
+        drawCenteredBigString(screen, screenTitle, screen.getHeight() / 4);
+        // Draw Selected Player Ship Type
+        backBufferGraphics.setColor(Color.white);
+        drawCenteredRegularString(screen, " > " + shipNames[selectedShipIndex] + " < ", screen.getHeight() / 2 - 40);
+        // Draw Selected Player Ship Info
+        backBufferGraphics.setColor(Color.WHITE);
+//        drawCenteredRegularString(shipSpeeds[selectedShipIndex], centerX, screen.getHeight() / 2 + 60);
+//        drawCenteredRegularString(shipFireRates[selectedShipIndex], centerX, screen.getHeight() / 2 + 80);
+        drawCenteredRegularString(screen, shipSpeeds[selectedShipIndex], screen.getHeight() / 2 + 60);
+        drawCenteredRegularString(screen, shipFireRates[selectedShipIndex], screen.getHeight() / 2 + 80);
+
+        backBufferGraphics.setColor(Color.GRAY);
+        drawCenteredRegularString(screen, "Press SPACE to Select", screen.getHeight() - 50);
     }
 
     /*
