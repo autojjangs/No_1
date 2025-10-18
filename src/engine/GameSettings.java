@@ -3,7 +3,11 @@ package engine;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.nio.file.*;
+import java.util.logging.Logger;
+
 /**
  * Implements an object that stores a single game's difficulty settings.
  *
@@ -12,6 +16,7 @@ import java.util.List;
  */
 public class GameSettings {
 
+	private static final Logger LOGGER = Logger.getLogger(Core.class.getSimpleName());
 	/** Width of the level's enemy formation. */
 	private int formationWidth;
 	/** Height of the level's enemy formation. */
@@ -20,7 +25,6 @@ public class GameSettings {
 	private int baseSpeed;
 	/** Frequency of enemy shootings, +/- 30%. */
 	private int shootingFrecuency;
-
 
 	//추가 사항
 	public static class ChangeData {
@@ -49,6 +53,75 @@ public class GameSettings {
 		}
 	}
 
+	// StageData: Structure of GameSettings + List<ChangeData> at each stage
+	public static class StageData {
+		public GameSettings settings;
+		public List<ChangeData> changeList;
+		public StageData(GameSettings settings, List<ChangeData> changeList) {
+			this.settings = settings;
+			this.changeList = changeList;
+		}
+	}
+
+	public static Color hexToColor(String hex) {
+		if(hex.startsWith("#")) hex = hex.substring(1);
+		if(hex.length() > 6) {
+			int alpha = Integer.parseInt(hex.substring(7), 16);
+			hex = hex.substring(0, 6);
+			int red = Integer.parseInt(hex.substring(0, 2), 16);
+			int green = Integer.parseInt(hex.substring(3, 5), 16);
+			int blue = Integer.parseInt(hex.substring(5), 16);
+			// if it is hex code with 8 digits(like #AAFFAABB)
+			return new Color(red, green, blue, alpha);
+		}
+		int rgb = Integer.parseInt(hex, 16);
+		// if it is hex code with 6 digits(like #AAFFAA)
+		return new Color(rgb);
+	}
+
+	public static List<StageData> parseStages(Path path) throws Exception {
+		String raw = Files.readString(path);
+		raw = raw.replace("\uFEFF", "");
+		raw = raw.replaceAll("(?m)^\\s*//.*$", "");
+
+		String[] stageBlocks = raw.split("&");
+		List<StageData> result = new ArrayList<>();
+		for(String block: stageBlocks) {
+			List<String> lines = Arrays.stream(block.split("\n"))
+					.map(String::trim)
+					.filter(s -> !s.isEmpty() && !s.startsWith("//")) // Deleting comments and empty lines
+					.toList();
+			if(lines.isEmpty()) continue;
+
+			String[] ints = lines.get(0).split(",");
+			GameSettings settings = new GameSettings(
+					Integer.parseInt(ints[0].trim()),
+					Integer.parseInt(ints[1].trim()),
+					Integer.parseInt(ints[2].trim()),
+					Integer.parseInt(ints[3].trim())
+			);
+
+			List<ChangeData> changeList = new ArrayList<>();
+			for(int i = 1; i < lines.size(); i++) {
+				String[] parts = lines.get(i).split(",");
+				int x = Integer.parseInt(parts[0].trim());
+				int y = Integer.parseInt(parts[1].trim());
+				int z = Integer.parseInt(parts[2].trim());
+				int w = Integer.parseInt(parts[3].trim());
+				Color color = null;
+				if(parts.length >= 5) {
+					String hex = parts[4].trim();
+					if(hex.startsWith("#")) hex = hex.substring(1);
+					color = hexToColor(hex);
+				}
+				changeList.add(new ChangeData(x, y, z, w, color));
+			}
+			result.add(new StageData(settings, changeList));
+		}
+
+		return result;
+	}
+
 	private List<ChangeData> changeDataList;
 	public final List<ChangeData> getChangeDataList() {
 		return changeDataList;
@@ -56,85 +129,32 @@ public class GameSettings {
 
 	public static List<GameSettings> getGameSettings(){
 		List<GameSettings> result = new ArrayList<>();
+		List<StageData> stageDataList;
 
 		GameSettings setting;
 
-		//Level 1
-		setting = new GameSettings(4, 3, 80, 2000);
-		result.add(setting);
+		try {
+			stageDataList = parseStages(Paths.get("res", "level.csv"));
+			for(StageData s : stageDataList) {
+				setting = s.settings;
+				setting.changeDataList = new ArrayList<>();
 
-		//Level 2
-		setting = new GameSettings(5, 4, 70, 1500);
-		setting.changeDataList = Arrays.asList(
-				new ChangeData(0, 0, 2, 2, Color.RED),
-				new ChangeData(1, 0, 2, 2, Color.RED),
-				new ChangeData(2, 0, 2, 2, Color.RED),
-				new ChangeData(3, 0, 2, 2, Color.RED),
-				new ChangeData(4, 0, 2, 2, Color.RED)
-		);
-		result.add(setting);
+				setting.changeDataList.addAll(s.changeList);
+				result.add(setting);
+			}
+		} catch (Exception e) {
+			LOGGER.info("Failed Loading Data: There is no such file named " + e.getMessage());
+			LOGGER.info("By the error, game is closing.");
+			System.exit(1);
+			return Collections.emptyList();
+		}
 
-		//Bonus Stage
-		setting = new GameSettings(5, 4, 1, 1000000);
-		setting.changeDataList = Arrays.asList(
-				new ChangeData(0, 0, 0, 0),
-				new ChangeData(1, 0, 0, 0),
-				new ChangeData(2, 0, 1, 2, Color.yellow),
-				new ChangeData(3, 0, 0, 0),
-				new ChangeData(4, 0, 0, 0),
-
-				new ChangeData(0, 1, 1, 2, Color.yellow),
-				new ChangeData(1, 1, 1, 2, Color.yellow),
-				new ChangeData(2, 1, 1, 2, Color.yellow),
-				new ChangeData(3, 1, 1, 2, Color.yellow),
-				new ChangeData(4, 1, 1, 2, Color.yellow),
-
-				new ChangeData(0, 2, 0, 0),
-				new ChangeData(1, 2, 1, 2, Color.yellow),
-				new ChangeData(2, 2, 1, 2, Color.yellow),
-				new ChangeData(3, 2, 1, 2, Color.yellow),
-				new ChangeData(4, 2, 0, 0),
-
-				new ChangeData(0, 3, 0, 0),
-				new ChangeData(1, 3, 1, 2, Color.yellow),
-				new ChangeData(2, 3, 0, 0),
-				new ChangeData(3, 3, 1, 2, Color.yellow),
-				new ChangeData(4, 3, 0, 0)
-
-		);
-		result.add(setting);
-
-		//Level 4
-		setting = new GameSettings(8, 2, 40, 1000);
-		setting.changeDataList = Arrays.asList(
-				new ChangeData(0, 0, 2, 2, Color.RED),
-				new ChangeData(1, 1, 2, 2, Color.RED),
-				new ChangeData(2, 0, 2, 2, Color.RED),
-				new ChangeData(3, 1, 2, 2, Color.RED),
-				new ChangeData(4, 0, 2, 2, Color.RED),
-				new ChangeData(5, 1, 2, 2, Color.RED),
-				new ChangeData(6, 0, 2, 2, Color.RED),
-				new ChangeData(7, 1, 2, 2, Color.RED)
-		);
-		result.add(setting);
-
-		//Level 5
-		setting = new GameSettings(3, 3, 40, 1000);
-		setting.changeDataList = Arrays.asList(
-				new ChangeData(0, 0, 3, 3, Color.BLUE),
-				new ChangeData(1, 0, 3, 3, Color.BLUE),
-				new ChangeData(2, 0, 3, 3, Color.BLUE),
-
-				new ChangeData(0, 1, 3, 3, Color.BLUE),
-				new ChangeData(1, 1, 10, 10, Color.MAGENTA),
-				new ChangeData(2, 1, 3, 3, Color.BLUE),
-
-				new ChangeData(0, 2, 3, 3, Color.BLUE),
-				new ChangeData(1, 2, 3, 3, Color.BLUE),
-				new ChangeData(2, 2, 3, 3, Color.BLUE)
-
-		);
-		result.add(setting);
+		if(stageDataList.isEmpty()) {
+			LOGGER.info("Failed Loading Data: There is no data in level.csv file.");
+			LOGGER.info("By the error, game is closing.");
+			System.exit(1);
+			return Collections.emptyList();
+		}
 
 		return result;
 	}

@@ -1,16 +1,22 @@
 package screen;
 
 import java.awt.event.KeyEvent;
+import engine.SoundManager;
 
 public class AchievementScreen extends Screen {
     public AchievementScreen(final int width, final int height, final int fps) {
         super(width, height, fps);
 
         this.returnCode = 3;
+        
+        // Start menu music loop when the achievement screen is created
+        SoundManager.playLoop("sound/menu_sound.wav");
     }
 
     public final int run() {
         super.run();
+        // Stop menu music when leaving the achievement screen
+        SoundManager.stop();
 
         return this.returnCode;
     }
