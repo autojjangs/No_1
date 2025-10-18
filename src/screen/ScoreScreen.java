@@ -2,6 +2,7 @@ package screen;
 
 import java.awt.event.KeyEvent;
 import java.io.IOException;
+import java.sql.Array;
 import java.util.*;
 
 import engine.*;
@@ -112,44 +113,50 @@ public class ScoreScreen extends Screen {
     protected final void update() {
         super.update();
 
-        draw();
-        if (this.inputDelay.checkFinished()) {
-            if (inputManager.isKeyDown(KeyEvent.VK_ESCAPE)) {
+		draw();
+		if (this.inputDelay.checkFinished()) {
+			if (inputManager.isKeyDown(KeyEvent.VK_ESCAPE)) {
                 // Return to main menu.
-                this.returnCode = 1;
-                this.isRunning = false;
-                if (this.isNewRecord) {
-                    saveScore();
-                    saveAchievement(); //2025-10-03 call method for save achievement released
-                }
-            } else if (inputManager.isKeyDown(KeyEvent.VK_SPACE)) {
-                // Play again.
-                this.returnCode = 2;
-                this.isRunning = false;
-                if (this.isNewRecord) {
-                    saveScore();
-                    saveAchievement(); // 2025-10-03 call method for save achievement released
-                }
-            }
+                SoundManager.playOnce("sound/select.wav");
+				this.returnCode = 1;
+				this.isRunning = false;
+				if (this.isNewRecord) {
+					saveScore();
+					saveAchievement(); //2025-10-03 call method for save achievement released
+				}
+			} else if (inputManager.isKeyDown(KeyEvent.VK_SPACE)) {
+				// Play again.
+                SoundManager.playOnce("sound/select.wav");
+				this.returnCode = 2;
+				this.isRunning = false;
+				if (this.isNewRecord) {
+					saveScore();
+					saveAchievement(); // 2025-10-03 call method for save achievement released
+				}
+			}
 
 			if (this.selectionCooldown.checkFinished()) {
 				if (inputManager.isKeyDown(KeyEvent.VK_RIGHT)) {
+                    SoundManager.playOnce("sound/hover.wav");
 					this.nameCharSelected = this.nameCharSelected == 2 ? 0
 							: this.nameCharSelected + 1;
 					this.selectionCooldown.reset();
 				}
 				if (inputManager.isKeyDown(KeyEvent.VK_LEFT)) {
+                    SoundManager.playOnce("sound/hover.wav");
 					this.nameCharSelected = this.nameCharSelected == 0 ? 2
 							: this.nameCharSelected - 1;
 					this.selectionCooldown.reset();
 				}
 				if (inputManager.isKeyDown(KeyEvent.VK_UP)) {
+                    SoundManager.playOnce("sound/hover.wav");
 					this.name[this.nameCharSelected] = (char) (this.name[this.nameCharSelected] == LAST_CHAR
 							? FIRST_CHAR
 							: this.name[this.nameCharSelected] + 1);
 					this.selectionCooldown.reset();
 				}
 				if (inputManager.isKeyDown(KeyEvent.VK_DOWN)) {
+                    SoundManager.playOnce("sound/hover.wav");
 					this.name[this.nameCharSelected] = (char) (this.name[this.nameCharSelected] == FIRST_CHAR
 							? LAST_CHAR
 							: this.name[this.nameCharSelected] - 1);
@@ -236,9 +243,6 @@ public class ScoreScreen extends Screen {
             float p1Acc = this.gameState.getBulletsShot(0) > 0 ? (float) this.gameState.getShipsDestroyed(0) / this.gameState.getBulletsShot(0) : 0f;
             float p2Acc = this.gameState.getBulletsShot(1) > 0 ? (float) this.gameState.getShipsDestroyed(1) / this.gameState.getBulletsShot(1) : 0f;
 
-            if(p1Acc >= 80 && p2Acc >=80){
-                achievementManager.unlock("Sharpshooter");
-            }
             String p1 = String.format("P1  %04d  |  acc %.2f%%", this.gameState.getScore(0), p1Acc * 100f);
             String p2 = String.format("P2  %04d  |  acc %.2f%%", this.gameState.getScore(1), p2Acc * 100f);
 
@@ -254,9 +258,6 @@ public class ScoreScreen extends Screen {
 		} else {
 			// 1P legacy summary with accuracy
 			float acc = (this.bulletsShot > 0) ? (float) this.shipsDestroyed / this.bulletsShot : 0f;
-			if(acc >= 80){
-				achievementManager.unlock("Sharpshooter");
-			}
 			drawManager.drawResults(this, this.score, this.livesRemaining, this.shipsDestroyed, acc, true); // Draw accuracy for 1P mode
 		}
 
