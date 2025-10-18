@@ -86,37 +86,52 @@ public class Item extends Entity {
      * @param playerId
      *            ID of the player to apply the effect to.
      */
-    public void applyEffect(final GameState gameState, final int playerId) {
+    public boolean applyEffect(final GameState gameState, final int playerId) {
         ItemDB itemDB = new ItemDB();
         ItemData data = itemDB.getItemData(this.type);
 
-        if (data == null) return;
+        if (data == null) return false;
 
         int value = data.getEffectValue();
         int duration = data.getEffectDuration();
+        int cost = data.getCost();
+
+        boolean applied = false;
+        /* item data always true to apply because free
+        * duration item will apply if enough coins*/
         switch (this.type) {
             case "COIN":
                 ItemEffect.applyCoinItem(gameState, playerId, value);
+                applied = true;
                 break;
             case "HEAL":
                 ItemEffect.applyHealItem(gameState, playerId, value);
+                applied = true;
                 break;
             case "SCORE":
                 ItemEffect.applyScoreItem(gameState, playerId, value);
+                applied = true;
                 break;
             case "TRIPLESHOT":
-                ItemEffect.applyTripleShot(gameState, playerId, value, duration);
+                applied = ItemEffect.applyTripleShot(gameState, playerId, value, duration,cost);
                 break;
             case "SCOREBOOST":
-                ItemEffect.applyScoreBoost(gameState, playerId, value, duration);
+                applied = ItemEffect.applyScoreBoost(gameState, playerId, value, duration,cost);
                 break;
             case "BULLETSPEEDUP":
-                ItemEffect.applyBulletSpeedUp(gameState, playerId, value, duration);
+                applied = ItemEffect.applyBulletSpeedUp(gameState, playerId, value, duration, cost);
                 break;
             default:
                 this.logger.warning("[Item]: No ItemEffect for type " + this.type);
+                applied = false;
                 break;
         }
+        if (!applied) {
+            // Player couldn't afford the item (or other failure).
+            logger.info("[Item]: Player " + playerId + " couldn't afford " + this.type + " (cost=" + cost + ")");
+        }
+
+        return applied;
     };
 
     /**
