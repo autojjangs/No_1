@@ -34,7 +34,7 @@ public class GameState {
 	private int teamLivesCap;
 
 	/** Current coin count. */ // ADD THIS LINE
-    private final int[] coins = new int[NUM_PLAYERS]; // ADD THIS LINE - edited for 2P mode
+    private static int coins = 0; // ADD THIS LINE - edited for 2P mode
 
     private static class EffectState {
         Cooldown cooldown;
@@ -53,21 +53,21 @@ public class GameState {
 
 	// 2P mode: co-op aware constructor used by the updated Core loop - livesEach
 	// applies per-player; co-op uses shared pool.
-	public GameState(final int level, final int livesEach, final boolean coop, final int[] coin) {
+	public GameState(final int level, final int livesEach, final boolean coop, final int coin) {
 		this.level = level;
 		this.coop = coop;
-        this.coins[0] = coin[0];
+        this.coins = coin;
 
 		if (coop) {
-            this.sharedLives = true;
-            this.teamLives = Math.max(0, livesEach * NUM_PLAYERS);
-            this.teamLivesCap = this.teamLives;
+			this.sharedLives = true;
+			this.teamLives = Math.max(0, livesEach * NUM_PLAYERS);
+			this.teamLivesCap = this.teamLives;
 		} else {
-            this.sharedLives = false;
-            this.teamLives = 0;
-            this.teamLivesCap = 0;
-            // legacy: put all lives on P1
-            lives[0] = Math.max(0, livesEach);
+			this.sharedLives = false;
+			this.teamLives = 0;
+			this.teamLivesCap = 0;
+			// legacy: put all lives on P1
+			lives[0] = Math.max(0, livesEach);
 		}
 
         initializeEffectStates();
@@ -101,7 +101,7 @@ public class GameState {
 	 */
 	public GameState(final int level, final int score,
 					 final int livesRemaining, final int bulletsShot,
-					 final int shipsDestroyed, final int[] coins) { // MODIFY THIS LINE
+					 final int shipsDestroyed, final int coins) { // MODIFY THIS LINE
 		this.level = level;
 		this.sharedLives = false;
 		this.teamLives = 0;
@@ -112,7 +112,7 @@ public class GameState {
 		this.bulletsShot[0] = bulletsShot;
 		this.shipsDestroyed[0] = shipsDestroyed;
 
-		this.coins[0] = Math.max(0, coins[0]); // ADD THIS LINE - edited for 2P mode
+		this.coins = coins; // ADD THIS LINE - edited for 2P mode
 		this.coop = false; // 2P: single-player mode
 
         initializeEffectStates();
@@ -181,18 +181,17 @@ public class GameState {
     public boolean getCoop() { return this.coop; }
 
 	// 2P mode: per-player coin tracking
-    public int getCoins(final int p) { return (p >= 0 && p < NUM_PLAYERS) ? coins[p] : 0; }
-    public int getCoins() { return coins[0]; } // legacy total for ScoreScreen
+    public int getCoins() { return coins; } // legacy total for ScoreScreen
 
     public void addCoins(final int p, final int delta) {
         if (p >= 0 && p < NUM_PLAYERS && delta > 0)
-            coins[p] = Math.max(0, coins[p] + delta);
+            coins = Math.max(0, coins + delta);
     }
 
     public boolean spendCoins(final int p, final int amount) {
         if (p < 0 || p >= NUM_PLAYERS || amount < 0) return false;
-        if (coins[p] < amount) return false;
-        coins[p] -= amount;
+        if (coins < amount) return false;
+        coins -= amount;
         return true;
     }
 
@@ -205,7 +204,6 @@ public class GameState {
 		return sharedLives;
 	}
 
-    //unused
 	public int getTeamLives() {
 		return teamLives;
 	}

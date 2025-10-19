@@ -1,7 +1,16 @@
-player, achievement, achievement1, achievement2, achievement3, achievement4, achievement5
-ROB, 1, 1, 1, 1, 1
-PAT, 0, 0, 1, 0, 1
-KOF 1, 0, 1, 0, 0
-BYR 0, 0, 0, 0, 0
-AAA,0,0,0
-
+mode,player,First Blood,Survivor,Clear,Sharpshooter,50 Bullets,Get 3000 Score
+1,AAA,1,0,0,0,0,0
+1,BBB,1,0,0,0,0,0
+1,CCC,1,0,0,0,0,0
+1,DDD,1,0,0,0,0,0
+1,EEE,1,0,0,0,0,0
+1,FFF,1,0,0,0,0,0
+1,GGG,1,0,0,0,0,0
+2,AAA,1,0,0,0,0,0
+2,BBB,1,0,0,0,0,0
+2,CCC,1,0,0,0,0,0
+2,DDD,1,0,0,0,0,0
+2,EEE,1,0,0,0,0,0
+2,FFF,1,0,0,0,0,0
+2,GGG,1,0,0,0,0,0
+1,PHM,1,0,0,0,1,0,0

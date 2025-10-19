@@ -30,10 +30,10 @@ public final class InputManager implements KeyListener, MouseListener, MouseMoti
 
 	/** Singleton instance of the class. */
 	private static InputManager instance;
-	/** Last character typed. */
-	private static char lastCharTyped;
-	/** Flag to check if a character was typed. */
-	private static boolean charTyped;
+    /** Last character typed. */
+    private static char lastCharTyped;
+    /** Flag to check if a character was typed. */
+    private static boolean charTyped;
 
 
     // add three variable
@@ -70,8 +70,8 @@ public final class InputManager implements KeyListener, MouseListener, MouseMoti
 	 */
 	private InputManager() {
 		keys = new boolean[NUM_KEYS];
-		lastCharTyped = '\0';
-		charTyped = false;
+        lastCharTyped = '\0';
+        charTyped = false;
 	}
 
 	/**
@@ -84,21 +84,21 @@ public final class InputManager implements KeyListener, MouseListener, MouseMoti
 			instance = new InputManager();
 		return instance;
 	}
+    /**
+     * Returns the last character typed and resets the flag.
+     *
+     * @return Last character typed, or '\0' if none.
+     */
+    public char getLastCharTyped() {
+        if (charTyped) {
+            charTyped = false;
+            return lastCharTyped;
+        }
+        return '\0';
+    }
 
-	/**
-	 * Returns the last character typed and resets the flag.
-	 *
-	 * @return Last character typed, or '\0' if none.
-	 */
-	public char getLastCharTyped() {
-		if (charTyped) {
-			charTyped = false;
-			return lastCharTyped;
-		}
-		return '\0';
-	}
 
-	/**
+    /**
 	 * Returns true if the provided key is currently pressed.
 	 *
 	 * @param keyCode
@@ -210,23 +210,23 @@ public final class InputManager implements KeyListener, MouseListener, MouseMoti
 	 */
 	@Override
 	public void keyTyped(final KeyEvent key) {
-		lastCharTyped = key.getKeyChar();
-		charTyped = true;
-	}
-
-	/**
-	 * Clears any pending key or character input.
-	 * (Prevents unintended key carry-over between screens)
-	 */
-	public void clearLastKey() {
-		lastCharTyped = '\0' ;
-		charTyped = false ;
+        lastCharTyped = key.getKeyChar();
+        charTyped = true;
 	}
     // Save and return the last pressed key
     public int getLastPressedKey() {
         int temp = lastPressedKey;
         lastPressedKey = -1;
         return temp;
+    }
+
+    /**
+     * Clears any pending key or character input.
+     * (Prevents unintended key carry-over between screens)
+     */
+    public void clearLastKey() {
+        lastCharTyped = '\0' ;
+        charTyped = false ;
     }
     // Create and return a project path/res/keyconfig.txt file object
     private File getKeyConfigFile() {

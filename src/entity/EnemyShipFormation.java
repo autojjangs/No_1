@@ -7,12 +7,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;
 
+import engine.*;
 import screen.Screen;
-import engine.Cooldown;
-import engine.Core;
-import engine.DrawManager;
 import engine.DrawManager.SpriteType;
-import engine.GameSettings;
 
 /**
  * Groups enemy ships into a formation that moves together.
@@ -488,8 +485,10 @@ public class EnemyShipFormation implements Iterable<EnemyShip> {
     public final boolean isEmpty() {
         return this.shipCount <= 0;
     }
-  
+
     public int getShipCount() {
-      return this.shipCount;
+        return this.shipCount;
     }
 }
+
+

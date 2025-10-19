@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import engine.Core;
 import engine.Score;
+import engine.SoundManager;
 
 /**
  * Implements the high scores screen, it shows player records.
@@ -31,12 +32,20 @@ public class HighScoreScreen extends Screen {
      */
     public HighScoreScreen(final int width, final int height, final int fps) {
         super(width, height, fps);
+        SoundManager.playLoop("sound/menu_sound.wav");
 
         this.returnCode = 1;
 
         try {
             this.highScores1P = Core.getFileManager().loadHighScores("1P");
             this.highScores2P = Core.getFileManager().loadHighScores("2P");
+            //상위 7명만 남기기
+            highScores1P.sort((a, b) -> b.getScore() - a.getScore());
+            if (highScores1P.size() > 7) highScores1P = highScores1P.subList(0, 7);
+
+            highScores2P.sort((a, b) -> b.getScore() - a.getScore());
+            if (highScores2P.size() > 7) highScores2P = highScores2P.subList(0, 7);
+
         } catch (NumberFormatException | IOException e) {
             logger.warning("Couldn't load high scores!");
         }
@@ -49,6 +58,7 @@ public class HighScoreScreen extends Screen {
      */
     public final int run() {
         super.run();
+        SoundManager.playOnce("sound/select.wav");
 
         return this.returnCode;
     }
