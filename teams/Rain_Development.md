@@ -20,7 +20,7 @@ Our team is responsible for all planning and implementation related to the game'
 - Difficulty scaling based on level
 
 ## Detailed Requirements
-1. Implementation of JSON-based level configuration file loader
+1. Implementation of CSV-based level configuration file loader
 2. Development of enemy wave generation and management module
 3. Design of special gimmick levels (implementation of diverse level patterns and events)
 4. Implementation of difficulty scaling logic
