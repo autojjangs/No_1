@@ -85,7 +85,7 @@ public class ScoreScreen extends Screen {
         this.bulletsShot = gameState.getBulletsShot();
         this.shipsDestroyed = gameState.getShipsDestroyed();
         this.totalCoins[0] = gameState.getCoins(); // ADD THIS LINE
-        this.isNewRecord = true;
+        this.isNewRecord = false;
         this.name = new StringBuilder();
         this.nameCharSelected = 0;
         this.selectionCooldown = Core.getCooldown(SELECTION_TIME);
@@ -136,7 +136,7 @@ public class ScoreScreen extends Screen {
 				}
 			} else if (inputManager.isKeyDown(KeyEvent.VK_SPACE)) {
                 // name too short -> return
-                if (this.isNewRecord && this.name.length() < 3) return;
+                if (this.name.length() < 3) return;
 				// Play again.
                 SoundManager.playOnce("sound/select.wav");
 				this.returnCode = 2;
@@ -147,34 +147,31 @@ public class ScoreScreen extends Screen {
 				}
 			}
 
-            // Handle name input if new record
-            if (this.isNewRecord) {
-                // Handle backspace
-                if (inputManager.isKeyDown(KeyEvent.VK_BACK_SPACE)
-                        && this.selectionCooldown.checkFinished()) {
-                    if (this.name.length() > 0) {
-                        this.name.deleteCharAt(this.name.length() - 1);
-                        this.selectionCooldown.reset();
-                    }
+			// Handle backspace
+			if (inputManager.isKeyDown(KeyEvent.VK_BACK_SPACE)
+					&& this.selectionCooldown.checkFinished()) {
+				if (this.name.length() > 0) {
+					this.name.deleteCharAt(this.name.length() - 1);
+					this.selectionCooldown.reset();
+				}
+			}
+
+			// Handle character input
+			char typedChar = inputManager.getLastCharTyped();
+			if (typedChar != '\0') {
+				// Checks the name is not short when you press the space bar
+				if (typedChar == ' ') {
+					if (this.name.length() < 3) {
+						// System.out.println("too short!!");
+						this.showNameError = true;
+					}
 				}
 
-                // Handle character input
-                char typedChar = inputManager.getLastCharTyped();
-                if (typedChar != '\0') {
-                    // Checks the name is not short when you press the space bar
-                    if (typedChar == ' ') {
-                        if (this.name.length() < 3) {
-                            // System.out.println("too short!!");
-                            this.showNameError = true;
-                        }
-                    }
+				// Check if it's a valid character (alphanumeric only)
+				else if ((Character.isLetterOrDigit(typedChar))
+						&& this.name.length() < MAX_NAME_LENGTH) {
+					this.name.append(Character.toUpperCase(typedChar));
 
-                    // Check if it's a valid character (alphanumeric only)
-                    else if ((Character.isLetterOrDigit(typedChar))
-                            && this.name.length() < MAX_NAME_LENGTH) {
-                        this.name.append(Character.toUpperCase(typedChar));
-
-                    }
 				}
 			}
 		}
@@ -277,11 +274,10 @@ public class ScoreScreen extends Screen {
             drawManager.drawResults(this, this.score, this.coins, this.livesRemaining, this.shipsDestroyed, acc, this.isNewRecord, true); // Draw accuracy for 1P mode
 		}
 
-        if (this.isNewRecord) {
-            drawManager.drawNameInput(this, this.name);
-            if (showNameError)
-                drawManager.drawNameInputError(this);
-        }
+
+		drawManager.drawNameInput(this, this.name, this.isNewRecord);
+		if (showNameError)
+			drawManager.drawNameInputError(this);
 
         drawManager.completeDrawing(this);
     }
