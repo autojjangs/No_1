@@ -1,0 +1,7 @@
+type,spriteType,dropTier,effectValue,effectDuration,cost
+SCORE,ItemScore,COMMON,10,0,0
+COIN,ItemCoin,UNCOMMON,20,0,0
+HEAL,ItemHeal,RARE,1,0,0
+TRIPLESHOT, ItemTripleShot, RARE, 30, 3, 100
+SCOREBOOST, ItemScoreBooster, UNCOMMON, 2, 5, 0
+BULLETSPEEDUP, ItemBulletSpeedUp, RARE, 2, 3, 75

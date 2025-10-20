@@ -9,8 +9,9 @@ public class BasicGameSpace {
     public final Star[] stars;
     private final Random rand = new Random();
     private int[][] positions;
-    private int speed;
+    private int speed = 0;
     private int numStars;
+
 
     public BasicGameSpace(int numStars) {
 
@@ -31,7 +32,12 @@ public class BasicGameSpace {
     public void update() {
         int i = 0;
         for (Star star : stars) {
-            star.y += star.speed;
+            if(this.speed != 3){
+                star.y += star.speed;
+            }
+            else{
+                star.y += 3;
+            }
             positions[i][1] = star.y;
 
             if (star.y >= 525) {
@@ -41,6 +47,19 @@ public class BasicGameSpace {
             i++;
         }
     }
+
+    public void setLastLife(boolean status){
+        if(status){
+            this.speed = 3;
+        }
+        else{
+            this.speed = 1;
+        }
+    }
+
+    public boolean isLastLife(){ return this.speed == 3; }
+
+
 
     public int[][] getStarLocations(){
         return this.positions;
