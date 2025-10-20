@@ -105,7 +105,7 @@ public class EnemyShip extends Entity {
      * known starting properties.
      */
     public EnemyShip() {
-        super(-32, 60, 16 * 2, 7 * 2, Color.RED);
+        super(-32, 80, 16 * 2, 7 * 2, Color.RED);
 
         this.spriteType = SpriteType.EnemyShipSpecial;
         this.isDestroyed = false;
