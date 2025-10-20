@@ -764,14 +764,16 @@ public final class DrawManager {
 	 * @param name
 	 *                         Current name inserted.
 	 */
-	public void drawNameInput(final Screen screen, final StringBuilder name) {
+	public void drawNameInput(final Screen screen, final StringBuilder name, boolean isNewRecord) {
 		String newRecordString = "New Record!";
 		String introduceNameString = "Name: ";
 		String nameStr = name.toString();
 
-		backBufferGraphics.setColor(Color.GREEN);
-		drawCenteredRegularString(screen, newRecordString, screen.getHeight()
-				/ 4 + fontRegularMetrics.getHeight() * 11);
+		if (isNewRecord) {
+			backBufferGraphics.setColor(Color.GREEN);
+			drawCenteredRegularString(screen, newRecordString, screen.getHeight()
+					/ 4 + fontRegularMetrics.getHeight() * 11);
+		}
 
 		// Draw the current name with blinking cursor
 		String displayName = name.isEmpty() ? "" : nameStr;
