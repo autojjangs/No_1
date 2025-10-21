@@ -5,7 +5,8 @@ Goal: Our team's goal is to create a dynamic and fun game by designing and devel
 Vision:
 - a modular scalable item system
 - a balanced item design system
-  
+  <img width="844" height="381" alt="image" src="https://github.com/user-attachments/assets/3869472d-23bd-4ff1-9059-0e885ad2ceae" />
+
 Team members:
 - Lim Kang Jun: Team Leader
 - Jang Gi Jun: Github Manager, QA Manager
